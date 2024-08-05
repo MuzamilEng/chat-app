@@ -16,8 +16,8 @@ const nextConfig = {
   swcMinify: true,
   publicRuntimeConfig: {
     // Will be available on both server and client
-    API_ENDPOINT: process.env.NEXT_PUBLIC_API_ENDPOINT || 'http://localhost:8080/v1',
-    SOCKET_ENDPOINT: process.env.NEXT_PUBLIC_SOCKET_ENDPOINT || 'http://localhost:8080',
+    API_ENDPOINT: process.env.NEXT_PUBLIC_API_ENDPOINT || 'https://api.girls2dream.com/v1',
+    SOCKET_ENDPOINT: process.env.NEXT_PUBLIC_SOCKET_ENDPOINT || 'https://api.girls2dream.com/v1',
   },
   async rewrites() {
     return [

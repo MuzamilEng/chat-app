@@ -3,12 +3,12 @@ import cookie from 'js-cookie';
 import getConfig from 'next/config';
 import Router from 'next/router';
 import { isUrl, updateQueryStringParameter } from 'src/lib/utils';
-export const  Baseurl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:8080/v1";
+export const  Baseurl = process.env.NEXT_PUBLIC_API_ENDPOINT || "https://api.girls2dream.com/v1";
 export abstract class APIRequest {
   static token: string = '';
 
   // static API_ENDPOINT: string = null;
-  static API_ENDPOINT: string = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:8080/v1"; 
+  static API_ENDPOINT: string = process.env.NEXT_PUBLIC_API_ENDPOINT || "https://api.girls2dream.com/v1"; 
   setAuthHeaderToken(token) {
     APIRequest.token = token;
   }

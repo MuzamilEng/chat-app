@@ -40,7 +40,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 function Blogs({ authUser }: PropsFromRedux) {
   const [fileUpload, setFileUpload] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
-  const ENDPOINT: string = process.env.API_ENDPOINT || 'http://localhost:8080/v1';
+  const ENDPOINT: string = process.env.API_ENDPOINT || 'https://api.girls2dream.com/v1';
   // const { publicRuntimeConfig: config } = getConfig();
   const [mediaId, setMediaId] = useState('');
   const [url, setUrl] = useState(`${ENDPOINT}/media/photos`);

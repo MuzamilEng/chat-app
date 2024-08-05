@@ -4,11 +4,11 @@ import cookie from 'js-cookie';
 import getConfig from 'next/config';
 import { isUrl } from '../lib/utils';
 export const TOKEN = 'accessToken';
-export const  baseurl = "http://localhost:8080/v1";
+export const  baseurl = "https://api.girls2dream.com/v1";
 export abstract class APIRequest {
   static token: string = '';
   // static API_ENDPOINT: string = null;
-  static API_ENDPOINT: string = "http://localhost:8080/v1";
+  static API_ENDPOINT: string = "https://api.girls2dream.com/v1";
   setAuthHeaderToken(token) {
     APIRequest.token = token;
   }

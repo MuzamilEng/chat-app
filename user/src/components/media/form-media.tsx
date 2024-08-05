@@ -35,11 +35,11 @@ const schema = Yup.object().shape({
 function FormMedia() {
   const [fileUpload, setFileUpload] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
-  const ENDPOINT: string = process.env.NEXT_PUBLIC_API_ENDPOINT || 'http://localhost:8080/v1';
+  const ENDPOINT: string = process.env.NEXT_PUBLIC_API_ENDPOINT || 'https://api.girls2dream.com/v1';
   const { publicRuntimeConfig: config } = getConfig();
   const [mediaId, setMediaId] = useState('');
   // const [url, setUrl] = useState(`${config.API_ENDPOINT}/media/photos`); // used (`${config.API_ENDPOINT}/media/photos`) changed to process.env.NEXT_PUBLIC_API_SERVER_ENDPOINT
-  const [url, setUrl] = useState(`http://localhost:8080/v1/media/photos`);
+  const [url, setUrl] = useState(`https://api.girls2dream.com/v1/media/photos`);
   const [switchValue, setSwitchValue] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const router = useRouter();
@@ -74,7 +74,7 @@ function FormMedia() {
     props.setFieldValue('price', '0');
     props.setFieldValue('free', false);
     setFileUpload(null);
-    setUrl(`http://localhost:8080/v1/media/${type.currentTarget.value}s`);
+    setUrl(`https://api.girls2dream.com/v1/media/${type.currentTarget.value}s`);
   };
 
   const onCheck = (e: any, props: FormikProps<FormValues>) => {

@@ -11,7 +11,7 @@ interface IProps {
 function AvatarComponent({ avatarUrl, onUploadAvatarComplete }: IProps) {
   const { publicRuntimeConfig: config } = getConfig();
   const [modalShow, setModalShow] = useState(false);
-  const ENDPOINT = 'http://localhost:8080/v1' || process.env.NEXT_PUBLIC_API_ENDPOINT;
+  const ENDPOINT = 'https://api.girls2dream.com/v1' || process.env.NEXT_PUBLIC_API_ENDPOINT;
 
   const onComplete = (resp: any) => {
     if (resp?.data?.url) {
