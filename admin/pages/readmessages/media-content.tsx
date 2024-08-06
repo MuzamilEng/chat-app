@@ -1,5 +1,5 @@
+import ImageBox from '@components/conversation/image-box';
 import { useEffect, useState } from 'react';
-import ImageBox from 'src/components/conversation/image-box';
 
 interface IProps {
   items: any;
