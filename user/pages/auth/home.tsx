@@ -12,6 +12,7 @@ import { setLogin } from "src/redux/auth/actions";
 import { Baseurl } from "@services/api-request";
 import { useTranslationContext } from "context/TranslationContext";
 import { userService } from "@services/user.service";
+import Loader from "@components/common-layout/loader/loader";
 interface IProps {
   authUser: any;
   transparentLogo: string;
@@ -314,9 +315,9 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
 
           <div className="col-md-12 col-12"  >
             <div className="">
-              <div style={{ display: "flex", flexWrap: "wrap" ,minHeight:"420px", border: "1px solid #e3e3e3", borderRadius: "11px", marginTop: "10px", width: "100%" }} className="col-md-12">
+              <div style={{ display: "flex", flexWrap: "wrap" ,minHeight:"420px", marginTop: "10px", width: "100%" }} className="col-md-12">
               {data?.items?.length === 0 ? (
-                   <div >No result found</div>
+                   <div className="" style={{ margin: "auto" }}><Loader /></div>
                    ) : (
                    data?.items?.map((data, index) => (
                  <Link href={`/auth/login`} key={index} className="d-block"
