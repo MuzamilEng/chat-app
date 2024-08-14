@@ -226,6 +226,12 @@ exports.search = async (req, res, next) => {
       equal: ['role', 'type', 'gender', 'city', 'state', 'country']
     });
 
+     // Ensure admin users are excluded
+     query = {
+      ...query,
+      role: { $ne: 'admin' } // Exclude users with the role 'admin'
+    };
+    
     if (req.user.role !== 'admin') {
       query = {
         ...query,
@@ -263,6 +269,51 @@ exports.search = async (req, res, next) => {
     res.locals.search = {
       count,
       items: await checkAndConvertFriend(items, req.user)
+    };
+    next();
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.defaultSearch = async (req, res, next) => {
+  const page = Math.max(0, req.query.page - 1) || 0; // using a zero-based page index for use with skip()
+  const take = parseInt(req.query.take, 10) || 10;
+  
+  try {
+    let query = Helper.App.populateDbQuery(req.query, {
+      text: ['phoneNumber', 'email', 'username'],
+      boolean: ['isOnline', 'isApproved', 'isCompletedProfile', 'isCompletedDocument', 'isActive', 'isBlocked', 'emailVerified'],
+      equal: ['role', 'type', 'gender', 'city', 'state', 'country']
+    });
+
+    if (req.query.postCode) {
+      const postCodePrefix = req.query.postCode.slice(0, 2);
+      query = {
+        ...query,
+        postCode: { $regex: `^${postCodePrefix}` }
+      };
+    }
+
+    // Set default sort to balance descending
+    let sort = { balance: -1 };
+
+    // Check if there's a custom sort parameter in the query
+    if (req.query.sort) {
+      sort = Helper.App.populateDBSort(req.query);
+    }
+
+    const count = await DB.User.count(query);
+    const items = await DB.User.find(query)
+      .collation({ locale: 'en' })
+      .sort(sort)
+      .skip(page * take)
+      .limit(take)
+      .exec();
+
+    res.locals.defaultSearch = {
+      count,
+      items: items,
     };
     next();
   } catch (e) {

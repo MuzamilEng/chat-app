@@ -5,6 +5,10 @@ class MessageService extends APIRequest {
     return this.get(this.buildUrl('/messages/all-messages', data));
   }
 
+  find(conversationId: any, query?: any) {
+    return this.get(`/messages/all-message/${conversationId}`, query);
+  }
+
   findConversation(data: any) {
     return this.get(this.buildUrl('/conversation/findConversationByMembers', data));
   }

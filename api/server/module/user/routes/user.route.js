@@ -216,6 +216,14 @@ module.exports = (router) => {
     Middleware.Response.success('search')
   );
 
+
+  // default search
+  router.get(
+    '/v1/users/default-search',
+    userController.defaultSearch,
+    Middleware.Response.success('defaultSearch')
+  );
+
   /**
    * @apiGroup User
    * @apiVersion 1.0.0

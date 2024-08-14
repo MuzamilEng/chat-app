@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import dynamic from 'next/dynamic';
 import Router from 'next/router';
 import { useState } from 'react';
@@ -16,6 +17,7 @@ function MediaContentPage({ authUser }: IProps) {
   const [mediaItem, setMediaItem] = useState(null);
   const [titleModal, setTitleModal] = useState('');
   const [folderImages, setFolderImages] = useState([]);
+  const {t, lang} = useTranslationContext()
 
   const openMedia = (item: any) => {
     setIsOpenMedia(true);
@@ -36,13 +38,13 @@ function MediaContentPage({ authUser }: IProps) {
         <div className="chat-body p-3">
           <div className="row m-0 mb-4">
             <div className="col-md-12">
-              <h4 className="font-weight-semibold">Medieninhalt</h4>
+              <h4 className="font-weight-semibold">{lang === 'en' ? "Media Content" : "Medieninhalt"}</h4>
             </div>
           </div>
           <Row>
           <Col md={12} className="flex justify-content-end mb-2">
-              <Button onClick={() => Router.push('/profile/upload', '/profile/upload', { shallow: true })} className="btn btn-primary">
-              Medien hochladen
+              <Button onClick={() => Router.push('/profile/upload', `/${lang}/profile/upload`, { shallow: true })} className="btn btn-primary">
+              {lang === 'en' ? "Upload Media" : "Medien hochladen"}
               </Button>
             </Col>
             <Col md={12}>

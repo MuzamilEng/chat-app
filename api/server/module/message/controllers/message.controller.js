@@ -297,6 +297,50 @@ exports.allMessage = async (req, res, next) => {
   }
 };
 
+exports.getAllMessagesByConversationId = async (req, res, next) => {
+  const page = Math.max(0, req.query.page - 1) || 0; // zero-based page index
+  const take = parseInt(req.query.take, 10) || 10;
+
+  try {
+    // Fetch the conversation ID from the request query or params
+    const { conversationId } = req.params; 
+
+    if (!conversationId) {
+      return next(PopulateResponse.notFound('Conversation ID is required.'));
+    }
+
+    // Define the query to fetch messages based on the conversationId
+    const query = {
+      conversationId: conversationId
+    };
+
+    // Sorting and pagination
+    const sort = Helper.App.populateDBSort(req.query);
+    const count = await DB.Message.countDocuments(query); // Total count of messages
+    const items = await DB.Message.find(query)
+      .populate('sender')
+      .populate('files')
+      .sort(sort)
+      .skip(page * take)
+      .limit(take)
+      .exec();
+
+    // Format the response data
+    res.locals.getAllMessagesByConversationId = {
+      count,
+      items: items.map((item) => {
+        const data = item.toObject();
+        data.sender = item.sender ? item.sender.getPublicProfile(true) : null;
+        return data;
+      })
+    };
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
+
 exports.bookmark = async (req, res, next) => {
   try {
     const validateSchema = Joi.object().keys({

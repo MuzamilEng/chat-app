@@ -10,10 +10,11 @@ export const TranslationProvider = ({ children }) => {
   const [checkPaidMedia, setCheckPaidMedia] = useState(false)
   const [modelId, setModelId] = useState(null)
     const router = useRouter();
-  const lang = getDictionary(router.locale).then(data => setT(data))
+  const local = getDictionary(router.locale).then(data => setT(data))
+  const lang = router.locale
   return (
     <TranslationContext.Provider value={{
-      lang, t, modelId, setModelId, checkPaidMedia, setCheckPaidMedia
+      lang, t, modelId, setModelId, checkPaidMedia, setCheckPaidMedia, local
     }}>
       {children}
     </TranslationContext.Provider>

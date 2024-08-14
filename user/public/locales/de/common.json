@@ -1,106 +1,146 @@
 {
-        "title": "Werden Sie intim. Keine Bedingungen gestellt!",
-        "header": {
-            "chat": "Chatten Zimmer",
-            "models": "Alle Modelle",
-            "favorites": "Meine Favoriten",
-            "invite": "Nutzer einladen",
-            "option": {
-                "all": "Alle",
-                "male": "Männlich",
-                "female": "Weiblich",
-                "transgender": "Transsexuelle"
+    "title": "Werden Sie intim. Keine Bedingungen gestellt!",
+    "header": {
+        "chat": "Chatten Zimmer",
+        "models": "Alle Modelle",
+        "favorites": "Meine Favoriten",
+        "invite": "Nutzer einladen",
+        "login": "Anmelden",
+        "option": {
+            "all": "Alle",
+            "male": "Männlich",
+            "female": "Weiblich",
+            "transgender": "Transsexuelle"
+        },
+        "postcode": "Postleitzahl",
+        "location": "Standort",
+        "all": "Alle Land"
+    },
+    "modelLists": {
+        "profile": "Profil prüfen",
+        "chat": "Chatten"
+    },
+    "conversation": "Plaudereien",
+    "welcome": "Willkommen",
+    "search": "Suche deinen Chat-Partner",
+    "conversationMsg": " Bitte wähle einen Chat aus, um mit der Nachrichtenübermittlung zu beginnen, oder finde weitere Modelle, die dir gefallen, von",
+    "messagePlaceHolder": "Bitte geben Sie Ihre Nachricht hier ein...",
+    "sendTip":"Teilen Sie einen Tipp",
+    "tokenMsg": "Mehr Token kaufen",
+    "tokenInfo": "[Token können verwendet werden für  Einkauf Modell Inhalt[Videos, Galerie, Produkte] und Trinkgeld Modelle auf dieser Plattform.]",
+    "tokenAlert": "Es ist kein Token-Paket erhältlich.",
+    "inviteUser": "Benutzer einladen",
+    "inviteEmail": "E-Mail Adresse",
+    "invitePlaceholder":"Bitte geben Sie hier Ihre E-Mail-Adresse ein",
+    "closeInvite": "Schließen Sie",
+    "sendInvite": "Einladung versenden",
+    "dropdown": {
+        "profile": "Mein Profil",
+        "blogs": "Meine Blogs",
+        "payout": "Auszahlungsantrag",
+        "earnings": "Verdienen",
+        "media": "Medieninhalt",
+        "bookmarkMsg": " Lesezeichen Nachrichten",
+        "token": "Token Geschichte",
+        "payment": "Zahlungsverhalten",
+        "contact": "Kontakt Verwaltung",
+        "logout":"Abmeldung"
+    },
+    "profilePage": {
+        "alert": "Bitte aktualisieren Sie Ihr Profil, um die Website zu betreten.",
+        "title": "Mein Profil",
+        "account": "Konto",
+        "update": "Aktualisierung der persönlichen Kontaktdaten",
+        "name": "Benutzername",
+        "email": "E-Mail Adresse",
+        "age": "Alter",
+        "phone": "Telefonnummer",
+        "dob": "Geburtsdatum",
+        "gender": "Geschlecht",
+        "option": {
+            "male": "Männlich",
+            "female": "Weiblich",
+            "transgender": "Transsexuelle"
+        },
+        "country": "Land",
+        "province": "Staat",
+        "city": "Stadt",
+        "bio": "Biografie",
+        "save": "Änderungen speichern"
+    },
+    "passwordPage": {
+        "title": "Passwort",
+        "update": "Kontopasswort aktualisieren",
+        "old": "Aktuelles Passwort",
+        "new": "Neues Passwort",
+        "confirm": "Passwort wiederholen",
+        "save": "Änderungen speichern"
+    },
+    "accountdeactivation": {
+        "title": "Konto deaktivieren",
+        "description": "OTP wird an Ihre E-Mail gesendet. Bitte geben Sie es unten ein",
+        "submit": "Konto Deaktivieren"
+    },
+    "mediaPage":{
+        "title": "Gekaufte Medien",
+        "videos": "Videos",
+        "gallery": "Galerie",
+        "products": "Produkte"
+    },
+    "bookmarkPage": {
+        "title": "Markierte Nachrichten"
+    },
+    "tokenPage": {
+        "title": "Tokenverlauf",
+        "buy": "Token kaufen"
+    },
+    "paymentPage": {
+        "title": "Zahlungsverlauf"
+    },
+    "contact": {
+        "title": "Kontakt",
+        "description": "Bitte füllen Sie alle Informationen aus, und wir werden uns innerhalb von 48 Stunden bei Ihnen melden",
+        "name": "Name",
+        "email": "E-Mail Adresse",
+        "message": "Beschreibung",
+        "submit": "Absenden"
+    },
+        "adultConfirmModal": {
+          "title": "Sie müssen über 18 Jahre alt sein und den folgenden Bedingungen zustimmen, bevor Sie fortfahren.",
+          "content": {
+            "intro": "Sie stimmen auch zu, Ihre Informationen mit girls2dream zu teilen. Erfahren Sie mehr",
+            "important": "Ein wichtiger Teil des Kamera-Materials wird von girls2dream.com bereitgestellt",
+            "details": {
+              "profileContent": "Profilinhalte und Fotografien",
+              "playerFunctionality": "Der Player und seine Funktionen",
+              "paymentProcessor": "Der Zahlungsabwickler",
+              "etc": "...",
+              "dependent": "Daher ist jede Seite der Website abhängig und kann nicht vom (User-URL) Dienst getrennt werden."
             },
-            "postcode": "Postleitzahl",
-            "location": "Standort",
-            "all": "Alle Land"
-        },
-        "modelLists": {
-            "profile": "Profil prüfen",
-            "chat": "Chatten"
-        },
-        "conversation": "Plaudereien",
-        "welcome": "Willkommen",
-        "search": "Suche deinen Chat-Partner",
-        "conversationMsg": " Bitte wähle einen Chat aus, um mit der Nachrichtenübermittlung zu beginnen, oder finde weitere Modelle, die dir gefallen, von",
-        "messagePlaceHolder": "Bitte geben Sie Ihre Nachricht hier ein...",
-        "sendTip":"Teilen Sie einen Tipp",
-        "tokenMsg": "Mehr Token kaufen",
-        "tokenInfo": "[Token können verwendet werden für  Einkauf Modell Inhalt[Videos, Galerie, Produkte] und Trinkgeld Modelle auf dieser Plattform.]",
-        "tokenAlert": "Es ist kein Token-Paket erhältlich.",
-        "inviteUser": "Benutzer einladen",
-        "inviteEmail": "E-Mail Adresse",
-        "invitePlaceholder":"Bitte geben Sie hier Ihre E-Mail-Adresse ein",
-        "closeInvite": "Schließen Sie",
-        "sendInvite": "Einladung versenden",
-        "dropdown": {
-            "profile": "Mein Profil",
-            "blogs": "Meine Blogs",
-            "payout": "Auszahlungsantrag",
-            "earnings": "Verdienen",
-            "media": "Medieninhalt",
-            "bookmarkMsg": " Lesezeichen Nachrichten",
-            "token": "Token Geschichte",
-            "payment": "Zahlungsverhalten",
-            "contact": "Kontakt Verwaltung",
-            "logout":"Abmeldung"
-        },
-        "profilePage": {
-            "title": "Mein Profil",
-            "account": "Konto",
-            "update": "Aktualisierung der persönlichen Kontaktdaten",
-            "name": "Benutzername",
-            "email": "E-Mail Adresse",
-            "age": "Alter",
-            "phone": "Telefonnummer",
-            "dob": "Geburtsdatum",
-            "gender": "Geschlecht",
-            "option": {
-                "male": "Männlich",
-                "female": "Weiblich",
-                "transgender": "Transsexuelle"
+            "warning": "Diese Website enthält Informationen, Links, Bilder und Videos mit sexuell explizitem Material (zusammenfassend als 'Sexuell Explizites Material' bezeichnet). Fahren Sie NICHT fort, wenn: (i) Sie nicht mindestens 18 Jahre alt sind oder das Mindestalter in der Gerichtsbarkeit erreicht haben, in der Sie das Sexuell Explizite Material einsehen oder darauf zugreifen ('Mindestalter'), (ii) dieses Material Sie beleidigt, oder (iii) das Betrachten des Sexuell Expliziten Materials in Ihrer Gemeinde, in der Sie es einsehen möchten, nicht legal ist.",
+            "confirmation": "Indem Sie sich entscheiden, diese Website zu betreten, bestätigen Sie unter Eid und unter Strafandrohung gemäß Titel 28 U.S.C. § 1746 und anderen anwendbaren Gesetzen, dass alle folgenden Aussagen wahr und korrekt sind:",
+            "points": {
+              "ageOfMajority": "Ich habe das Mindestalter in meiner Gerichtsbarkeit erreicht;",
+              "personalUse": "Das sexuell explizite Material, das ich einsehe, dient meinem persönlichen Gebrauch, und ich werde Minderjährige nicht mit dem Material konfrontieren;",
+              "wishToView": "Ich wünsche, sexuell explizites Material zu erhalten/anzusehen;",
+              "constitutionalRight": "Ich glaube, es ist mein unveräußerliches verfassungsmäßiges Recht als Erwachsener, sexuell explizites Material zu erhalten/anzusehen;",
+              "noOffense": "Ich glaube, dass sexuelle Handlungen zwischen einvernehmlichen Erwachsenen weder anstößig noch obszön sind;",
+              "noViolation": "Das Ansehen, Lesen und Herunterladen von sexuell explizitem Material verstößt nicht gegen die Standards einer Gemeinschaft, Stadt, Bundesstaat oder eines Landes, in dem ich das Sexuell Explizite Material ansehen, lesen und/oder herunterladen werde;",
+              "responsibility": "Ich bin allein verantwortlich für falsche Aussagen oder rechtliche Konsequenzen aus dem Ansehen, Lesen oder Herunterladen von Material, das auf dieser Website erscheint. Ich stimme ferner zu, dass weder diese Website noch deren Partner für rechtliche Konsequenzen aufgrund betrügerischen Zugriffs oder Missbrauchs dieser Website haftbar gemacht werden können;",
+              "termsAcceptance": "Ich verstehe, dass meine Nutzung dieser Website durch die Nutzungsbedingungen der Website geregelt wird, die ich überprüft und akzeptiert habe, und ich stimme zu, an diese Bedingungen gebunden zu sein.",
+              "jurisdiction": "Ich stimme zu, dass ich durch den Zugriff auf diese Website mich selbst und jedes Geschäft, an dem ich rechtlich oder finanziell interessiert bin, der persönlichen Gerichtsbarkeit des Staates Florida, Miami-Dade County unterwerfe, falls ein Streit zwischen dieser Website, mir und/oder einem solchen Geschäft entstehen sollte;",
+              "legallyBinding": "Diese Warnseite stellt eine rechtlich verbindliche Vereinbarung zwischen mir, dieser Website und/oder einem Geschäft, an dem ich rechtlich oder finanziell interessiert bin, dar. Sollte eine Bestimmung dieser Vereinbarung für nicht durchsetzbar gehalten werden, wird der Rest soweit wie möglich durchgesetzt, und die nicht durchsetzbare Bestimmung wird in dem Maße geändert, dass sie in der Absicht, die hierin zum Ausdruck gebracht wurde, durchsetzbar wird.",
+              "performers": "Alle Darsteller auf dieser Website sind über 18 Jahre alt, haben der fotografischen und/oder filmischen Aufnahme zugestimmt, glauben, es sei ihr Recht, einvernehmliche sexuelle Handlungen zum Vergnügen und zur Erziehung anderer Erwachsener durchzuführen, und ich glaube, es sei mein Recht als Erwachsener, sie dabei zu sehen;",
+              "intendedUse": "Die Videos und Bilder auf dieser Website sind für den verantwortungsvollen Gebrauch als sexuelle Hilfsmittel, zur sexuellen Aufklärung und sexuellen Unterhaltung vorgesehen;",
+              "falseStatement": "Ich verstehe, dass eine falsche Aussage unter Strafandrohung eine Straftat ist;",
+              "eSignAct": "Ich stimme zu, dass diese Vereinbarung durch das 'Electronic Signatures in Global and National Commerce Act' (auch bekannt als 'E-Sign Act'), 15 U.S.C. § 7000, et seq., geregelt wird, und indem ich auf 'Ich stimme zu. Hier eintreten' klicke und meine Zustimmung zur Bindung an die Bedingungen dieser Vereinbarung zeige, betrachte ich die untenstehende Unterschriftenzeile als meine Unterschrift und als Ausdruck meiner Zustimmung zur Bindung an die Bedingungen dieser Vereinbarung."
             },
-            "country": "Land",
-            "province": "Staat",
-            "city": "Stadt",
-            "bio": "Biografie",
-            "save": "Änderungen speichern"
-        },
-        "passwordPage": {
-            "title": "Passwort",
-            "update": "Kontopasswort aktualisieren",
-            "old": "Aktuelles Passwort",
-            "new": "Neues Passwort",
-            "confirm": "Passwort wiederholen",
-            "save": "Änderungen speichern"
-        },
-        "accountdeactivation": {
-            "title": "Konto deaktivieren",
-            "description": "OTP wird an Ihre E-Mail gesendet. Bitte geben Sie es unten ein",
-            "submit": "Konto Deaktivieren"
-        },
-        "mediaPage":{
-            "title": "Gekaufte Medien",
-            "videos": "Videos",
-            "gallery": "Galerie",
-            "products": "Produkte"
-        },
-        "bookmarkPage": {
-            "title": "Markierte Nachrichten"
-        },
-        "tokenPage": {
-            "title": "Tokenverlauf",
-            "buy": "Token kaufen"
-        },
-        "paymentPage": {
-            "title": "Zahlungsverlauf"
-        },
-        "contact": {
-            "title": "Kontakt",
-            "description": "Bitte füllen Sie alle Informationen aus, und wir werden uns innerhalb von 48 Stunden bei Ihnen melden",
-            "name": "Name",
-            "email": "E-Mail Adresse",
-            "message": "Beschreibung",
-            "submit": "Absenden"
+            "buttons": {
+              "confirm": "Ich stimme zu",
+              "leave": "Verlassen"
+            }
+          },
+          "notice": "Diese Website arbeitet aktiv mit der Strafverfolgung in allen Fällen des verdächtigen illegalen Gebrauchs des Dienstes zusammen, insbesondere in Fällen der Nutzung des Dienstes durch Minderjährige."
         }
+      
 }

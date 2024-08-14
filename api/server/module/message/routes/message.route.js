@@ -70,6 +70,13 @@ module.exports = (router) => {
     Middleware.Response.success('all')
   );
 
+
+  router.get(
+    '/v1/messages/all-message/:conversationId',
+    Middleware.hasRole('admin'),
+    messageController.getAllMessagesByConversationId,
+    Middleware.Response.success('getAllMessagesByConversationId')
+  );
   /**
    * @apiGroup Message
    * @apiVersion 1.0.0

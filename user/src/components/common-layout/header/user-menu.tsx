@@ -24,7 +24,7 @@ function UserMenu({
   const router = useRouter();
   const user = useSelector((state: any) => state.auth.authUser);
   const [activeRoute, setActiveRoute] = useState(null);
-  const {t} = useTranslationContext();
+  const {t, lang} = useTranslationContext();
 
   const onClickMenu = (url: string, pathname: string) => {
     handleClickToMenu();
@@ -62,7 +62,7 @@ function UserMenu({
           <div className="username ">{username || ' N/A '}</div>
         </Dropdown.Item>
         <Dropdown.Item
-          onClick={() => onClickMenu('/profile/update', '/profile/update')}
+          onClick={() => onClickMenu(`/${lang}/profile/update`, `/${lang}/profile/update`)}
           active={activeRoute === '/profile/update'}
         >
          {t?.dropdown?.profile}
@@ -82,27 +82,27 @@ function UserMenu({
               </a>
             </Dropdown.Item>
             <Dropdown.Item
-          onClick={() => onClickMenu(`/blogs/allblogs/${user._id}`, `/blogs/allblogs/${user._id}`)}
+          onClick={() => onClickMenu(`/${lang}/blogs/allblogs/${user._id}`, `/${lang}/blogs/allblogs/${user._id}`)}
           active={activeRoute === `/blogs/allblogs/${user._id}`}
         >
          {t?.dropdown?.blogs}
         </Dropdown.Item>
             <Dropdown.Item
-              onClick={() => onClickMenu('/profile/media-content', '/media-content')}
+              onClick={() => onClickMenu('/profile/media-content', `/${lang}/media-content`)}
               active={['/profile/media-content', '/media-content'].includes(activeRoute)}
 
             >
               {t?.dropdown?.media}
             </Dropdown.Item>
             <Dropdown.Item
-              onClick={() => onClickMenu('/profile/payout-request', '/payout-request')}
+              onClick={() => onClickMenu('/profile/payout-request', `/${lang}/payout-request`)}
               active={['/profile/payout-request', '/payout-request'].includes(activeRoute)}
             >
               {t?.dropdown?.payout}
 
             </Dropdown.Item>
             <Dropdown.Item
-              onClick={() => onClickMenu('/earning', '/earning')}
+              onClick={() => onClickMenu(`/${lang}/earning`, `/${lang}/earning`)}
               active={activeRoute === '/earning'}
             >
               {t?.dropdown?.earnings}
@@ -114,7 +114,7 @@ function UserMenu({
           <>
             <Dropdown.Item
               className="show-mobile"
-              onClick={() => onClickMenu('/tokens', '/tokens')}
+              onClick={() => onClickMenu(`/${lang}/earning`, `/${lang}/earning`)}
               active={['/tokens', '/tokens'].includes(activeRoute)}
             >
               <a
@@ -125,26 +125,26 @@ function UserMenu({
               </a>
             </Dropdown.Item>
             <Dropdown.Item
-              onClick={() => onClickMenu('/profile/purchased-media', '/purchased-media')}
+              onClick={() => onClickMenu('/profile/purchased-media', `/${lang}/purchased-media`)}
               active={['/profile/purchased-media', '/purchased-media'].includes(activeRoute)}
             >
               {t?.dropdown?.media}
             </Dropdown.Item>
             <Dropdown.Item
-              onClick={() => onClickMenu('/profile/bookmarked-messages', '/bookmarked-messages')}
+              onClick={() => onClickMenu('/profile/bookmarked-messages', `/${lang}/bookmarked-messages`)}
               active={['/profile/bookmarked-messages', '/bookmarked-messages'].includes(activeRoute)}
 
             >
               {t?.dropdown?.bookmarkMsg}
             </Dropdown.Item>
             <Dropdown.Item
-              onClick={() => onClickMenu('/tokens/history', '/token-history')}
+              onClick={() => onClickMenu('/tokens/history', `/${lang}/token-history`)}
               active={['/tokens/history', '/token-history'].includes(activeRoute)}
             >
               {t?.dropdown?.token}
             </Dropdown.Item>
             <Dropdown.Item
-              onClick={() => onClickMenu('/payment-history', '/payment-history')}
+              onClick={() => onClickMenu('/payment-history', `/${lang}/payment-history`)}
               active={activeRoute === '/payment-history'}
             >
               {t?.dropdown?.payment}
@@ -152,7 +152,7 @@ function UserMenu({
           </>
         )}
         <Dropdown.Item
-          onClick={() => onClickMenu('/contact-us', '/contact-us')}
+          onClick={() => onClickMenu('/contact-us', `/${lang}/contact-us`)}
           active={activeRoute === '/contact-us'}
         >
           {t?.dropdown?.contact}

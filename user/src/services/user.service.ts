@@ -20,6 +20,10 @@ class UserService extends APIRequest {
     return this.get('/users/search', data);
   }
 
+  findDefault(data: any) {
+    return this.get('/users/default-search', data);
+  }
+
   getFriends(data: any) {
     return this.get('/users/search-friend', data);
   }

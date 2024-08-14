@@ -36,7 +36,7 @@ function Header({
 }: PropsFromRedux) {
   const [showInviteUser, setShowInviteUser] = useState(false);
   const [activeRoute, setActiveRoute] = useState(null);
-  const {t, setCheckPaidMedia} = useTranslationContext();
+  const {t, setCheckPaidMedia, lang} = useTranslationContext()
 
 
   const router = useRouter();
@@ -93,7 +93,6 @@ function Header({
     <nav className="navbar navbar-expand-lg navbar-light bg-light top-nav navbar-menu-mobile">
       <a aria-hidden className={`navbar-brand ${activeRoute === 'models' && 'active'}`} href="/models">
         <img alt="img_logo_header" src={appConfig.siteLogo || '/images/logo.svg'} />
-        {/* <h1>App</h1> */}
       </a>
       <div className="navbar-menu">
         <div className="collapse navbar-collapse show" id="navbarNav">
@@ -105,7 +104,7 @@ function Header({
                   'custom-btn btn-chatroom': activeRoute !== 'conversation' && totalUnreadMessage > 0
                 })
               }
-                onClick={() => onClickMenu('/conversation', '/conversation')}
+                onClick={() => onClickMenu(`/${lang}/conversation`, `/${lang}/conversation`)}
               >
                 <svg style={{ width: 20, height: 20 }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -146,7 +145,7 @@ function Header({
                   <a
                     aria-hidden
                     className={`hide-mobile w-100 my-1 nav-link btn btn-outline-primary no-box-shadow ${activeRoute === 'payout-request' ? 'active' : ''}`}
-                    onClick={() => onClickMenu('/profile/payout-request', '/payout-request')}
+                    onClick={() => onClickMenu('/profile/payout-request', `/${lang}/payout-request`)}
                   >
                     <i className="fa fa-heart" />
                     {' '}
@@ -161,7 +160,7 @@ function Header({
               <a
                 aria-hidden
                 className={`nav-link ${activeRoute === 'models' && 'active'}`}
-                onClick={() => onClickMenu('/models', '/models')}
+                onClick={() => onClickMenu(`/${lang}/models`, `/${lang}/models`)}
               >
                 <i className="fa fa-users" />
                 {' '}
@@ -174,7 +173,7 @@ function Header({
                   <a
                     aria-hidden
                     className={`nav-link ${activeRoute === 'favorites' && 'active'}`}
-                    onClick={() => onClickMenu('/favorites', '/favorites')}
+                    onClick={() => onClickMenu(`/${lang}/favorites`, `/${lang}/favorites`)}
                   >
                     <i className="far fa-heart" />
                     {' '}

@@ -7,6 +7,7 @@ import {
   Button
 } from 'react-bootstrap';
 import { log } from 'console';
+import { useTranslationContext } from 'context/TranslationContext';
 function Header( { onByCoinsClick ,isAuthUserTrue ,onByfavoriteClick ,onBymodelsClick ,onByconversationClick ,inviteClick  }) {
   const [activeRoute, setActiveRoute] = useState(null);
 
@@ -16,6 +17,7 @@ function Header( { onByCoinsClick ,isAuthUserTrue ,onByfavoriteClick ,onBymodels
 
   const [open, setOpen] = useState<boolean>(false);
   const [emails, setEmails] = useState<string>("");
+  const {t, lang} = useTranslationContext();
 
 
 
@@ -86,7 +88,7 @@ function Header( { onByCoinsClick ,isAuthUserTrue ,onByfavoriteClick ,onBymodels
       <div className="navbar-menu">
         <div className="collapse navbar-collapse show" id="navbarNav">
           <ul className="navbar-nav ml-auto">
-            <li className="nav-item" data-toggle="tooltip" title="Chat Room">
+            <li className="nav-item" data-toggle="tooltip" title={t?.header?.chat}>
               <Button
      onClick={handleconversationClick}
               >
@@ -99,36 +101,36 @@ function Header( { onByCoinsClick ,isAuthUserTrue ,onByfavoriteClick ,onBymodels
                   />
                 </svg>
                 {' '}
-                <span className="hide-mobile">Chatten Zimmer</span>
+                <span className="hide-mobile">{t?.header?.chat}</span>
               </Button>
             
             </li>
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <a aria-hidden className="nav-link" onClick={handleByCoinsClick}>
                 <i className="fa fa-heart" />
                 {' '}
                 <span className="hide-mobile">Gleichgewicht</span>
               </a>
-            </li>
+            </li> */}
             <li className="nav-item">
               <a aria-hidden className="nav-link" onClick={handleBymodelsClick}>
                 <i className="fa fa-users" />
                 {' '}
-                <span className="hide-mobile">Alle Modelle</span>
+                <span className="hide-mobile">{t?.header?.models}</span>
               </a>
             </li>
             <li className="nav-item">
               <a aria-hidden className="nav-link"onClick={handleByfavoriteClick}>
                 <i className="far fa-heart" />
                 {' '}
-                <span className="hide-mobile">Meine Favoriten</span>
+                <span className="hide-mobile">{t?.header?.favorites}</span>
               </a>
             </li>
             <li className="nav-item">
               <a aria-hidden className="nav-link" onClick={openModal}>
                 <i className="fas fa-user-plus" />
                 {' '}
-                <span className="hide-mobile">Nutzer einladen</span>
+                <span className="hide-mobile">{t?.header?.invite}</span>
               </a>
             </li>
 
@@ -138,7 +140,7 @@ function Header( { onByCoinsClick ,isAuthUserTrue ,onByfavoriteClick ,onBymodels
                  <li className="nav-item">
                    <a aria-hidden className="nav-link" href="/auth/login">
                       <i className="far fa-sign-in" />
-                     <span className="hide-mobile" style={{paddingLeft:"7px"}}>Einloggen</span>
+                     <span className="hide-mobile" style={{paddingLeft:"7px"}}>{t?.header?.login}</span>
                   </a>
                  </li>
                 )}
@@ -155,7 +157,7 @@ function Header( { onByCoinsClick ,isAuthUserTrue ,onByfavoriteClick ,onBymodels
     >
       <Modal.Header>
         <h5 className="modal-title" id="inviteUsersLabel">
-          Benutzer einladen
+          {lang === "en" ? "Invite Users" : "Benutzer einladen"}
         </h5>
         <Button className="fa fa-xmark" type="button" aria-label="Close" onClick={closeModal} />
       </Modal.Header>
@@ -164,11 +166,11 @@ function Header( { onByCoinsClick ,isAuthUserTrue ,onByfavoriteClick ,onBymodels
           <div className="row">
             <div className="col-12">
               <div className="form-group">
-                <label>E-Mail Adresse</label>
+                <label>{lang === "en" ? "Email" : "E-Mail"}</label>
                 <input
                   type="text"
                   className="form-control form-control-md h-100"
-                  placeholder="Bitte geben Sie hier Ihre E-Mail-Adresse ein"
+                  placeholder={lang === "en" ? "Enter email address here"  : "Bitte geben Sie hier Ihre E-Mail-Adresse ein"}
                   value={emails}
                   onChange={(e) => setEmails(e.target.value)}
                 />
@@ -183,10 +185,10 @@ function Header( { onByCoinsClick ,isAuthUserTrue ,onByfavoriteClick ,onBymodels
           className="btn btn-link text-muted"
           onClick={closeModal}
         >
-          Schließen
+          {lang === 'en' ? "Cancel" : 'Schließen'}
         </button>
         <button type="button" className="btn btn-primary" onClick={handlesendemailinvite}>
-          Einladung versenden
+          {lang === 'en' ? "Send Invite": "Einladung versenden"}
         </button>
       </Modal.Footer>
     </Modal>

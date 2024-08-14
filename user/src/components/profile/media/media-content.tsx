@@ -164,6 +164,7 @@ function MediaContent({
       setPageVideo(1);
     }
   };
+  const defaultImg = 'https://media.istockphoto.com/id/1354776457/vector/default-image-icon-vector-missing-picture-page-for-website-design-or-mobile-app-no-photo.jpg?s=612x612&w=0&k=20&c=w3OW0wX3LyiFRuDHo9A32Q0IUMtD4yjXEvQlqyYk9O4='
 
   useEffect(() => {
     getSellItemPhoto();
@@ -177,231 +178,429 @@ function MediaContent({
 
   return (
     <div className="card mb-3">
-      <UpdateMediaModal
-        isModalShow={isUpdateShow}
-        setModalShow={setIsUpdateShow}
-        item={itemUpdate}
-        handleUpdate={handelUpdate}
-      />
+      <UpdateMediaModal isModalShow={isUpdateShow} setModalShow={setIsUpdateShow} item={itemUpdate} handleUpdate={handelUpdate}/>
       <div className="card-body">
         <Tabs defaultActiveKey="photo" transition={false} id="tab-media-content" onSelect={(key: any) => onChangeTab(key)}>
         <Tab eventKey="photo" title={`Fotos (${totalPhoto})`}>
   {loading && <Loading />}
-  {!loading && videoFolders?.length > 0 ? (
-    <Row className=''>
-      {photoFolders?.map((folder: any, index: any) => (
-        <article key={folder._id + index} style={{ width: selectedFolderId === folder._id ? '100%' : '30%' }}>
-          <section
-            onClick={() => handleFolderClick(folder._id)}
-            style={{ cursor: 'pointer', margin: '10px', border: selectedFolderId === folder._id ? '': '1px solid #eee', display: selectedFolderId && selectedFolderId !== folder._id ? 'none' : 'block' }}
-            className='image-box mt-1 mb-1 active'
+  {!loading && photoFolders?.length > 0 ? (
+    <Row>
+      {photoFolders
+        ?.filter((folder: any) => folder.sellItems && folder.sellItems.length > 0) // Filter folders with media
+        ?.map((folder: any, index: any) => (
+          <article
+            key={folder._id + index}
+            style={{ width: selectedFolderId === folder._id ? '100%' : '30%' }}
           >
-            { <img
-              style={{ display: selectedFolderId === folder._id ? 'none' : 'block',  objectFit: 'cover' }}
-              src={folder?.sellItems?.[0]?.media?.thumbUrl || '/images/default_thumbnail_photo.jpg'}
-              alt="media_thumb_photo"
-            />}
-            <button style={{ width: selectedFolderId === folder._id ? '20%' : '100%', height: '100%', backgroundColor: '#FF337C', color: 'white', border: 'none', padding: '10px' }} className=''>
-              {selectedFolderId === folder._id ? "Go back" : folder.name}
-            </button>
-          </section>
+            <section
+              onClick={() => handleFolderClick(folder._id)}
+              style={{ cursor: 'pointer', margin: '10px',
+                border: selectedFolderId === folder._id ? '' : '1px solid #eee',
+                display: selectedFolderId && selectedFolderId !== folder._id ? 'none' : 'block',
+              }}
+              className="image-box mt-1 mb-1 active" >
+              {folder.sellItems.length > 0 && (
+                <img
+                  style={{ display: selectedFolderId === folder._id ? 'none' : 'block', objectFit: 'cover',}}
+                  src={folder?.sellItems?.[0]?.media?.thumbUrl || defaultImg}
+                  onError={(e) => (e.currentTarget.src = defaultImg)} alt="media_thumb_photo"
+                />
+              )}
+              <button
+                style={{ width: selectedFolderId === folder._id ? '20%' : '100%', height: '100%',
+                  backgroundColor: '#FF337C', color: 'white', border: 'none', padding: '10px',
+                }}
+              >
+                {selectedFolderId === folder._id ? 'Go back' : folder.name}
+              </button>
+            </section>
 
-          {selectedFolderId === folder?._id && (
-            <Row>
-              {folder?.sellItems?.map((item: any, index: any) => (
-                <Col xs={12} sm={6} md={4} lg={4} key={item._id + index} data-toggle="tooltip" title={item.name}>
-                  <div className="image-box mt-1 mb-1 active">
-                    <img
-                      alt="media_thumb_photo"
-                      src={item?.media?.thumbUrl || '/images/default_thumbnail_photo.jpg'}
-                    />
-                    <h5>
-                      <i className="far fa-eye" /> Vorschau
-                    </h5>
-                    <a className="edit" onClick={() => handleOpenModalUpdate(item, 'photo')}>
-                      <i className="fas fa-pencil-alt" />
-                    </a>
-                    <a className="remove" onClick={() => handleRemove(item._id, 'photo')}>
-                      <i className="fas fa-trash" />
-                    </a>
-                    <a href="#" className="popup" role="button" onClick={() => handleOpenMedia(item)}></a>
-                    <div className="overlay" />
-                  </div>
-                  <div className="media-name">
-                    {item.name}
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          )}
-        </article>
-      ))}
+            {selectedFolderId === folder?._id && (
+              <Row>
+                {folder?.sellItems?.map((item: any, index: any) => (
+                  <Col xs={12} sm={6} md={4} lg={4} key={item._id + index} data-toggle="tooltip" title={item.name} >
+                    <div className="image-box mt-1 mb-1 active">
+                      <img alt="media_thumb_photo" src={item?.media?.thumbUrl} onError={(e) => (e.currentTarget.src = defaultImg)} />
+                      <h5> <i className="far fa-eye" /> Vorschau</h5>
+                      <a className="edit" onClick={() => handleOpenModalUpdate(item, 'photo')}> <i className="fas fa-pencil-alt" /> </a>
+                      <a className="remove" onClick={() => handleRemove(item._id, 'photo')}> <i className="fas fa-trash" /></a>
+                      <a href="#" className="popup" role="button" onClick={() => handleOpenMedia(item)} ></a>
+                      <div className="overlay" />
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </article>
+        ))}
     </Row>
-  ) : (
-    <p className="text-alert-danger">Sie haben kein Foto verfügbar!</p>
-  )}
-  {itemsPhoto?.length > 0 && totalPhoto > 0 && totalPhoto > take && <MainPaginate currentPage={pagePhoto} pageTotal={totalPhoto} pageNumber={take} setPage={setPagePhoto} />}
+  ) : ( <p className="text-alert-danger">Sie haben kein Foto verfügbar!</p>)}
+  {itemsPhoto?.length > 0 && totalPhoto > 0 &&
+    totalPhoto > take && (
+      <MainPaginate  currentPage={pagePhoto} pageTotal={totalPhoto} pageNumber={take} setPage={setPagePhoto}/>
+    )}
         </Tab>
 
         <Tab eventKey="videos" title={`Videos (${totalVideo})`}>
   {loading && <Loading />}
   {!loading && videoFolders?.length > 0 ? (
     <Row>
-      {videoFolders?.map((folder: any, index: any) => (
-        <article key={folder._id + index} style={{ width: selectedFolderId === folder._id ? '100%' : '30%' }}>
-          <section
-            onClick={() => handleFolderClick(folder._id)}
-            style={{ cursor: 'pointer', margin: '10px', border: selectedFolderId === folder._id ? '' : '1px solid #eee', display: selectedFolderId && selectedFolderId !== folder._id ? 'none' : 'block' }}
-            className='image-box mt-1 mb-1 active'
+      {videoFolders
+        ?.filter((folder: any) => folder.sellItems && folder.sellItems.length > 0) // Filter folders with media
+        ?.map((folder: any, index: any) => (
+          <article
+            key={folder._id + index}
+            style={{ width: selectedFolderId === folder._id ? '100%' : '30%' }}
           >
-            <video src={folder?.sellItems?.[0]?.media?.fileUrl} style={{ display: selectedFolderId === folder._id ? 'none' : 'block', objectFit: 'cover', width: '100%', height: '13vw' }} />
-            <button style={{ width: selectedFolderId === folder._id ? '20%' : '100%', height: '100%', backgroundColor: '#FF337C', color: 'white', border: 'none', padding: '10px' }}>
-              {selectedFolderId === folder._id ? "Go back" : folder.name}
-            </button>
-          </section>
+            <section
+              onClick={() => handleFolderClick(folder._id)}
+              style={{
+                cursor: 'pointer',
+                margin: '10px',
+                border: selectedFolderId === folder._id ? '' : '1px solid #eee',
+                display:
+                  selectedFolderId && selectedFolderId !== folder._id
+                    ? 'none'
+                    : 'block',
+              }}
+              className="image-box mt-1 mb-1 active"
+            >
+              <img
+                src={
+                  folder?.sellItems?.[0]?.media?.thumbUrl ||
+                  'https://png.pngtree.com/png-vector/20220518/ourmid/pngtree-video-player-vector-flat-icon-black-icon-avi-vector-png-image_46135892.jpg'
+                }
+                onError={(e) =>
+                  (e.currentTarget.src =
+                    'https://png.pngtree.com/png-vector/20220518/ourmid/pngtree-video-player-vector-flat-icon-black-icon-avi-vector-png-image_46135892.jpg')
+                }
+                style={{
+                  display: selectedFolderId === folder._id ? 'none' : 'block',
+                  objectFit: 'cover',
+                  width: '100%',
+                  height: '13vw',
+                }}
+              />
+              <button
+                style={{
+                  width: selectedFolderId === folder._id ? '20%' : '100%',
+                  height: '100%',
+                  backgroundColor: '#FF337C',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px',
+                }}
+              >
+                {selectedFolderId === folder._id ? 'Go back' : folder.name}
+              </button>
+            </section>
 
-          {selectedFolderId === folder._id && (
-            <Row>
-              {folder.sellItems.map((item: any, index: any) => (
-                <Col xs={12} sm={6} md={4} lg={4} key={item._id + index} data-toggle="tooltip" title={item.name}>
-                  <div className="image-box mt-1 mb-1 active">
-                    <video style={{ width: '100%', height: '13vw' }} controls src={item.media.fileUrl || '/images/default_thumbnail_video.png'} />
-                    <h5>
-                      <i className="far fa-eye" /> Vorschau
-                    </h5>
-                    <a className="edit" onClick={() => handleOpenModalUpdate(item, 'video')}>
-                      <i className="fas fa-pencil-alt" />
-                    </a>
-                    <a className="remove" onClick={() => handleRemove(item._id, 'video')}>
-                      <i className="fas fa-trash" />
-                    </a>
-                    <a href="#" className="popup" role="button" onClick={() => handleOpenMedia(item)}></a>
-                    <div className="overlay" />
-                  </div>
-                  <div className="media-name">
-                    {item.name}
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          )}
-        </article>
-      ))}
+            {selectedFolderId === folder._id && (
+              <Row>
+                {folder.sellItems.map((item: any, index: any) => (
+                  <Col
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={4}
+                    key={item._id + index}
+                    data-toggle="tooltip"
+                    title={item.name}
+                  >
+                    <div className="image-box mt-1 mb-1 active">
+                      <video
+                        style={{ width: '100%', height: '13vw' }}
+                        controls
+                        src={
+                          item.media.fileUrl ||
+                          '/images/default_thumbnail_video.png'
+                        }
+                        onError={(e) =>
+                          (e.currentTarget.src =
+                            'https://png.pngtree.com/png-vector/20220518/ourmid/pngtree-video-player-vector-flat-icon-black-icon-avi-vector-png-image_46135892.jpg')
+                        }
+                      />
+                      <h5>
+                        <i className="far fa-eye" /> Vorschau
+                      </h5>
+                      <a
+                        className="edit"
+                        onClick={() => handleOpenModalUpdate(item, 'video')}
+                      >
+                        <i className="fas fa-pencil-alt" />
+                      </a>
+                      <a
+                        className="remove"
+                        onClick={() => handleRemove(item._id, 'video')}
+                      >
+                        <i className="fas fa-trash" />
+                      </a>
+                      <a
+                        href="#"
+                        className="popup"
+                        role="button"
+                        onClick={() => handleOpenMedia(item)}
+                      ></a>
+                      <div className="overlay" />
+                    </div>
+                    <div className="media-name">{item.name}</div>
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </article>
+        ))}
     </Row>
   ) : (
     <p className="text-alert-danger">Sie haben kein Video verfügbar!</p>
   )}
-  {itemsVideo?.length > 0 && totalVideo > 0 && totalVideo > take && <MainPaginate currentPage={pageVideo} pageTotal={totalVideo} pageNumber={take} setPage={setPageVideo} />}
-        </Tab>
+  {itemsVideo?.length > 0 &&
+    totalVideo > 0 &&
+    totalVideo > take && (
+      <MainPaginate
+        currentPage={pageVideo}
+        pageTotal={totalVideo}
+        pageNumber={take}
+        setPage={setPageVideo}
+      />
+    )}
+      </Tab>
 
-          <Tab eventKey="pending" title={`Pending Photos (${photoFolders?.length})`}>
+
+      <Tab eventKey="pending" title={`Pending Photos`}>
   {loading && <Loading />}
-  {!loading && photoFolders?.length > 0 ? (
+  {!loading && pendingPhotoFolders?.length > 0 ? (
     <Row className=''>
-      {pendingPhotoFolders?.map((folder: any, index: any) => (
-        <article key={folder._id + index} style={{ width: selectedFolderId === folder._id ? '100%' : '30%' }}>
-          <section
-            onClick={() => handleFolderClick(folder._id)}
-            style={{ cursor: 'pointer', margin: '10px', border: selectedFolderId === folder._id ? '': '1px solid #eee', display: selectedFolderId && selectedFolderId !== folder._id ? 'none' : 'block' }}
-            className='image-box mt-1 mb-1 active'
+      {pendingPhotoFolders
+        ?.filter((folder: any) => folder.sellItems && folder.sellItems.length > 0) // Filter folders with media items
+        ?.map((folder: any, index: any) => (
+          <article
+            key={folder._id + index}
+            style={{
+              width: selectedFolderId === folder._id ? '100%' : '30%',
+            }}
           >
-            { <img
-              style={{ display: selectedFolderId === folder._id ? 'none' : 'block',  objectFit: 'cover' }}
-              src={folder?.sellItems?.[0]?.media?.thumbUrl || '/images/default_thumbnail_photo.jpg'}
-              alt="media_thumb_photo"
-            />}
-            <button style={{ width: selectedFolderId === folder._id ? '20%' : '100%', height: '100%', backgroundColor: '#FF337C', color: 'white', border: 'none', padding: '10px' }} className=''>
-              {selectedFolderId === folder._id ? "Go back" : folder.name}
-            </button>
-          </section>
+            <section
+              onClick={() => handleFolderClick(folder._id)}
+              style={{
+                cursor: 'pointer',
+                margin: '10px',
+                border: selectedFolderId === folder._id ? '' : '1px solid #eee',
+                display:
+                  selectedFolderId && selectedFolderId !== folder._id
+                    ? 'none'
+                    : 'block',
+              }}
+              className='image-box mt-1 mb-1 active'
+            >
+              <img
+                style={{
+                  display: selectedFolderId === folder._id ? 'none' : 'block',
+                  objectFit: 'cover',
+                }}
+                src={
+                  folder?.sellItems?.[0]?.media?.thumbUrl || defaultImg
+                }
+                alt="media_thumb_photo"
+                onError={(e) => (e.currentTarget.src = defaultImg)}
+              />
+              <button
+                style={{
+                  width: selectedFolderId === folder._id ? '20%' : '100%',
+                  height: '100%',
+                  backgroundColor: '#FF337C',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px',
+                }}
+              >
+                {selectedFolderId === folder._id ? 'Go back' : folder.name}
+              </button>
+            </section>
 
-          {selectedFolderId === folder?._id && (
-            <Row>
-              {folder?.sellItems?.map((item: any, index: any) => (
-                <Col xs={12} sm={6} md={4} lg={4} key={item._id + index} data-toggle="tooltip" title={item.name}>
-                  <div className="image-box mt-1 mb-1 active">
-                    <img
-                      alt="media_thumb_photo"
-                      src={item?.media?.thumbUrl || '/images/default_thumbnail_photo.jpg'}
-                    />
-                    <h5>
-                      <i className="far fa-eye" /> Vorschau
-                    </h5>
-                    <a className="edit" onClick={() => handleOpenModalUpdate(item, 'photo')}>
-                      <i className="fas fa-pencil-alt" />
-                    </a>
-                    <a className="remove" onClick={() => handleRemove(item._id, 'photo')}>
-                      <i className="fas fa-trash" />
-                    </a>
-                    <a href="#" className="popup" role="button" onClick={() => handleOpenMedia(item)}></a>
-                    <div className="overlay" />
-                  </div>
-                  {/* <div className="media-name">
-                    {item.name}
-                  </div> */}
-                </Col>
-              ))}
-            </Row>
-          )}
-        </article>
-      ))}
+            {selectedFolderId === folder._id && (
+              <Row>
+                {folder?.sellItems?.map((item: any, index: any) => (
+                  <Col
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={4}
+                    key={item._id + index}
+                    data-toggle="tooltip"
+                    title={item.name}
+                  >
+                    <div className="image-box mt-1 mb-1 active">
+                      <img
+                        alt="media_thumb_photo"
+                        src={item?.media?.thumbUrl || defaultImg}
+                        onError={(e) => (e.currentTarget.src = defaultImg)}
+                      />
+                      <h5>
+                        <i className="far fa-eye" /> Vorschau
+                      </h5>
+                      <a
+                        className="edit"
+                        onClick={() => handleOpenModalUpdate(item, 'photo')}
+                      >
+                        <i className="fas fa-pencil-alt" />
+                      </a>
+                      <a
+                        className="remove"
+                        onClick={() => handleRemove(item._id, 'photo')}
+                      >
+                        <i className="fas fa-trash" />
+                      </a>
+                      <a
+                        href="#"
+                        className="popup"
+                        role="button"
+                        onClick={() => handleOpenMedia(item)}
+                      ></a>
+                      <div className="overlay" />
+                    </div>
+                    {/* <div className="media-name">
+                      {item.name}
+                    </div> */}
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </article>
+        ))}
     </Row>
   ) : (
     <p className="text-alert-danger">Sie haben kein Foto verfügbar!</p>
   )}
-  {itemsPhoto?.length > 0 && totalPhoto > 0 && totalPhoto > take && <MainPaginate currentPage={pagePhoto} pageTotal={totalPhoto} pageNumber={take} setPage={setPagePhoto} />}
-        </Tab>
-        {/* Video pending */}
-        <Tab eventKey="pending videos" title={`Pending Videos (${videoFolders?.length})`}>
-  {loading && <Loading />}
-  {!loading && pendingVideoItems?.length > 0 ? (
-    <Row>
-      {pendingVideoFolders?.map((folder: any, index: any) => (
-        <article key={folder._id + index} style={{ width: selectedFolderId === folder._id ? '100%' : '30%' }}>
-          <section
-            onClick={() => handleFolderClick(folder._id)}
-            style={{ cursor: 'pointer', margin: '10px', border: selectedFolderId === folder._id ? '' : '1px solid #eee', display: selectedFolderId && selectedFolderId !== folder._id ? 'none' : 'block' }}
-            className='image-box mt-1 mb-1 active'
-          >
-            <video src={folder?.sellItems?.[0]?.media?.fileUrl} style={{ display: selectedFolderId === folder._id ? 'none' : 'block', objectFit: 'cover', width: '100%', height: '13vw' }} />
-            <button style={{ width: selectedFolderId === folder._id ? '20%' : '100%', height: '100%', backgroundColor: '#FF337C', color: 'white', border: 'none', padding: '10px' }}>
-              {selectedFolderId === folder._id ? "Go back" : folder.name}
-            </button>
-          </section>
+  {itemsPhoto?.length > 0 &&
+    totalPhoto > 0 &&
+    totalPhoto > take && (
+      <MainPaginate
+        currentPage={pagePhoto}
+        pageTotal={totalPhoto}
+        pageNumber={take}
+        setPage={setPagePhoto}
+      />
+    )}
+</Tab>
 
-          {selectedFolderId === folder._id && (
+        {/* Video pending */}
+        <Tab eventKey="pending videos" title={`Pending Videos`}>
+          {loading && <Loading />}
+          {!loading && pendingVideoItems?.length >= 0 ? (
             <Row>
-              {folder.sellItems.map((item: any, index: any) => (
-                <Col xs={12} sm={6} md={4} lg={4} key={item._id + index} data-toggle="tooltip" title={item.name}>
-                  <div className="image-box mt-1 mb-1 active">
-                    <video style={{ width: '100%', height: '13vw' }} controls src={item.media.fileUrl || '/images/default_thumbnail_video.png'} />
-                    <h5>
-                      <i className="far fa-eye" /> Vorschau
-                    </h5>
-                    <a className="edit" onClick={() => handleOpenModalUpdate(item, 'video')}>
-                      <i className="fas fa-pencil-alt" />
-                    </a>
-                    <a className="remove" onClick={() => handleRemove(item._id, 'video')}>
-                      <i className="fas fa-trash" />
-                    </a>
-                    <a href="#" className="popup" role="button" onClick={() => handleOpenMedia(item)}></a>
-                    <div className="overlay" />
-                  </div>
-                  <div className="media-name">
-                    {item.name}
-                  </div>
-                </Col>
-              ))}
+              {pendingVideoFolders
+                ?.filter((folder: any) => folder.sellItems && folder.sellItems.length > 0) // Filter folders with media items
+                ?.map((folder: any, index: any) => (
+                  <article
+                    key={folder._id + index}
+                    style={{
+                      width: selectedFolderId === folder._id ? '100%' : '30%',
+                    }}
+                  >
+                    <section
+                      onClick={() => handleFolderClick(folder._id)}
+                      style={{
+                        cursor: 'pointer',
+                        margin: '10px',
+                        border: selectedFolderId === folder._id ? '' : '1px solid #eee',
+                        display:
+                          selectedFolderId && selectedFolderId !== folder._id
+                            ? 'none'
+                            : 'block',
+                      }}
+                      className="image-box mt-1 mb-1 active"
+                    >
+                      <video
+                        src={folder?.sellItems?.[0]?.media?.fileUrl}
+                        style={{
+                          display: selectedFolderId === folder._id ? 'none' : 'block',
+                          objectFit: 'cover',
+                          width: '100%',
+                          height: '13vw',
+                        }}
+                      />
+                      <button
+                        style={{
+                          width: selectedFolderId === folder._id ? '20%' : '100%',
+                          height: '100%',
+                          backgroundColor: '#FF337C',
+                          color: 'white',
+                          border: 'none',
+                          padding: '10px',
+                        }}
+                      >
+                        {selectedFolderId === folder._id ? 'Go back' : folder.name}
+                      </button>
+                    </section>
+
+                    {selectedFolderId === folder._id && (
+                      <Row>
+                        {folder.sellItems.map((item: any, index: any) => (
+                          <Col
+                            xs={12}
+                            sm={6}
+                            md={4}
+                            lg={4}
+                            key={item._id + index}
+                            data-toggle="tooltip"
+                            title={item.name}
+                          >
+                            <div className="image-box mt-1 mb-1 active">
+                              <video
+                                style={{ width: '100%', height: '13vw' }}
+                                controls
+                                src={
+                                  item.media.fileUrl ||
+                                  '/images/default_thumbnail_video.png'
+                                }
+                              />
+                              <h5>
+                                <i className="far fa-eye" /> Vorschau
+                              </h5>
+                              <a
+                                className="edit"
+                                onClick={() => handleOpenModalUpdate(item, 'video')}
+                              >
+                                <i className="fas fa-pencil-alt" />
+                              </a>
+                              <a
+                                className="remove"
+                                onClick={() => handleRemove(item._id, 'video')}
+                              >
+                                <i className="fas fa-trash" />
+                              </a>
+                              <a
+                                href="#"
+                                className="popup"
+                                role="button"
+                                onClick={() => handleOpenMedia(item)}
+                              ></a>
+                              <div className="overlay" />
+                            </div>
+                            <div className="media-name">{item.name}</div>
+                          </Col>
+                        ))}
+                      </Row>
+                    )}
+                  </article>
+                ))}
             </Row>
+          ) : (
+            <p className="text-alert-danger">Sie haben kein Video verfügbar!</p>
           )}
-        </article>
-      ))}
-    </Row>
-  ) : (
-    <p className="text-alert-danger">Sie haben kein Video verfügbar!</p>
-  )}
-  {itemsVideo?.length > 0 && totalVideo > 0 && totalVideo > take && <MainPaginate currentPage={pageVideo} pageTotal={totalVideo} pageNumber={take} setPage={setPageVideo} />}
+          {itemsVideo?.length > 0 &&
+            totalVideo > 0 &&
+            totalVideo > take && (
+              <MainPaginate
+                currentPage={pageVideo}
+                pageTotal={totalVideo}
+                pageNumber={take}
+                setPage={setPageVideo}
+              />
+            )}
         </Tab>
+
 
         </Tabs>
 

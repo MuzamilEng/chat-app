@@ -36,7 +36,8 @@ function Blogs() {
            <div style={{ textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }} className="w-full"> <Loader containerStyle="text-center" size="40px" /></div>
           ): (
             <>
-            <img style={{width: '50vw', height: '20vw', objectFit: 'cover', boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)'}} src={blogPosts?.media.thumbUrl || 'https://www.google.com/imgres?q=blogs%20default%20image&imgurl=https%3A%2F%2Fenviragallery.com%2Fwp-content%2Fuploads%2F2024%2F03%2FHow-To-Add-Post-Thumbnails-Set-a-Default-Featured-Image-in-WordPress-1-1.png&imgrefurl=https%3A%2F%2Fenviragallery.com%2Fhow-to-set-a-default-featured-image-in-wordpress%2F&docid=6tfspqrjYn3P7M&tbnid=V0dSXMI6bRCrMM&vet=12ahUKEwimi-v9zLeHAxUGhf0HHZA5D74QM3oECBwQAA..i&w=1240&h=600&hcb=2&ved=2ahUKEwimi-v9zLeHAxUGhf0HHZA5D74QM3oECBwQAA'} alt="" className='w-full' />
+            <img style={{width: '50vw', height: '20vw', objectFit: 'cover', boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)'}} 
+            src={blogPosts?.media.thumbUrl} alt="" className='w-full' onError={(e) => (e.currentTarget.src = 'https://cdn.vectorstock.com/i/500p/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg')} />
             <p className='' style={{width: '100%', maxWidth: '50vw', marginTop: '2vw'}}>{blogPosts?.description}</p>
             </>
           )}

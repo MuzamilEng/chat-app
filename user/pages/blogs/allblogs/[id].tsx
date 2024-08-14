@@ -50,9 +50,14 @@ function Blogs({ authUser }: PropsFromRedux) {
               {blogPosts?.map((item: any, index: any) => (
                 <Col xs={12} sm={6} md={4} lg={4} key={item._id + index} data-toggle="tooltip" title={item.name}>
                   <div className="image-box mt-1 mb-1 active">
-                    <img
+                    {/* <img
                       alt="media_thumb_photo"
                       src={item?.media?.thumbUrl || '/images/default_thumbnail_photo.jpg'}
+                    /> */}
+                     <img
+                      alt="media_thumb_photo"
+                      src={item?.media?.thumbUrl || '/images/default-img.jpg'}
+                      onError={(e) => (e.currentTarget.src = 'https://cdn.vectorstock.com/i/500p/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg')}
                     />
                     <div className="overlay" />
                   </div>

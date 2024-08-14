@@ -37,7 +37,7 @@ function TableMessages() {
   const loadFindMessages = async () => {
     try {
       const resp = await messageService.findConversation(findMessageQuery);
-      navigate.push(`http://localhost:8081/conversation/${resp.conversationId}`);
+      navigate.push(`/messages/${resp.conversationId}`);
     } catch (e) {
       const err = await e;
       toast.error(err?.message || 'Load data message failed!');
