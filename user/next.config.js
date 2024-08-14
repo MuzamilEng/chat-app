@@ -17,7 +17,7 @@ const nextConfig = {
   publicRuntimeConfig: {
     // Will be available on both server and client
     API_ENDPOINT: process.env.NEXT_PUBLIC_API_ENDPOINT || 'https://api.girls2dream.com/v1',
-    SOCKET_ENDPOINT: process.env.NEXT_PUBLIC_SOCKET_ENDPOINT || 'https://api.girls2dream.com/v1',
+    SOCKET_ENDPOINT: process.env.NEXT_PUBLIC_SOCKET_ENDPOINT || 'https://girls2dream.com/v1',
   },
   async rewrites() {
     return [
