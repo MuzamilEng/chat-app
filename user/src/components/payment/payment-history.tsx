@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import { Table } from 'react-bootstrap';
 import Moment from 'react-moment';
 import { NumericFormat } from 'react-number-format';
@@ -25,11 +26,13 @@ function PaymentHistory({
   sort,
   sortType
 }: IProps) {
+
+  const {t, lang} = useTranslationContext();
   const columns = [
-    { name: 'Beschreibung', value: 'description' },
+    { name: lang === 'en' ? 'Description' : 'Beschreibung', value: 'description' },
     { name: 'Gateway', value: 'gateway' },
-    { name: 'Preis', value: 'price' },
-    { name: 'Erstellt am', value: 'createdAt' }
+    { name: lang === 'en' ? 'Price' : 'Preis', value: 'price' },
+    { name: lang === 'en' ? 'Created at' : 'Erstellt am', value: 'createdAt' }
   ];
 
   return (
@@ -64,7 +67,7 @@ function PaymentHistory({
             ))
           ) : (
             <tr>
-              <td colSpan={4}>Keine Zahlung verfügbar</td>
+              <td colSpan={4}>{lang === 'en' ? 'No payment available' : 'Keine Zahlung verfügbar'}</td>
             </tr>
           )}
         </tbody>

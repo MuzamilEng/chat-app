@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
@@ -39,6 +40,7 @@ function RegisterForm() {
   const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
   const [requesting, setRequesting] = useState(false);
   const [type, setType] = useState('user');
+  const { t, lang } = useTranslationContext();
 
   const register = async (data: any) => {
     const {
@@ -57,7 +59,7 @@ function RegisterForm() {
         .then((resp) => {
           toast.success(resp?.data?.data?.message || 'Registrierung erfolgreich!');
           setTimeout(() => {
-            window.location.href = '/auth/login';
+            window.location.href = `/${lang}/auth/login`;
           }, 1000);
         })
         .catch(async (e) => {
@@ -83,14 +85,14 @@ function RegisterForm() {
       {(props: FormikProps<FormValues>) => (
         <form onSubmit={props.handleSubmit}>
           <Form.Group className="form-group">
-            <Form.Label className="input-label">Benutzername</Form.Label>
+            <Form.Label className="input-label">{lang === 'de' ? 'Benutzername' : 'Username'}</Form.Label>
             <FormControl
               isInvalid={props.touched.username && !!props.errors.username}
               name="username"
               className="form-control"
               type="text"
               id="username"
-              placeholder="Benutzername"
+              placeholder={lang === 'de' ? 'Benutzername' : 'Username'}
               onChange={props.handleChange}
               onBlur={props.handleBlur}
               value={props.values.username}
@@ -98,7 +100,7 @@ function RegisterForm() {
             <div className="invalid-feedback">{props.errors.username}</div>
           </Form.Group>
           <Form.Group className="form-group">
-            <Form.Label className="input-label">E-Mail-Adresse</Form.Label>
+            <Form.Label className="input-label">{lang === 'de' ? 'E-Mail-Adresse' : 'Email-Adress'}</Form.Label>
             <FormControl
               isInvalid={props.touched.email && !!props.errors.email}
               name="email"
@@ -113,7 +115,7 @@ function RegisterForm() {
             <div className="invalid-feedback">{props.errors.email}</div>
           </Form.Group>
           <Form.Group className="form-group">
-            <Form.Label className="input-label">Passwort</Form.Label>
+            <Form.Label className="input-label">{lang === 'de' ? 'Passwort' : 'Password' }</Form.Label>
             <FormControl
               isInvalid={props.touched.password && !!props.errors.password}
               name="password"
@@ -133,7 +135,7 @@ function RegisterForm() {
             />
           </Form.Group>
           <Form.Group className="form-group">
-            <Form.Label className="input-label">Passwort bestätigen</Form.Label>
+            <Form.Label className="input-label">{lang === 'de' ? 'Passwort bestätigung' : 'Confirm Password' }</Form.Label>
             <FormControl
               isInvalid={props.touched.confirmPassword && !!props.errors.confirmPassword}
               name="confirmPassword"
@@ -161,7 +163,7 @@ function RegisterForm() {
               name="type"
               id="user"
               inline
-              label="Nutzer"
+              label={lang === 'de' ? 'Benutzer' : 'User'}
             />
             <Form.Check
               type="radio"
@@ -170,7 +172,7 @@ function RegisterForm() {
               name="type"
               id="model"
               inline
-              label="Modell"
+              label={lang === 'de' ? 'Modell' : 'Model'}
             />
           </Form.Group>
           <Form.Group className="mb-10 form-group">
@@ -180,7 +182,9 @@ function RegisterForm() {
               name="isAgreeToS"
               label={(
                 <>
-                  Ich stimme den <a href="/posts/terms-and-conditions">Geschäftsbedingungen</a> zu
+                {/* /posts/terms-and-conditions   link commented by muzi*/}
+                  {lang === 'de' ? 'Ich stimme den' : 'I agree to the terms and conditions'}
+                  {/*  <a href="#">Geschäftsbedingungen</a> zu */} commented by muzi
                 </>
               )}
               checked={props.values.isAgreeToS}

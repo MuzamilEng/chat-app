@@ -26,22 +26,22 @@ function ContactHeader({
   contact
 }: IProps) {
   const router = useRouter();
-  const {setModelId} = useTranslationContext();
+  const {setModelId, lang} = useTranslationContext();
 
   useEffect(() => {
     if (authUser.type === 'model') {
-      setModelId(contact._id);
+      setModelId(contact?._id);
     }
   })
 
   // const isFriend = React.useRef<boolean>(contact.isFriend);
-  const [isFriend, setIsFriend] = useState(contact.isFriend);
+  const [isFriend, setIsFriend] = useState(contact?.isFriend);
   const removeContact = async () => {
     try {
       // TODO - prevent click too many times
-      await contactService.remove(contact._id);
+      await contactService.remove(contact?._id);
       setIsFriend(false);
-      toast.success(`${contact.username} wurde aus Ihrer Favoritenliste entfernt!`);
+      toast.success(`${contact?.username} wurde aus Ihrer Favoritenliste entfernt!`);
     } catch (e) {
       const err = await e;
       toast.error(err.msg || 'Ein Fehler ist aufgetreten, bitte versuchen Sie es später erneut!');
@@ -57,7 +57,7 @@ function ContactHeader({
           userId: contact._id
         });
         setIsFriend(true);
-        toast.success(`${contact.username} wurde Ihrer Favoritenliste hinzugefügt!`);
+        toast.success(`${contact?.username} wurde Ihrer Favoritenliste hinzugefügt!`);
       } catch (e) {
         const err = await e;
         toast.error(err?.data?.message || 'Ein Fehler ist aufgetreten, bitte versuchen Sie es später erneut!');
@@ -90,23 +90,23 @@ function ContactHeader({
               </div>
             </div>
             <div className="avatar avatar-lg mb-3">
-              <img className="avatar-img" src={contact.avatarUrl || '/images/user1.jpg'} alt="" />
+              <img className="avatar-img" src={contact?.avatarUrl || '/images/user1.jpg'} alt="" />
             </div>
 
             <div className="d-flex flex-column align-items-center">
-              <h5 className="mb-1">{contact.username}</h5>
+              <h5 className="mb-1">{contact?.username}</h5>
               <div className="text-center">
                 {authUser.type === 'user' && contact?.type === 'model' && <SendTipButton model={contact} />}
                 <ChatButton isFriend={isFriend} user={contact} />
-                {authUser.type === 'user' && <Link className="btn btn-primary btn-sm" href={`/blogs/allblogs/${contact._id}`}>Blogs</Link>}
+                {authUser.type === 'user' && <Link className="btn btn-primary btn-sm" href={`/blogs/allblogs/${contact?._id}`}>Blogs</Link>}
               </div>
               <div>
                 (
-                {contact.tokenPerMessage}
+                {contact?.tokenPerMessage}
                 {' '}
-                {contact.tokenPerMessage === 1 ? 'token' : 'tokens'}
+                {contact?.tokenPerMessage === 1 ? 'token' : 'tokens'}
                 {' '}
-                pro Nachricht)
+                {lang === 'de' ? 'pro Nachricht' : 'per message'})
               </div>
             </div>
           </div>
@@ -116,7 +116,7 @@ function ContactHeader({
               className="btn btn-secondary btn-icon btn-minimal btn-sm text-muted"
               type="button"
               data-close=""
-              onClick={() => router.push('/models')}
+              onClick={() => router.push(`/${lang}/models`)}
             >
               <svg className="hw-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path

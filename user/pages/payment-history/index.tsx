@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import dynamic from 'next/dynamic';
 import { Component } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
@@ -9,6 +10,7 @@ interface IProps {
   items: any;
   total: any;
   getInvoice: Function;
+  lang: string; 
 }
 
 interface IStates {
@@ -43,18 +45,19 @@ class PaymentHistoryPage extends Component<IProps, IStates> {
   }
 
   render() {
-    const { items, total } = this.props;
+    const { items, total, lang } = this.props;
     const { take, q } = this.state;
+  
     return (
       <main className="main scroll">
         <Container fluid className="p-3">
           <PageTitle title="Zahlungsverlauf" />
           <Row className="m-2 mgB20">
             <Col md={12} className="mb-4">
-              <h4 className="font-weight-semibold">Zahlungsverlauf</h4>
+              <h4 className="font-weight-semibold">{lang === 'de' ? 'Zahlungsverlauf' : 'Payment History'}</h4>
             </Col>
             <Col md={6} className="mt-2">
-            Anzeigen
+            {lang === 'de' ? 'Anzeigen' : 'View'}
               {' '}
               <select
                 className="select-pageSize"
@@ -67,15 +70,15 @@ class PaymentHistoryPage extends Component<IProps, IStates> {
                 <option value={50}>50</option>
               </select>
               {' '}
-              Einträge
+              {lang === 'de' ? 'Eintraege' : 'Entries'}
             </Col>
             <Col md={6} className="mt-2">
               <div className="search-box">
-              Suche:
+              {lang === 'de' ? 'Suche' : 'Search'}:
                 {' '}
                 <input
                   type="text"
-                  placeholder="Suche"
+                  placeholder={lang === 'de' ? 'Suche' : 'Search'}
                   value={q}
                   onChange={(e) => this.doGetInvoice({ q: e.target.value })}
                 />

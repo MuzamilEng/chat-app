@@ -1,5 +1,6 @@
 import SeoMetaHead from '@components/seo-meta-head';
 import { systemService } from '@services/system.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -22,6 +23,7 @@ function Register({
 }: IProps) {
   const router = useRouter();
   const bg = authBgImage || '/images/auth-bg.jpg';
+  const { t, lang } = useTranslationContext();
 
   const checkAuthUser = () => {
     if (authUser.isLoggedIn) {
@@ -62,17 +64,17 @@ function Register({
                 <a href="/" className="header-logo-mobile">
                   <img src={transparentLogo} alt="Logo" width="327" />
                 </a>
-                <h3 className="text-center text-uppercase">Benutzerregistrierung</h3>
+                <h3 className="text-center text-uppercase">{lang === 'en' ? 'Register' : 'Benutzerregistrierung'}</h3>
                 <hr />
                 <div className="xchat-form">
                   <RegisterFrom />
                 </div>
                 <div className="text-center">
                   <p>
-                  Haben Sie bereits ein Konto?
-                    <Link legacyBehavior href="/auth/login" as="/login" key="login">
+                  {lang === 'en' ? 'Already have an account?' : 'Hast du bereits ein Konto?'}
+                    <Link legacyBehavior href={`/${lang}/auth/login`} as="/login" key="login">
                       <a className="switcher-text2 inline-text">
-                      Anmelden
+                      {lang === 'en' ? 'Sign in' : 'Anmelden'}
                       </a>
                     </Link>
                   </p>

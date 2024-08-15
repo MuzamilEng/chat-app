@@ -91,7 +91,7 @@ function Header({
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light top-nav navbar-menu-mobile">
-      <a aria-hidden className={`navbar-brand ${activeRoute === 'models' && 'active'}`} href="/models">
+      <a aria-hidden className={`navbar-brand ${activeRoute === 'models' && 'active'}`} href={`/${lang}/models`}>
         <img alt="img_logo_header" src={appConfig.siteLogo || '/images/logo.svg'} />
       </a>
       <div className="navbar-menu">

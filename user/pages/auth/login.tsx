@@ -1,6 +1,7 @@
 import PageTitle from '@components/page-title';
 import SeoMetaHead from '@components/seo-meta-head';
 import { systemService } from '@services/system.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useEffect } from 'react';
@@ -34,6 +35,7 @@ function Login({
   authUser
 }: IProps & PropsFromRedux) {
   const bg = authBgImage || '/images/auth-bg.jpg';
+  const { t, lang } = useTranslationContext();
 
   useEffect(() => {
     if (authUser) {
@@ -67,17 +69,17 @@ function Login({
               <a href="/" className="header-logo-mobile">
                 <img src={transparentLogo} alt="Logo" width="327" />
               </a>
-              <h3 className="text-center text-uppercase">Anmeldung</h3>
+              <h3 className="text-center text-uppercase">{lang === 'en' ? 'Login' : 'Anmeldung'}</h3>
               <hr />
               <div className="xchat-form">
                 <LoginForm />
               </div>
               <div className="xchat-footer">
                 <p>
-                Sie haben kein Konto?
-                  <Link legacyBehavior href="/auth/register" as="/auth/register" key="register">
+                {lang === 'en' ? 'Don’t have an account?' : 'Sie haben kein Konto?'}
+                  <Link legacyBehavior href={`/${lang}/auth/register`} as="/auth/register" key="register">
                     <a className="switcher-text2 inline-text">
-                    Registrieren
+                    {lang === 'en' ? 'Sign up' : 'Registrieren'}
                     </a>
                   </Link>
                 </p>

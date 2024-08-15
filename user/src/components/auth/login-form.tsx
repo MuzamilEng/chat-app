@@ -1,4 +1,5 @@
 import { showError } from '@lib/utils';
+import { useTranslationContext } from 'context/TranslationContext';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -48,6 +49,7 @@ function LoginForm({
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
   const router = useRouter();
+  const { t , lang} = useTranslationContext();
 
   const login = async (values) => {
     try {
@@ -64,7 +66,7 @@ function LoginForm({
       if (!me?.data?.isCompletedProfile || !me?.data?.isApproved) {
         router.push('/profile/update?requireUpdate=1');
       } else {
-        router.push('/conversation');
+        router.push(`/${lang}/conversation`);
       }
     } catch (e) {
       const error = await e;
@@ -85,7 +87,7 @@ function LoginForm({
       {(props: FormikProps<FormValues>) => (
         <form onSubmit={props.handleSubmit}>
           <Form.Group className="form-group">
-            <Form.Label className="input-label">E-Mail-Adresse</Form.Label>
+            <Form.Label className="input-label">{lang === 'en' ? 'Email' : 'E-Mail-Adresse'}</Form.Label>
             <FormControl
               isInvalid={props.touched.email && !!props.errors.email}
               name="email"
@@ -101,7 +103,7 @@ function LoginForm({
           </Form.Group>
 
           <Form.Group className="form-group">
-            <Form.Label className="input-label">Passwort</Form.Label>
+            <Form.Label className="input-label">{lang === 'en' ? 'Password' : 'Passwort'}</Form.Label>
             <FormControl
               isInvalid={props.touched.password && !!props.errors.password}
               name="password"
@@ -128,7 +130,7 @@ function LoginForm({
                 type="checkbox"
                 id="isKeepLogin"
                 name="isKeepLogin"
-                label="Eingeloggt bleiben"
+                label={lang === 'en' ? 'Keep me logged in' : 'Eingeloggt bleiben'}
                 checked={props.values.isKeepLogin}
                 onChange={props.handleChange}
                 onBlur={props.handleBlur}
@@ -136,14 +138,14 @@ function LoginForm({
               {/* </div> */}
               <Link legacyBehavior href="/auth/forgot" as="/forgot" key="forgot-password">
                 <a href="" className="switcher-text">
-                Passwort vergessen
+                {lang === 'en' ? 'Forgot password?' : 'Passwort vergessen?'}
                 </a>
               </Link>
             </div>
           </Form.Group>
           <div className="form-group">
             <button type="submit" className="xchat-btn-fill" disabled={loading}>
-              {loading ? <Loader /> : 'Einloggen'}
+              {loading ? <Loader /> : lang === 'en' ? 'Log in' : 'Einloggen'}
             </button>
           </div>
         </form>

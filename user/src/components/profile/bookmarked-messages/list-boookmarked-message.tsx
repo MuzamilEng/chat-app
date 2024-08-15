@@ -9,6 +9,7 @@ import {
 import { toast } from 'react-toastify';
 
 import TableBookmarked from './table-bookmarked';
+import { useTranslationContext } from 'context/TranslationContext';
 // Child Component
 
 function ListBookmarkedMessage() {
@@ -30,6 +31,8 @@ function ListBookmarkedMessage() {
     sort: '',
     sortType: ''
   });
+
+  const {t, lang} = useTranslationContext();
 
   const loadBookmarkedMessages = async () => {
     try {
@@ -69,18 +72,19 @@ function ListBookmarkedMessage() {
 
   const renderAlert = () => (
     <p className="text-alert-danger">
-    Sie haben keine
+      {lang === 'de' ? 'Sie haben keine Nachrichten-Lesezeichen' : "You don't have text message bookmarks "}
+    {/* Sie haben keine */}
     {' '}
     {query.type}
     {' '}
-    Nachrichten-Lesezeichen
+    {/* Nachrichten-Lesezeichen */}
   </p>
   );
 
   return (
     <>
       <Col md={6} className="mt-2">
-      Anzeigen
+      {lang === 'de' ? 'Anzeigen' : 'View'}
         {' '}
         <select
           className="select-pageSize"
@@ -93,7 +97,7 @@ function ListBookmarkedMessage() {
           <option value={50}>50</option>
         </select>
         {' '}
-        Einträge
+        {lang === 'de' ? 'Eintraege' : 'Entries'}
       </Col>
       <Col md={12} className="p-2">
         <Tabs defaultActiveKey="text" transition={false} id="tab-media-content" onSelect={(key) => onChangeTab(key)}>
@@ -160,7 +164,7 @@ function ListBookmarkedMessage() {
               changePage={(value) => onChangPage({ page: value.data })}
             />
           </Tab>
-          <Tab eventKey="file" title="Dokument">
+          <Tab eventKey="file" title={lang === 'de' ? 'Dokument' : 'Document'}>
             {loading && <Loading />}
             {!loading && listBookmarked && listBookmarked.length > 0
               && (

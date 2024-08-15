@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import { Table } from 'react-bootstrap';
 import Moment from 'react-moment';
 import { NumericFormat } from 'react-number-format';
@@ -35,14 +36,15 @@ function EarningHistory({
   sortType,
   totalEarnings
 }: IProps) {
+  const {lang} = useTranslationContext();
   const columns = [
-    { name: 'Name', value: 'name' },
+    { name:  'Name', value: 'name' },
     { name: 'Token', value: 'token' },
     { name: 'Provision', value: 'commission' },
-    { name: 'Kontostand', value: 'balance' },
-    { name: 'Typ', value: 'type' },
-    { name: 'Status', value: 'status' },
-    { name: 'Erstellt am', value: 'createdAt' }
+    { name:  lang === 'en' ? 'Balance' : 'Kontostand', value: 'balance' },
+    { name: lang === 'en' ? 'Type' : 'Typ', value: 'type' },
+    { name:  lang === 'en' ? 'Status' : 'Status', value: 'status' },
+    { name:  lang === 'en' ? 'Created at' : 'Erstellt am', value: 'createdAt' }
   ];
 
   return (
@@ -88,7 +90,7 @@ function EarningHistory({
             ))
           ) : (
             <tr>
-              <td colSpan={7}>Kein Token verfügbar</td>
+              <td colSpan={7}>{lang === 'en' ? 'No Earning yet' : 'Kein Token verfügbar'}</td>
             </tr>
           )}
         </tbody>
@@ -96,7 +98,7 @@ function EarningHistory({
 
       <article style={{display: 'flex', justifyContent: 'space-between', padding: '2vw', backgroundColor: '#f5f5f5', boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)'}}>
       <aside style={{width: '45%'}}>
-        <div style={{display: 'flex', width: '40%', justifyContent: 'space-evenly',
+        <div style={{display: 'flex', width: '55%', justifyContent: 'space-evenly',
       alignItems: 'center',}}>
         <span >Model</span>
         <span>Provision</span>
@@ -109,7 +111,7 @@ function EarningHistory({
       alignItems: 'center', padding: '1vw'}} className='flex'>
         <p style={{marginLeft: '-1vw'}}>Starter</p>
         <p>20%</p>
-        <p>Auf jede Einnahme wird eine Provision von 20% erhoben.</p>
+        <p>{lang === 'en' ? 'A commission of 20% is charged on every income.' : 'Auf jede Einnahme wird eine Provision von 20% erhoben'}.</p>
       </main>
       </aside>
       <section style={{marginTop: '1vw'}}>

@@ -12,7 +12,11 @@ class ConversationService extends APIRequest {
   }
 
   create(data: ICreateConv) {
-    return this.post('/conversation', data);
+    return this.post('/conversation', data); 
+  }
+
+  deductBalance(data: any) {
+    return this.post('/deductbalance', data); 
   }
 
   block(conversationId: string, data: IBlockConv) {

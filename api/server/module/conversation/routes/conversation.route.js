@@ -52,6 +52,13 @@ router.get(
     Middleware.Response.success('block')
   );
 
+
+  router.post(
+    '/v1/deductbalance',
+    Middleware.isAuthenticated,
+    conversationController.deductUserBalance,
+    Middleware.Response.success('deductUserBalance')
+  );
   /**
    * @apiGroup Conversation
    * @apiVersion 1.0.0

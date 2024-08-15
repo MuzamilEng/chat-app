@@ -162,7 +162,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
     console.log(`Profile button clicked for item with ID: ${_id}`);
   };
 
-  const {t} = useTranslationContext();
+  const {t, lang} = useTranslationContext();
   const handleByCoinsClick = (value) => {
     if (value === true) {
       if (authUser) {
@@ -320,7 +320,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
                    <div className="" style={{ margin: "auto" }}><Loader /></div>
                    ) : (
                    data?.items?.map((data, index) => (
-                 <Link href={`/auth/login`} key={index} className="d-block"
+                 <Link href={`/${lang}/auth/login`} key={index} className="d-block"
                  style={{ position: "relative", margin: "auto", }}
 
                  >

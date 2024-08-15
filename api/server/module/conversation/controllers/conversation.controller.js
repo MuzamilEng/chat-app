@@ -49,7 +49,6 @@ exports.create = async (req, res, next) => {
       })
     );
     await newConv.save();
-    console.log(user,"5555555555555555555555555555555555",req.user)
     newConv.members = [];
     newConv.members.push(user, req.user);
 
@@ -57,32 +56,6 @@ exports.create = async (req, res, next) => {
     // await Service.Socket.emitToUsers(req.user._id, 'new_conversation', newConv);
 
     res.locals.conversation = newConv.toObject();
-    // console.log(res.locals.conversation,"22222222222222222222222222222")
-    // const loginType= user.type
-    // const loginRole= user.role
-
- 
-    // await newActivityLog.save();
-    // console.log('Activity log created:', newActivityLog);
-
-
-    // console.log("aswinaswinaswinaswinaswinaswinaswinaswinaswin")
-    // if(loginType=="user" && loginRole=="user"){
-    //   console.log(user)
-    //   const user_id = user._id;
-    //   const model_id = req.user._id;
-    //   const request_url ="abc"
-
-    //   const newActivityLog = new DB.Activity(
-    //     {
-    //       user_id: user_id.toString(),
-    //       model_id: model_id.toString(),
-    //       request_url: request_url
-    //     }
-    //   );
-    //   await newActivityLog.save();
-    //   console.log('Activity log created:', newActivityLog);
-    // }
     //write a logic ashwani
     return next();
   } catch (e) {
@@ -97,7 +70,6 @@ exports.list = async (req, res, next) => {
       deletedByIds: {
         $nin: [req.user._id]
       }
-      // lastMessageId: { $ne: null }
     };
 
     const conversations = await DB.Conversation.find(query)
@@ -161,6 +133,35 @@ exports.findOne = async (req, res, next) => {
     newData.unreadMessageCount = metaData?.unreadMessageCount || 0;
 
     res.locals.conversation = newData;    
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
+
+// deduct balance 
+exports.deductUserBalance = async (req, res, next) => {
+  try {
+    const { userId, tokenPerMessage } = req.body;
+
+    // Find the user by userId
+    const user = await DB.User.findOne({ _id: userId }).exec();
+
+    if (!user) throw new Error('User not found');
+
+    // Check if the user's balance is sufficient
+    if (user.balance < tokenPerMessage) {
+      throw new Error('Insufficient balance');
+    }
+
+    // Deduct the tokenPerMessage amount from the user's balance
+    user.balance -= tokenPerMessage;
+
+    // Save the updated user balance
+    await user.save();
+
+    res.locals.updatedUser = user.toObject(); // Pass the updated user data to the response
     return next();
   } catch (e) {
     return next(e);

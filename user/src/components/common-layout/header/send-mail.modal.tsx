@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable jsx-a11y/label-has-associated-control */
+import { useTranslationContext } from 'context/TranslationContext';
 import { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { isEmail, ReactMultiEmail } from 'react-multi-email';
@@ -9,6 +10,7 @@ import { mailService } from 'src/services';
 function SendMailModal({ state, setState }: any) {
   const [emails, setEmails] = useState([]);
   const [isValidEmail, setIsValidEmail] = useState(true);
+  const {t, lang} = useTranslationContext();
 
   const sendInvite = async (e: any) => {
     e.preventDefault();
@@ -39,7 +41,7 @@ function SendMailModal({ state, setState }: any) {
       >
         <Modal.Header>
           <h5 className="modal-title" id="inviteUsersLabel">
-          Benutzer einladen
+          {lang === 'en' ? 'Invite User' : 'Benutzer einladen'}
           </h5>
           <Button className="fa fa-xmark" type="button" aria-label="Close" onClick={setState} />
         </Modal.Header>
@@ -48,10 +50,10 @@ function SendMailModal({ state, setState }: any) {
             <div className="row">
               <div className="col-12">
                 <div className="form-group">
-                  <label>E-Mail Adresse</label>
+                  <label>{lang === 'en' ? 'Email' : 'E-Mail-Adresse'}</label>
                   <ReactMultiEmail
                     className="form-control form-control-md h-100"
-                    placeholder="Bitte geben Sie hier Ihre E-Mail-Adresse ein"
+                    placeholder={lang === 'en' ? 'Enter the email address here' : 'Bitte geben Sie hier Ihre E-Mail-Adresse ein'}
                     emails={emails}
                     onChange={(_emails: any) => setEmails(_emails)}
                     validateEmail={(email) => {
@@ -82,10 +84,10 @@ function SendMailModal({ state, setState }: any) {
             data-dismiss="modal"
             onClick={() => setState(false)}
           >
-            Schließen Sie
+            {lang === 'en' ? 'Close' : 'Schließen'}
           </button>
           <button type="button" className="btn btn-primary" onClick={(e) => sendInvite(e)}>
-          Einladung versenden
+          {lang === 'en' ? 'Send Invite' : 'Einladung versenden'}
           </button>
         </Modal.Footer>
       </Modal>

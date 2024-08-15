@@ -17,7 +17,7 @@ import * as Yup from 'yup';
 function ContactUsForm() {
   const [submitting, setSubmitting] = useState(false);
   const [countTime, setCountTime] = useState(0);
-  const {t} = useTranslationContext()
+  const {t, lang} = useTranslationContext()
 
   const _intervalCountdown = useRef(null);
   const schema = Yup.object().shape({
@@ -92,7 +92,7 @@ function ContactUsForm() {
                       type="text"
                       name="name"
                       id="name"
-                      placeholder="Bitte geben Sie Ihren Namen ein"
+                      placeholder={lang === 'en' ? 'Please enter your name' : 'Bitte geben Sie Ihren Namen ein'}
                       isInvalid={touched.name && !!errors.name}
                       className="form-control"
                       onChange={handleChange}
@@ -107,7 +107,7 @@ function ContactUsForm() {
                       type="email"
                       name="email"
                       id="email"
-                      placeholder="Bitte geben Sie Ihre E-Mail-Adresse ein"
+                      placeholder={lang === 'en' ? 'Please enter your email' : 'Bitte geben Sie Ihre E-Mail Adresse ein'}
                       isInvalid={touched.email && !!errors.email}
                       className="form-control"
                       onChange={handleChange}

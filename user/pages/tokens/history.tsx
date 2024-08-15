@@ -20,7 +20,7 @@ function TokenHistoryPage() {
   const [query, setQuery] = useState(initialQuery);
   const [items, setItems] = useState({} as any);
   const [total, setTotal] = useState(0);
-  const {t} = useTranslationContext()
+  const {t, lang} = useTranslationContext()
 
   const loadEarning = async () => {
     try {
@@ -51,8 +51,8 @@ function TokenHistoryPage() {
             <h4 className="font-weight-semibold">{t?.tokenPage?.title}</h4>
           </Col>
           <Col md={6} className="mt-2">
-            Anzeigen
-            {' '}
+          {lang === 'de' ? 'Anzeigen' : 'View'}
+          {' '}
             <select
               className="select-pageSize"
               value={query.take}
@@ -64,7 +64,7 @@ function TokenHistoryPage() {
               <option value={50}>50</option>
             </select>
             {' '}
-            Einträge
+            {lang === 'de' ? 'Einträge' : 'Entries'}
           </Col>
           <Col md={6} className="flex justify-content-end align-items-center mt-2">
             <div className="search-box">
@@ -72,7 +72,7 @@ function TokenHistoryPage() {
               {' '}
               <input
                 type="text"
-                placeholder="Modell suchen"
+                placeholder={lang === 'de' ? 'Modell suchen' : 'Search model'}
                 value={query.q}
                 onChange={(e) => handleGetTransaction({ q: e.target.value })}
               />

@@ -1,5 +1,6 @@
 import PageTitle from '@components/page-title';
 import { earningService } from '@services/earning.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
@@ -20,6 +21,8 @@ function EarningHistoryPage() {
   const [items, setItems] = useState({} as any);
   const [total, setTotal] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
+
+  const {t, lang} = useTranslationContext()
 
   const loadEarning = async () => {
     try {
@@ -43,13 +46,13 @@ function EarningHistoryPage() {
   return (
     <main className="main scroll">
       <Container fluid className="p-3">
-        <PageTitle title="Verdienst" />
+        <PageTitle title={lang === 'en' ? "Earnings" : "Verdienst"} />
         <Row className="m-2 mgB20">
           <Col md={12} className="mb-4">
-            <h4 className="font-weight-semibold">Verdienst</h4>
+            <h4 className="font-weight-semibold">{lang === 'en' ? "Earnings" : "Verdienst"}</h4>
           </Col>
           <Col md={6} className="mt-2">
-          Anzeigen
+          {lang === 'de' ? 'Anzeigen' : 'View'}
             {' '}
             <select
               className="select-pageSize"
@@ -62,16 +65,16 @@ function EarningHistoryPage() {
               <option value={50}>50</option>
             </select>
             {' '}
-            Einträge
+            {lang === 'de' ? 'Einträge' : 'Entries'}
           </Col>
           <Col md={6} className="flex justify-content-end align-items-center mt-2">
             <div className="search-box">
-            Nutzer:
+            {lang === 'de' ? 'Nutzer' : 'Search'}:
               {' '}
               <input
                 className="ml-1"
                 type="text"
-                placeholder="Namen suchen"
+                placeholder={lang === 'de' ? 'Nutzer suchen' : 'Search user'}
                 value={query.q}
                 onChange={(e) => handleGetEarning({ q: e.target.value })}
               />

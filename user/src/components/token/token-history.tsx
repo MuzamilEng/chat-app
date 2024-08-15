@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import { Table } from 'react-bootstrap';
 import Moment from 'react-moment';
 import { NumericFormat } from 'react-number-format';
@@ -33,12 +34,14 @@ function TokenHistory({
   sort,
   sortType
 }: IProps) {
+
+  const {t, lang} = useTranslationContext();
   const columns = [
-    { name: 'Modellname', value: 'name' },
+    { name: lang === 'de' ? 'Modellname' : 'Model Name', value: 'name' },
     { name: 'Token', value: 'token' },
     { name: 'Typ', value: 'type' },
     // { name: 'Status', value: 'status' },
-    { name: 'Transaktionszeitstempel', value: 'createdAt' }
+    { name: lang === 'en' ? 'Transaction timestamp' : 'Transaktionszeitstempel', value: 'createdAt' }
   ];
 
   return (

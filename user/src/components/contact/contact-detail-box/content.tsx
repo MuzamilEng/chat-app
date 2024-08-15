@@ -29,7 +29,7 @@ function ContactContent({ contact }: IProps) {
           <div className="media align-items-center">
             <div className="media-body">
               <p className="small text-muted mb-0">Biografie</p>
-              <p className="mb-0">{contact.bio}</p>
+              <p className="mb-0">{contact?.bio}</p>
             </div>
             <svg
               className="text-muted hw-20"
@@ -53,7 +53,7 @@ function ContactContent({ contact }: IProps) {
           <div className="media align-items-center">
             <div className="media-body">
               <p className="small text-muted mb-0">Geschlecht</p>
-              <p className="mb-0">{contact.gender}</p>
+              <p className="mb-0">{contact?.gender}</p>
             </div>
             <svg
               className="text-muted hw-20"
@@ -92,7 +92,7 @@ function ContactContent({ contact }: IProps) {
           <div className="media align-items-center">
             <div className="media-body">
               <p className="small text-muted mb-0">Alter</p>
-              <p className="mb-0">{contact.age}</p>
+              <p className="mb-0">{contact?.age}</p>
             </div>
             <svg className="text-muted hw-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path

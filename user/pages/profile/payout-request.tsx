@@ -21,6 +21,7 @@ interface IProps {
     success: boolean;
     error: any;
   };
+  lang: string;
 }
 
 interface IStates {
@@ -87,27 +88,27 @@ class PayoutRequestHistoryPage extends Component<IProps, IStates> {
   }
 
   render() {
-    const { items, total } = this.props;
+    const { items, total, lang } = this.props;
     const {
       take, q, showModal, status
     } = this.state;
     return (
       <main className="main scroll">
         <Container fluid className="p-3">
-          <PageTitle title="Auszahlungsanforderung" />
+          <PageTitle title={lang === 'de' ? 'Auszahlungsanforderung' : 'Payout Request'} />
           <Row className="m-2">
             <Col md={12}>
-              <h4 className="font-weight-semibold">Auszahlungsanforderung</h4>
+              <h4 className="font-weight-semibold">{lang === 'de' ? 'Auszahlungsanforderung' : 'Payout Request'}</h4>
             </Col>
             <Col md={12} className="flex justify-content-end">
               <a onClick={() => Router.push('/profile/setting/payout-account', '/payout-account', { shallow: true })}>
-                <a className="btn btn-primary text-light mx-2 my-1">Konto für Auszahlungen</a>
+                <a className="btn btn-primary text-light mx-2 my-1">{lang === 'de' ? 'Konto für Auszahlungen' : 'Payout Account'}</a>
               </a>
               <a
                 className="btn btn-warning text-light mx-2 my-1"
                 onClick={() => this.setState({ showModal: true })}
               >
-              Hinzufügen
+              {lang === 'de' ? 'Hinzufügen' : 'Add Payout Request'}
               </a>
             </Col>
           </Row>
@@ -115,7 +116,7 @@ class PayoutRequestHistoryPage extends Component<IProps, IStates> {
             <Col>
               <div className="mgB20 flex ">
                 <Col sm={6} lg={6} className="no-padL">
-                Anzeigen
+                {lang === 'de' ? 'Anzeigen' : 'View'}
                   {' '}
                   <select
                     className="select-pageSize"
@@ -128,15 +129,15 @@ class PayoutRequestHistoryPage extends Component<IProps, IStates> {
                     <option value={50}>50</option>
                   </select>
                   {' '}
-                  Einträge
+                  {lang === 'de' ? 'Eintraege' : 'Entries'}
                 </Col>
                 <Col sm={6} lg={6} className="no-padR">
                   <div className="search-box d-inline-block float-right ml-2 mt-2">
-                  Suche :
+                  {lang === 'de' ? 'Suche' : 'Search'} :
                     {' '}
                     <input
                       type="text"
-                      placeholder="Suche"
+                      placeholder={lang === 'de' ? 'Suche' : 'Search'}
                       value={q}
                       onChange={(e) => this.doGetPayoutRequest({ q: e.target.value })}
                     />
@@ -147,11 +148,11 @@ class PayoutRequestHistoryPage extends Component<IProps, IStates> {
                       value={status}
                       onChange={(e) => this.doGetPayoutRequest({ status: e.target.value })}
                     >
-                      <option value="">Alle</option>
-                      <option value="pending">Ausstehend</option>
-                      <option value="paid">Bezahlt</option>
-                      <option value="approved">Akzeptiert</option>
-                      <option value="rejected">Zurückgewiesen</option>
+                      <option value="">{lang === 'de' ? 'Alle' : 'All'}</option>
+                      <option value="pending">{lang === 'de' ? 'Ausstehend' : 'Pending'}</option>
+                      <option value="paid">{lang === 'de' ? 'Bezahlt' : 'Paid'}</option>
+                      <option value="approved">{lang === 'de' ? 'Akzeptiert' : 'Approved'}</option>
+                      <option value="rejected">{lang === 'de' ? 'Zurückgewiesen' : 'Rejected'}</option>
                     </select>
                   </div>
                 </Col>

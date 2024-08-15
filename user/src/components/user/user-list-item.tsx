@@ -34,7 +34,7 @@ function UserListItem({
   const isFriend = useRef<boolean>(user.isFriend);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const {t} = useTranslationContext();
+  const {t, lang} = useTranslationContext();
 
 
   // TODO - detect with user gender
@@ -78,7 +78,7 @@ function UserListItem({
   const checkProfile = async () => {
     router.push(
       { pathname: '/models/[username]', query: { username: user.username } },
-      `/models/${user.username}`
+      `/${lang}/models/${user.username}`
     );
   };
 

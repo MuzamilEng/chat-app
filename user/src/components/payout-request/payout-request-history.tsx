@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import { Table } from 'react-bootstrap';
 import Moment from 'react-moment';
 import { NumericFormat } from 'react-number-format';
@@ -33,12 +34,13 @@ function PayoutRequestHistory({
   sort,
   sortType
 }:IProps) {
+  const {t, lang} = useTranslationContext();
   const columns = [
     { name: 'Name', value: 'name' },
-    { name: 'Summe', value: 'tokenRequest' },
-    { name: 'Kontotyp', value: '' },
-    { name: 'Status', value: 'status' },
-    { name: 'Erstellt am', value: 'createdAt' }
+    { name: lang === 'en' ? 'Amount' : 'Summe', value: 'tokenRequest' },
+    { name: lang === 'en' ? 'Payout type' : 'Kontotyp', value: '' },
+    { name: lang === 'en' ? 'Status' : 'Status', value: 'status' },
+    { name: lang === 'en' ? 'Created at' : 'Erstellt am', value: 'createdAt' }
   ];
 
   return (
@@ -73,7 +75,7 @@ function PayoutRequestHistory({
             ))
           ) : (
             <tr>
-              <td colSpan={5}>Keine Anfrage verfügbar</td>
+              <td colSpan={5}>{lang === 'en' ? 'No payout request available' : 'Keine Auszahlungsanfrage verfügbar'}</td>
             </tr>
           )}
         </tbody>

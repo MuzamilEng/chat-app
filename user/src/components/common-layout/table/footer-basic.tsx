@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import MainPaginate from 'src/components/paginate/main-paginate';
 
 interface IProps {
@@ -9,12 +10,13 @@ interface IProps {
 function TableFooterBasic({
   changePage, page, take, total
 }: IProps) {
+  const { t, lang } = useTranslationContext();
   return (
     <div className="row pagin flex w-100 mt-3">
       <div className="col-sm-12 col-md-6 m-0">
         {total > 0 && (
         <span>
-          Anzeigen
+          {lang === 'en' ? 'Showing' : 'Anzeigen'}
           {' '}
           {(page - 1) * take + 1}
           {' '}
@@ -26,7 +28,7 @@ function TableFooterBasic({
           {' '}
           {total}
           {' '}
-          Einträge
+          {lang === 'en' ? 'Entries' : 'Einträge'}
         </span>
         )}
       </div>

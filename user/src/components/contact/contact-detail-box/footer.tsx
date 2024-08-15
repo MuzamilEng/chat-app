@@ -68,11 +68,11 @@ function ContactFooter({
   };
 
   const fetchData  = async ()=> {
-    const resp2 = await sellItemService.getModelSellItems({ page: 1, mediaType: 'photo', take: 9, modelId: contact._id });
+    const resp2 = await sellItemService.getModelSellItems({ page: 1, mediaType: 'photo', take: 9, modelId: contact?._id });
     setPhotoFolders(resp2?.data?.folders);
   }
   const fetchVideoData  = async ()=> {
-    const resp2 = await sellItemService.getModelSellItems({ page: 1, mediaType: 'video', take: 9, modelId: contact._id });
+    const resp2 = await sellItemService.getModelSellItems({ page: 1, mediaType: 'video', take: 9, modelId: contact?._id });
     setVideoFolders(resp2?.data?.folders);
   }
 

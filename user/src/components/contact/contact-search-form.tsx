@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import {
   FormikHelpers, FormikProvider, useFormik
 } from 'formik';
@@ -40,6 +41,8 @@ function ContactSearchForm({
     }
   }));
 
+  const {t, lang} = useTranslationContext();
+
   return (
     <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit} className="form-inline">
@@ -51,7 +54,7 @@ function ContactSearchForm({
             className="form-control search border-right-0 transparent-bg pr-0"
             name="username"
             id="username"
-            placeholder="Modellname eingeben"
+            placeholder={lang === 'en' ? 'Search ...' : 'Modellname eingeben'}
             onChange={formik.handleChange.bind(this)}
           />
           <div className="input-group-append">

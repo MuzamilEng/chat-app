@@ -6,7 +6,7 @@ import { Button, Form, FormControl, Modal } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { sendMessage } from 'src/redux/message/actions';
-import { mediaService, sellItemService } from 'src/services';
+import { conversationService, mediaService, sellItemService } from 'src/services';
 import { useTranslationContext } from 'context/TranslationContext';
 
 interface IProps {
@@ -41,6 +41,7 @@ function ChatFooter({
   const [price, setPrice] = useState(0);
   const [isFree, setIsFree] = useState(true);
   const [userType, setUserType] = useState('');
+  const [tokenPerMessage, setTokenPerMessage] = useState(0);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('userType'));
@@ -73,6 +74,7 @@ function ChatFooter({
 
   useEffect(() => {
     const receiver = selectedConversation.members.find((i) => i._id !== authUser._id);
+    setTokenPerMessage(receiver?.tokenPerMessage)
     if (receiver.isBlocked || !receiver.isActive) {
       // user is deactivate
       setIsBlocked(true);
@@ -170,7 +172,16 @@ function ChatFooter({
       };
       sendMess(data);
     }
+    if(authUser.type === 'user' || userType === 'user'){
+      const data = {
+        userId: authUser._id,
+        tokenPerMessage: tokenPerMessage
+
+      };
+       conversationService.deductBalance(data);
+    }
   };
+
 
   return (
     <>

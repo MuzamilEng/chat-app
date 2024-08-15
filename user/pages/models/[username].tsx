@@ -40,11 +40,14 @@ ModelDetail.getInitialProps = async (ctx) => {
   try {
     const { username } = ctx.query;
     const user = await userService.findByUsername(username);
+    console.log('====================================');
+    console.log(user, "user");
+    console.log('====================================');
     return {
       user: user.data
     };
   } catch {
-    redirect('/404', ctx);
+    // redirect('/404', ctx);
     return {};
   }
 };
