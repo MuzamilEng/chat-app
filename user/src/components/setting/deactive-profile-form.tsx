@@ -23,7 +23,7 @@ function DeactiveProfileForm({
 }: PropsFromRedux) {
   const [code, setCode] = useState('');
   const [disabled, setDisabled] = useState(false);
-  const {t} = useTranslationContext()
+  const {t, lang} = useTranslationContext()
 
   const deactive = async () => {
     try {
@@ -34,21 +34,21 @@ function DeactiveProfileForm({
       await authService.deactiveProfile();
 
       // log out?
-      toast.success('Ihr Konto wurde deaktiviert!');
+      toast.success( lang === 'en' ? 'Account deactivated successfully' : 'Ihr Konto wurde deaktiviert!');
       handleLogout();
       setTimeout(() => {
         window.location.href = '/';
       }, 1000);
     } catch (e) {
       const err = await e;
-      toast.error(err?.message || err?.msg || 'Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut!');
+      toast.error(err?.message || err?.msg || lang === 'en' ? 'Something went wrong, please try again!' :  'Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut!');
       setDisabled(false);
     }
   };
 
   const onChangeCode = (value: any) => {
     if (!/^[0-9_-]*$/.test(value)) {
-      toast.error('Bitte nur numerische Zeichen eingeben');
+      toast.error( lang === 'en' ? 'Please enter only numeric characters' : 'Bitte nur numerische Zeichen eingeben');
       return;
     }
     setCode(value);
@@ -61,10 +61,11 @@ function DeactiveProfileForm({
   const getOTP = async () => {
     if (
       window.confirm(
+        lang === 'en' ? 'Are you sure you want to deactivate your profile?' :
         'Andere Fans oder Models können dich nicht mehr kontaktieren, wenn du dein Profil deaktivierst. Sind Sie sicher?'
       )
     ) {
-      await userService.getOTP().then(() => toast.success('Überprüfungscode wurde gesendet!'));
+      await userService.getOTP().then(() => toast.success( lang === 'en' ? 'Verification code sent!' : 'Überprüfungscode wurde gesendet!'));
     }
   };
 

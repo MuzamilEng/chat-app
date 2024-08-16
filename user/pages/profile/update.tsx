@@ -25,7 +25,7 @@ function UpdateProfile({
 }: PropsFromRedux) {
   const router = useRouter();
   const [showRq, setShowRq] = useState(false);
-  const {t} = useTranslationContext()
+  const {t, lang} = useTranslationContext()
 
 
   useEffect(() => {
@@ -47,7 +47,7 @@ function UpdateProfile({
 
                 {showRq && (
                 <div className="alert alert-warning" role="alert">
-                 Bitte aktualisieren Sie Ihr Profil, um die Website zu betreten.
+                 {lang === 'en' ? "Please update your profile to access the website." : "Bitte aktualisieren Sie Ihr Profil, um die Website zu betreten."}
                 </div>
                 )}
               </div>
@@ -76,8 +76,8 @@ function UpdateProfile({
                 {authUser?.type === 'model' && !authUser?.isApproved && (
                 <div className="card mb-3">
                   <div className="card-header">
-                    <h6 className="mb-1">Überprüfungsdokument</h6>
-                    <p className="mb-0 text-muted small">Nachweisdokument aktualisieren</p>
+                    <h6 className="mb-1">{lang === 'en' ? 'Verification Document' : 'Überprüfungsdokument'}</h6>
+                    <p className="mb-0 text-muted small">{lang === 'en' ? 'Update evidence document' : 'Nachweisdokument aktualisieren'}</p>
                   </div>
                   <div className="card-body">
                     <VerificationDocument />

@@ -16,26 +16,6 @@ interface FormValues {
 }
 const validatePassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-const schema = Yup.object().shape({
-  password: Yup.string().required('Aktuelles Passwort ist erforderlich'),
-  newPassword: Yup.string()
-    .required('Neues Passwort ist erforderlich')
-    .test('Passwort-gleich, Neues Passwort ist dasselbe wie das aktuelle Passwort', function validatePw(value) {
-      return this.parent.password !== value;
-    })
-    .matches(
-      validatePassword,
-      'Das Passwort muss mindestens 8 Zeichen lang sein, mindestens 1 Zahl, 1 Großbuchstaben, 1 Kleinbuchstaben und 1 Sonderzeichen enthalten'
-    ),
-  repeatPassword: Yup.string()
-    .matches(
-      validatePassword,
-      'Das Passwort muss mindestens 8 Zeichen lang sein, mindestens 1 Zahl, 1 Großbuchstaben, 1 Kleinbuchstaben und 1 Sonderzeichen enthalten'
-    )
-    .oneOf([Yup.ref('Neues Passwort')], 'Das wiederholte Passwort muss mit dem neuen Passwort übereinstimmen')
-    .required('Wiederholtes Passwort ist erforderlich')
-
-});
 
 const mapStateToProps = (state: any) => ({
   authUser: state.auth.authUser
@@ -49,14 +29,38 @@ function UpdatePasswordForm({
   authUser
 }: PropsFromRedux) {
 
-  const {t} = useTranslationContext()
+
+  const {t, lang} = useTranslationContext()
+
+  const schema = Yup.object().shape({
+    password: Yup.string().required( lang === 'en' ? 'Current password is required' : 'Aktuelles Passwort ist erforderlich'),
+    newPassword: Yup.string()
+      .required( lang === 'en' ? 'New password is required' : 'Neues Passwort ist erforderlich')
+      .test( lang === 'en' ? 'Passwords must match ' : 'Passwort-gleich, Neues Passwort ist dasselbe wie das aktuelle Passwort', function validatePw(value) {
+        return this.parent.password !== value;
+      })
+      .matches(
+        validatePassword, 
+        lang === 'en' ? 'The password must be at least 8 characters long, contain at least one number, one uppercase letter, one lowercase letter and one special character' :
+        'Das Passwort muss mindestens 8 Zeichen lang sein, mindestens 1 Zahl, 1 Großbuchstaben, 1 Kleinbuchstaben und 1 Sonderzeichen enthalten'
+      ),
+    repeatPassword: Yup.string()
+      .matches(
+        validatePassword,
+        lang === 'en' ? 'The password must be at least 8 characters long, contain at least one number, one uppercase letter, one lowercase letter and one special character' :
+        'Das Passwort muss mindestens 8 Zeichen lang sein, mindestens 1 Zahl, 1 Großbuchstaben, 1 Kleinbuchstaben und 1 Sonderzeichen enthalten'
+      )
+      .oneOf([Yup.ref('Neues Passwort')], lang === 'en' ? 'Passwords must match' : 'Das wiederholte Passwort muss mit dem neuen Passwort übereinstimmen')
+      .required( lang === 'en' ? 'Repeat password is required' : 'Wiederholtes Passwort ist erforderlich')
+  
+  });
   const updatePassword = async (data) => {
     try {
       await authService.updatePassword(data);
-      toast.success('Passwort erfolgreich aktualisiert!');
+      toast.success( lang === 'en' ? 'Password updated successfully' : 'Passwort erfolgreich aktualisiert!');
     } catch (e) {
       const err = await e;
-      toast.error(err?.data?.message || 'Fehler beim Aktualisieren des Passworts!');
+      toast.error(err?.data?.message || lang === 'en' ? 'Failed to update password' : 'Fehler beim Aktualisieren des Passworts!');
     }
   };
 
@@ -71,7 +75,7 @@ function UpdatePasswordForm({
         }}
         onSubmit={(values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
           if (values.newPassword !== values.repeatPassword) {
-            toast.error('Das wiederholte Passwort unterscheidet sich vom neuen Passwort');
+            toast.error(  lang === 'en' ? 'The repeated password is different from the new password' : 'Das wiederholte Passwort unterscheidet sich vom neuen Passwort');
             return;
           }
           const data = {

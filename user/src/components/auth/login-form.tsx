@@ -64,7 +64,7 @@ function LoginForm({
       localStorage.setItem('userType', JSON.stringify(me.data?.type));
       localStorage.setItem('userEmail', JSON.stringify(me.data?._id));
       if (!me?.data?.isCompletedProfile || !me?.data?.isApproved) {
-        router.push('/profile/update?requireUpdate=1');
+        router.push(`/${lang}/profile/update?requireUpdate=1`);
       } else {
         router.push(`/${lang}/conversation`);
       }

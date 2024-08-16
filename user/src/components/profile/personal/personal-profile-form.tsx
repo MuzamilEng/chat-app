@@ -23,26 +23,6 @@ interface FormValues {
   postCode: string;
 }
 
-const schema = Yup.object().shape({
-  username: Yup.string()
-    .matches(/^[a-zA-Z0-9]*$/, {
-      message: 'Der Name darf keine Leerzeichen enthalten',
-      excludeEmptyString: true
-    })
-    .min(3, 'Die Länge des Namens muss größer als 3 sein')
-    .required('Benutzername ist erforderlich'),
-  bio: Yup.string().min(20, 'Bitte geben Sie mindestens 20 Zeichen ein').required('Eine Kurzbiografie wird benötigt'),
-  age: Yup.number().min(2).required('Das Alter wird benötigt'),
-  gender: Yup.string().required('Geschlecht wird benötigt'),
-  phoneNumber: Yup.string(),
-  email: Yup.string().email('Die E-Mail-Adresse muss gültig sein').required('E-Mail-Adresse wird benötigt'),
-  address: Yup.string(),
-  state: Yup.string(),
-  city: Yup.string(),
-  country: Yup.string(),
-  postCode: Yup.string()
-});
-
 
 class PersonalProfileForm extends Component<any, any> {
   constructor(props: any) {
@@ -50,23 +30,34 @@ class PersonalProfileForm extends Component<any, any> {
     this.state = {
       countries: [],
       states: [],
-      cities: []
+      cities: [],
+      lang: 'en' // Default language
     };
   }
 
   componentDidMount() {
-    this.getCountry();
+    const lang = this.getLangFromUrl(); // Extract lang from URL
+    this.setState({ lang }, () => this.getCountry()); // Set the lang state and then fetch countries
   }
 
   componentDidUpdate(prevProps: any) {
     const { requesting, success, error } = this.props.updateProfileStore;
     if (prevProps.updateProfileStore?.requesting && !requesting && success && !error) {
-      toast.success('Profil erfolgreich aktualisiert!');
+      toast.success(this.state.lang === 'de' ? 'Profil erfolgreich aktualisiert!' : 'Profile updated successfully!');
     }
     if (prevProps.updateProfileStore?.requesting && !requesting && !success && error) {
-      toast.error(error?.data?.message || 'Fehler beim Aktualisieren des Profils!');
+      toast.error(error?.data?.message || this.state.lang === 'de' ? 'Fehler beim Aktualisieren des Profils!' : 'Error updating profile!');
     }
   }
+
+  getLangFromUrl = () => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const lang = path.split('/')[1];
+      return lang && lang.length === 2 ? lang : 'en';
+    }
+    return 'en';
+  };
 
   getCountry() {
     this.setState(
@@ -84,9 +75,7 @@ class PersonalProfileForm extends Component<any, any> {
 
   async getStateAndCity(country: string) {
     const countryCode = this.getCodeByCountry(country);
-    // State data
     const stateData = await State.getStatesOfCountry(countryCode).map((i) => ({ isoCode: i.isoCode, name: i.name }));
-    // City data
     const cityData = await City.getCitiesOfCountry(countryCode).map((i) => ({ name: i.name }));
 
     this.setState({ states: stateData, cities: cityData });
@@ -101,7 +90,29 @@ class PersonalProfileForm extends Component<any, any> {
   render() {
     const { authUser } = this.props;
     const { countries, states, cities } = this.state;
-    const { t } = this.props;
+    const { t} = this.props;
+    const lang = this.getLangFromUrl();
+
+    const schema = Yup.object().shape({
+      username: Yup.string()
+        .matches(/^[a-zA-Z0-9]*$/, {
+          message: lang === 'en' ? 'Name can only contain letters and numbers' : 'Der Name darf keine Leerzeichen enthalten',
+          excludeEmptyString: true
+        })
+        .min(3, lang === 'en' ? 'Name must be at least 3 characters' : 'Die Länge des Namens muss größer als 3 sein')
+        .required( lang === 'en' ? 'Username is required' : 'Benutzername ist erforderlich'),
+      bio: Yup.string().min(20, lang === 'en' ? 'Bio must be at least 20 characters' : 'Bitte geben Sie mindestens 20 Zeichen ein').required( lang === 'en' ? 'Bio is required' : 'Eine Kurzbiografie wird benötigt'),
+      age: Yup.number().min(2).required( lang === 'en' ? 'Age is required' : 'Das Alter wird benötigt'),
+      gender: Yup.string().required( lang === 'en' ? 'Gender is required' : 'Geschlecht wird benötigt'),
+      phoneNumber: Yup.string(),
+      email: Yup.string().email( lang === 'en' ? 'Email is not valid' : 'Die E-Mail-Adresse muss gültig sein').required( lang === 'en' ? 'Email is required' : 'E-Mail-Adresse wird benötigt'),
+      address: Yup.string(),
+      state: Yup.string(),
+      city: Yup.string(),
+      country: Yup.string(),
+      postCode: Yup.string()
+    });
+  
 
     return (
       <div>
@@ -157,7 +168,7 @@ class PersonalProfileForm extends Component<any, any> {
                         <div className="invalid-feedback">{props.errors.username}</div>
                       </Form.Group>
                     </Col>
-                    <p className='text-muted mx-auto'>Diese Daten werden nicht im Profil angezeigt</p>
+                    <p className='text-muted mx-auto'>{lang === 'en' ? 'This data will be displayed publicly' : 'Diese Daten werden nicht im Profil angezeigt'}</p>
                     <Col md={12} xs={12}>
                       <Form.Group>
                         <Form.Label>{t?.profilePage?.email}</Form.Label>
@@ -174,23 +185,6 @@ class PersonalProfileForm extends Component<any, any> {
                         <div className="invalid-feedback">{props.errors.email}</div>
                       </Form.Group>
                     </Col>
-                    {/* <Col md={6} xs={12}>
-                      <Form.Group>
-                        <Form.Label>Telefonnummer</Form.Label>
-                        <FormControl
-                          isInvalid={props.touched.phoneNumber && !!props.errors.phoneNumber}
-                          name="phoneNumber"
-                          type="text"
-                          className="form-control form-control-md"
-                          id="phoneNumber"
-                          placeholder="Bitte geben Sie Ihre Telefonnummer ein"
-                          onChange={props.handleChange}
-                          onBlur={props.handleBlur}
-                          value={props.values.phoneNumber}
-                        />
-                        <div className="invalid-feedback">{props.errors.phoneNumber}</div>
-                      </Form.Group>
-                    </Col> */}
                     <Col xs={12} md={6}>
                       <Form.Group>
                         <Form.Label>
@@ -205,7 +199,7 @@ class PersonalProfileForm extends Component<any, any> {
                           min={18}
                           className="form-control form-control-md"
                           id="age"
-                          placeholder="Bitte geben Sie Ihr Alter ein"
+                          placeholder={lang === 'en' ? 'Please enter your age.' : 'Bitte geben Sie Ihr Alter ein.'}
                           onChange={props.handleChange}
                           onBlur={props.handleBlur}
                           value={props.values.age}
@@ -262,7 +256,7 @@ class PersonalProfileForm extends Component<any, any> {
                           name="bio"
                           id="bio"
                           className="form-control form-control-md"
-                          placeholder="Erzählen Sie uns etwas über Sie"
+                          placeholder={lang === 'en' ? 'Please enter your bio.' : 'Bitte geben Sie Ihre Bio ein.'}
                           as="textarea"
                           onChange={props.handleChange}
                           onBlur={props.handleBlur}
@@ -271,38 +265,6 @@ class PersonalProfileForm extends Component<any, any> {
                         <div className="invalid-feedback">{props.errors.bio}</div>
                       </Form.Group>
                     </Col>
-                    {/* <Col xs={12}>
-                      <Form.Group>
-                        <Form.Label>Adresse</Form.Label>
-                        <FormControl
-                          isInvalid={props.touched.address && !!props.errors.address}
-                          name="address"
-                          id="address"
-                          type="text"
-                          className="form-control form-control-md"
-                          placeholder="Ihre Adresse"
-                          onChange={props.handleChange}
-                          onBlur={props.handleBlur}
-                          value={props.values.address}
-                        />
-                        <div className="invalid-feedback">{props.errors.address}</div>
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label>Postleitzahl</Form.Label>
-                        <FormControl
-                          isInvalid={props.touched.postCode && !!props.errors.postCode}
-                          name="postCode"
-                          id="postCode"
-                          type="text"
-                          className="form-control form-control-md"
-                          placeholder="Ihre Postleitzahl"
-                          onChange={props.handleChange}
-                          onBlur={props.handleBlur}
-                          value={props.values.postCode}
-                        />
-                        <div className="invalid-feedback">{props.errors.postCode}</div>
-                      </Form.Group>
-                    </Col> */}
                     <Col xs={4}>
                       <Form.Group>
                         <Form.Label>{t?.profilePage?.country}</Form.Label>

@@ -1,4 +1,5 @@
 import { authService } from '@services/auth.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import { Formik, FormikProps } from 'formik';
 import { Button, Form, FormControl } from 'react-bootstrap';
 import { connect, ConnectedProps } from 'react-redux';
@@ -20,21 +21,21 @@ const mapStates = (state: any) => ({
 const connector = connect(mapStates);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
-
 function TokenPerMessageForm({ authUser }: PropsFromRedux) {
+  const { t, lang } = useTranslationContext();
   const updateToken = async (values) => {
     try {
       await authService.updateTokenPerMessage(values);
-      toast.success('Ihre Einstellungen wurden aktualisiert!');
+      toast.success( lang === 'en' ? 'Settings updated successfully' : 'Ihre Einstellungen wurden aktualisiert!');
     } catch (e) {
       const err = await e;
-      toast.error(err?.message || err?.msg || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut!');
+      toast.error(err?.message || err?.msg || lang === 'en' ? 'Something went wrong. Please try again!' : 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut!');
     }
   };
 
   return (
     <div className="card mb-3">
-      <div className="card-header">Token pro Nachricht</div>
+      <div className="card-header">{lang === 'en' ? 'Token Per Message' : 'Token pro Nachricht'}</div>
       <Formik
         validationSchema={schema}
         initialValues={{ token: authUser?.tokenPerMessage || 1 }}
@@ -60,7 +61,7 @@ function TokenPerMessageForm({ authUser }: PropsFromRedux) {
             </div>
             <div className="card-footer d-flex justify-content-end">
               <Button variant="primary" type="submit">
-              Änderungen speichern
+             {lang === 'en' ? 'Save Changes' : ' Änderungen speichern'}
               </Button>
             </div>
           </form>

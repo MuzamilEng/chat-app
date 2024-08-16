@@ -1,5 +1,6 @@
 import PageTitle from '@components/page-title';
 import { systemService } from '@services/system.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
@@ -20,6 +21,7 @@ function ForgotPassword({
   authBgImage,
   transparentLogo = '/images/logo-white.svg'
 }: IProps) {
+  const { t, lang } = useTranslationContext();
   const router = useRouter();
   const bg = authBgImage || '/images/auth-bg.jpg';
 
@@ -30,7 +32,7 @@ function ForgotPassword({
         router.push('/auth/login');
       }
       if (authUser && (!authUser.isCompletedProfile || !authUser.isApproved)) {
-        Router.push('/profile/update?requireUpdate=1');
+        Router.push(`/${lang}/profile/update?requireUpdate=1`);
       } else {
         router.push('/conversation');
       }

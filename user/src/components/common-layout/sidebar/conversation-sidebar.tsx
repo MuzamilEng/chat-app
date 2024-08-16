@@ -40,7 +40,7 @@ function ConversationSideBar({
   const searchRef = useRef<string>('');
   const [conversationList, setConversationList] = useState(conversations);
   const ditspatch = useDispatch();
-  const {t} = useTranslationContext()
+  const {t, lang} = useTranslationContext()
 
   const filter = () => {
     const newConversations = conversations.filter((con) => {
@@ -79,8 +79,8 @@ function ConversationSideBar({
 
           {conversationList.length > 0 ? (
             <ConversationList conversations={conversationList} authUser={authUser} />
-          ) : (<AlertDanger content="Kein Gespräch verfügbar" />)}
-          {!requesting && !success && <AlertDanger content="Kein Gespräch verfügbar" />}
+          ) : (<AlertDanger content={lang === 'en' ? "No conversation": "Kein Gespräch verfügbar"} />)}
+          {!requesting && !success && <AlertDanger content={lang === 'en' ? "No conversation": "Kein Gespräch verfügbar"} />}
         </div>
       </div>
     </aside>

@@ -1,4 +1,5 @@
 import { payoutAccountAccount } from '@services/payout.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import Router from 'next/router';
 import { useEffect, useState } from 'react';
@@ -18,6 +19,7 @@ interface FormValues {
 }
 
 function PayoutAccountForm() {
+  const { t, lang } = useTranslationContext();
   const [loading, setLoading] = useState(true);
   const [initialValues, setInitialValues] = useState<any>({
     type: 'bank'
@@ -27,31 +29,31 @@ function PayoutAccountForm() {
     type: Yup.string().required(),
     email: Yup.string().when('type', {
       is: (type) => type !== 'bank',
-      then: Yup.string().email('E-Mail-Format ist nicht korrekt').required('E-Mail wird benötigt!')
+      then: Yup.string().email( lang === 'en' ?  'Email format is not correct' : 'E-Mail-Format ist nicht korrekt').required( lang === 'en' ? 'Email is required' : 'E-Mail wird benötigt!')
     }),
     bankName: Yup.string().when('type', {
       is: 'bank',
-      then: Yup.string().required('Bankname wird benötigt!')
+      then: Yup.string().required( lang === 'en' ? 'Bankname is required' :  'Bankname wird benötigt!')
     }),
     bankAddress: Yup.string().when('type', {
       is: 'bank',
-      then: Yup.string().required('Bankadresse wird benötigt!')
+      then: Yup.string().required( lang === 'en' ? 'Bankadresse is required' : 'Bankadresse wird benötigt!')
     }),
     iban: Yup.string().when('type', {
       is: 'bank',
-      then: Yup.string().required('IBAN wird benötigt!')
+      then: Yup.string().required( lang === 'en' ? 'IBAN is required' :  'IBAN wird benötigt!')
     }),
     swift: Yup.string().when('type', {
       is: 'bank',
-      then: Yup.string().required('SWIFT/BIC wird benötigt!')
+      then: Yup.string().required( lang === 'en' ? 'SWIFT/BIC is required' : 'SWIFT/BIC wird benötigt!')
     }),
     beneficiaryName: Yup.string().when('type', {
       is: 'bank',
-      then: Yup.string().required('Name des Begünstigten wird benötigt!')
+      then: Yup.string().required( lang === 'en' ? 'Name of beneficiary is required' : 'Name des Begünstigten wird benötigt!')
     }),
     beneficiaryAddress: Yup.string().when('type', {
       is: 'bank',
-      then: Yup.string().required('Adresse des Begünstigten wird benötigt!')
+      then: Yup.string().required( lang === 'en' ? 'Address of beneficiary is required' : 'Adresse des Begünstigten wird benötigt!')
     })
   });
 
@@ -72,7 +74,7 @@ function PayoutAccountForm() {
     } : { type, email };
 
     await payoutAccountAccount.update(data);
-    toast.success('Das Auszahlungskonto wurde aktualisiert!');
+    toast.success( lang === 'en' ? 'Payout account updated!' : 'Das Auszahlungskonto wurde aktualisiert!');
     setTimeout(() => {
       Router.push('/profile/payout-request', '/payout-request', { shallow: true });
     }, 1000);
@@ -120,11 +122,11 @@ function PayoutAccountForm() {
                     <div className="row">
                       <div className="col-md-12 col-12">
                         <Form.Group>
-                          <Form.Label>Zahlungssystem</Form.Label>
+                          <Form.Label>{lang === 'en' ? 'Payment system' : 'Zahlungssystem'}</Form.Label>
                           <Form.Control as="select" name="type" onChange={props.handleChange} onBlur={props.handleBlur} value={props.values.type}>
-                            <option value="bank">Überweisung</option>
-                            <option value="paypal">Paypal</option>
-                            <option value="paxum">Paxum</option>
+                            <option value="bank">{lang === 'en' ? 'Bank' : 'Überweisung' }</option>
+                            <option value="paypal">{lang === 'en' ? 'PayPal' : 'PayPal' }</option>
+                            <option value="paxum">{lang === 'en' ? 'Paxum' : 'Paxum' }</option>
                           </Form.Control>
                         </Form.Group>
                       </div>
@@ -152,7 +154,7 @@ function PayoutAccountForm() {
                               <Form.Label>Bank Name</Form.Label>
 
                               <FormControl
-                                placeholder="Geben Sie den Banknamen ein"
+                                placeholder={lang === 'en' ? 'Enter bank name' : 'Geben Sie den Namen der Bank ein'}
                                 className="input-type"
                                 name="bankName"
                                 value={props.values.bankName}
@@ -165,10 +167,10 @@ function PayoutAccountForm() {
                           </div>
                           <div className="col-md-6 col-12">
                             <Form.Group>
-                              <Form.Label>Bankadresse</Form.Label>
+                              <Form.Label>{lang === 'en' ? 'Bank Address' : 'Adresse der Bank' }</Form.Label>
 
                               <FormControl
-                                placeholder="Geben Sie die Bankadresse ein"
+                                placeholder={lang === 'en' ? 'Enter bank address' : 'Geben Sie die Adresse der Bank ein'}
                                 className="input-type"
                                 name="bankAddress"
                                 value={props.values.bankAddress}
@@ -200,7 +202,7 @@ function PayoutAccountForm() {
                               <Form.Label>SWIFT/BIC</Form.Label>
 
                               <FormControl
-                                placeholder="Geben Sie SWIFT/BIC ein"
+                                placeholder={lang === 'en' ? 'Enter SWIFT/BIC' : 'Geben Sie SWIFT/BIC ein'}
                                 className="input-type"
                                 name="swift"
                                 value={props.values.swift}
@@ -213,10 +215,10 @@ function PayoutAccountForm() {
                           </div>
                           <div className="col-md-6 col-12">
                             <Form.Group>
-                              <Form.Label>Name des Begünstigten</Form.Label>
+                              <Form.Label>{lang === 'en' ? 'Beneficiary Name' : 'Name des Begätigten' }</Form.Label>
 
                               <FormControl
-                                placeholder="Geben Sie den Namen des Begünstigten ein."
+                                placeholder={lang === 'en' ? 'Enter beneficiary name' : 'Geben Sie den Namen des Begätigten ein'}
                                 className="input-type"
                                 name="beneficiaryName"
                                 value={props.values.beneficiaryName}
@@ -229,10 +231,10 @@ function PayoutAccountForm() {
                           </div>
                           <div className="col-md-6 col-12">
                             <Form.Group>
-                              <Form.Label>Adresse des Begünstigten</Form.Label>
+                              <Form.Label>{lang === 'en' ? 'Beneficiary Address' : 'Adresse des Begünstigten' }</Form.Label>
 
                               <FormControl
-                                placeholder="Geben Sie die Adresse des Begünstigten ein."
+                                placeholder={lang === 'en' ? 'Enter beneficiary address' : 'Geben Sie die Adresse des Begätigten ein'}
                                 className="input-type"
                                 name="beneficiaryAddress"
                                 value={props.values.beneficiaryAddress}
@@ -249,10 +251,10 @@ function PayoutAccountForm() {
                   </div>
                   <div className="card-footer d-flex justify-content-end">
                     <Button className="mr-3" variant="outline-primary" onClick={() => Router.back()}>
-                    Abbrechen
+                    {lang === 'en' ? 'Cancel' : 'Abbrechen'}
                     </Button>
                     <Button type="submit" variant="primary" disabled={loading}>
-                      {loading ? 'Laden...' : 'Absenden'}
+                      {loading ?  lang === 'en' ? 'Laden...' : lang === 'en' ? 'Submit' : 'Absenden' : lang === 'en' ? 'Submit' : 'Absenden'}
                     </Button>
                   </div>
                 </form>

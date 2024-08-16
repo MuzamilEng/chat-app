@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import { Formik, FormikProps } from 'formik';
 import { useEffect, useState } from 'react';
 import {
@@ -38,6 +39,7 @@ function PayoutRequestModal({
   const [payoutAccount, setpayoutAccount] = useState(null);
   const [OTPForm, isOTPForm] = useState(false);
   const [token, setToken] = useState(0);
+  const { t, lang } = useTranslationContext();
 
   const distpatch = useDispatch();
 
@@ -54,7 +56,7 @@ function PayoutRequestModal({
       setpayoutAccount(resp.data.bankInfo);
     } catch (e) {
       const err = await e;
-      toast.error(err?.message || ' Das Laden des Auszahlungskontos ist fehlgeschlagen');
+      toast.error(err?.message ||  lang === 'en' ? 'Failed to load payout account' : ' Das Laden des Auszahlungskontos ist fehlgeschlagen');
     }
   };
 
@@ -77,19 +79,19 @@ function PayoutRequestModal({
 
   const onChangeValue = (value: any) => {
     if (!/^[0-9_-]*$/.test(value)) {
-      toast.error('Bitte geben Sie nur numerische Zeichen ein');
+      toast.error(lang === 'en' ? 'Please enter only numeric characters' : 'Bitte geben Sie nur numerische Zeichen ein');
     }
     setVerifyCode(value);
   };
 
   const getOTP = async (data: number) => {
     if (!payoutAccount) {
-      toast.error('Bitte geben Sie die Auszahlungskontoinformationen ein!');
+      toast.error( lang === 'en' ? 'Please enter payout account information' : 'Bitte geben Sie die Auszahlungskontoinformationen ein!');
     } else {
       await userService.getOTP().then(() => {
         setToken(data);
         isOTPForm(true);
-        toast.success('Bestätigungscode wurde gesendet!');
+        toast.success( lang === 'en' ? 'Verification code sent!' : 'Bestätigungscode wurde gesendet!');
       });
     }
   };
@@ -104,7 +106,7 @@ function PayoutRequestModal({
       // onHide={() => onCloseModal()}
     >
       <Modal.Header>
-        <h5 className="modal-title">Senden Sie eine Auszahlungsanfrage</h5>
+        <h5 className="modal-title">{lang === 'en' ? 'Send payout request' : 'Senden Sie eine Auszahlungsanfrage'}</h5>
         <Button className="fa fa-xmark" type="button" aria-label="Close" onClick={() => onCloseModal()} />
       </Modal.Header>
       <Formik
@@ -120,7 +122,7 @@ function PayoutRequestModal({
                   <Form.Group>
                     <Form.Label>Tokens</Form.Label>
                     <FormControl
-                      placeholder={`Mindestauszahlungsanforderung ${config?.minPayoutRequest || 1}, Verfügbare Tokens für Auszahlung ${authUser?.balance
+                      placeholder={lang === 'en' ? 'Enter number of tokens' : `Mindestauszahlungsanforderung ${config?.minPayoutRequest || 1}, Verfügbare Tokens für Auszahlung ${authUser?.balance
                       }`}
                       className="input-type"
                       name="token"
@@ -139,7 +141,7 @@ function PayoutRequestModal({
                 {OTPForm && (
                 <div className="col-md-6 col-12">
                   <Form.Group>
-                    <Form.Label>Die OTP wurde an Ihre E-Mail gesendet. Bitte geben Sie sie unten ein.</Form.Label>
+                    <Form.Label>{lang === 'en' ? ' OTP sent to your email address please enter it below ' : 'Die OTP wurde an Ihre E-Mail gesendet. Bitte geben Sie sie unten ein'}.</Form.Label>
                     <OtpInput
                     containerStyle="otp-container-custom"
                     inputStyle="otp-mini-custom"
@@ -157,7 +159,7 @@ function PayoutRequestModal({
             </Modal.Body>
             <Modal.Footer>
               <Button type="submit" variant="primary">
-              Absenden
+              {lang === 'en' ? 'Submit' : 'Absenden'}
               </Button>
             </Modal.Footer>
           </form>

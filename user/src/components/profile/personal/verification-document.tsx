@@ -33,22 +33,6 @@ interface FormValues {
   isExpired: boolean;
 }
 
-const schema = Yup.object().shape({
-  firstName: Yup.string().required('Vorname ist erforderlich'),
-  lastName: Yup.string().required('Nachname ist erforderlich'),
-  address: Yup.string().required('Adresse ist erforderlich'),
-  city: Yup.string(),
-  state: Yup.string(),
-  country: Yup.string().required('Land ist erforderlich'),
-  zipCode: Yup.string().required('Postleitzahl ist erforderlich'),
-  birthday: Yup.string().required('Geburtstag ist erforderlich'),  
-  twitter: Yup.string().notRequired(),
-  instagram: Yup.string().notRequired(),
-  number: Yup.string().notRequired(),
-  expiredDate: Yup.string().notRequired(),
-  isExpired: Yup.boolean(),
-  isConfirm: Yup.boolean()
-});
 
 class VerificationDocumentComponent extends Component<any, any> {
   constructor(props: any) {
@@ -63,7 +47,7 @@ class VerificationDocumentComponent extends Component<any, any> {
       holdingUrl: this.props.authUser.verificationDocument?.holdingUrl || '',
       countries: [],
       states: [],
-      cities: []
+      cities: [],
     };
   }
 
@@ -96,6 +80,17 @@ class VerificationDocumentComponent extends Component<any, any> {
       }
     );
   }
+
+
+  getLangFromUrl = () => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const lang = path.split('/')[1];
+      return lang && lang.length === 2 ? lang : 'en';
+    }
+    return 'en';
+  };
+  
 
   async getStateAndCity(country: string) {
     const countryCode = this.getCodeByCountry(country);
@@ -161,17 +156,36 @@ class VerificationDocumentComponent extends Component<any, any> {
 
   uploadPhoto(state: string, photoUrl: string, value: any) {
     this.setState({ [state]: true, [photoUrl]: value.data.url });
-    return toast.success('Foto erfolgreich hochgeladen!');
+    return toast.success( 'Foto erfolgreich hochgeladen!');
   }
 
   render() {
     const { verificationDocument } = this.props.authUser;
     const { countries, states, cities } = this.state;
+    const lang = this.getLangFromUrl();
+
     // eslint-disable-next-line no-nested-ternary
     const certText = this.state.type === 'ID' ? 'ID' : this.state.type === 'passport' ? 'Passport' : 'Driving Lisence';
     const { publicRuntimeConfig: config } = getConfig();
     const validateMaxBirhOfDay = moment().subtract(18, 'year').endOf('day').format('YYYY-MM-DD');
     const validateMinBirhOfDay = moment().subtract(100, 'year').endOf('day').format('YYYY-MM-DD');
+
+    const schema = Yup.object().shape({
+      firstName: Yup.string().required( lang === 'en' ? 'First Name is required' : 'Vorname ist erforderlich'),
+      lastName: Yup.string().required( lang === 'en' ? 'Last Name is required' : 'Nachname ist erforderlich'),
+      address: Yup.string().required( lang === 'en' ? 'Address is required' : 'Adresse ist erforderlich'),
+      city: Yup.string(),
+      state: Yup.string(),
+      country: Yup.string().required( lang === 'en' ? 'Country is required' : 'Land ist erforderlich'),
+      zipCode: Yup.string().required( lang === 'en' ? 'Zip Code is required' : 'Postleitzahl ist erforderlich'),
+      birthday: Yup.string().required( lang === 'en' ? 'Birthday is required' : 'Geburtstag ist erforderlich'),  
+      twitter: Yup.string().notRequired(),
+      instagram: Yup.string().notRequired(),
+      number: Yup.string().notRequired(),
+      expiredDate: Yup.string().notRequired(),
+      isExpired: Yup.boolean(),
+      isConfirm: Yup.boolean()
+    });
 
     return (
       <div>
@@ -204,7 +218,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                   <Col md={6} xs={12}>
                     <Form.Group>
                       <Form.Label>
-                      Vorname
+                      {lang === 'en' ? 'First Name' : 'Vorname'}
                         {' '}
                         <span className="text-required required-red">*</span>
                       </Form.Label>
@@ -213,7 +227,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         name="firstName"
                         className="form-control form-control-md"
                         type="text"
-                        placeholder="Geben Sie Ihren Vornamen ein"
+                        placeholder={lang === 'en' ? 'Please enter your first name.' : 'Bitte geben Sie Ihren Vornamen ein.'}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
                         value={props.values.firstName}
@@ -224,7 +238,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                   <Col md={6} xs={12}>
                     <Form.Group>
                       <Form.Label>
-                      Nachname
+                      {lang === 'en' ? 'Last Name' : 'Nachname'}
                         {' '}
                         <span className="text-required required-red">*</span>
                       </Form.Label>
@@ -233,7 +247,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         name="lastName"
                         className="form-control form-control-md"
                         type="text"
-                        placeholder="Bitte geben Sie Ihren Nachnamen ein."
+                        placeholder={lang === 'en' ? 'Please enter your last name.' : 'Bitte geben Sie Ihren Nachnamen ein.'}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
                         value={props.values.lastName}
@@ -244,7 +258,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                   <Col md={6} xs={12}>
                     <Form.Group>
                       <Form.Label>
-                      Geburtsdatum
+                      {lang === 'en' ? 'Birthday' : 'Geburtstag'}
                         {' '}
                         <span className="text-required required-red">*</span>
                       </Form.Label>
@@ -255,7 +269,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         type="date"
                         min={validateMinBirhOfDay}
                         max={validateMaxBirhOfDay}
-                        placeholder="Geben Sie Ihr Geburtsdatum ein."
+                        placeholder={lang === 'en' ? 'Please enter your birthday.' : 'Bitte geben Sie Ihr Geburtstag ein.'}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
                         value={props.values.birthday}
@@ -266,7 +280,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                   <Col md={12} xs={12}>
                     <Form.Group>
                       <Form.Label>
-                      Adresse
+                      {lang === 'en' ? 'Address' : 'Adresse'}
                         {' '}
                         <span className="text-required required-red">*</span>
                       </Form.Label>
@@ -302,7 +316,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         onBlur={props.handleBlur}
                         value={props.values.country}
                       >
-                        <option value="">Mein Land</option>
+                        <option value="">{lang === 'en' ? 'Your Country' : 'Mein Land'}</option>
                         {countries.length
                         && countries.map((i) => (
                           <option value={i.name} key={i.isoCode}>
@@ -315,7 +329,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                   </Col>
                   <Col md={4} xs={12}>
                     <Form.Group>
-                      <Form.Label>Staat</Form.Label>
+                      <Form.Label>{lang === 'en' ? 'State' : 'Staat'}</Form.Label>
                       <FormControl
                         isInvalid={props.touched.state && !!props.errors.state}
                         as="select"
@@ -326,7 +340,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         onBlur={props.handleBlur}
                         value={props.values.state}
                       >
-                        <option value="">Mein Staat</option>
+                        <option value="">{lang === 'en' ? 'Your State' : 'Mein Staat'}</option>
                         {states.length
                         && states.map((i, index) => (
                           <option value={i.name} key={`${i.name}_${index}` as any}>
@@ -340,7 +354,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                   <Col md={4} xs={12}>
                     <Form.Group>
                       <Form.Label>
-                      Stadt
+                      {lang === 'en' ? 'City' : 'Stadt'}
                         {' '}
                         <span className="text-required required-red">*</span>
                       </Form.Label>
@@ -354,7 +368,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         onBlur={props.handleBlur}
                         value={props.values.city}
                       >
-                        <option value="">Mein Stadt</option>
+                        <option value="">{lang === 'en' ? 'Your City' : 'Meine Stadt'}</option>
                         {cities.length
                         && cities.map((i, index) => (
                           <option value={i.name} key={`${i.name}_${index}` as any}>
@@ -368,7 +382,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                   <Col md={6} xs={12}>
                     <Form.Group>
                       <Form.Label>
-                      Postleitzahl
+                      {lang === 'en' ? 'Zip Code' : 'Postleitzahl'}
                         {' '}
                         <span className="text-required required-red">*</span>
                       </Form.Label>
@@ -378,7 +392,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         className="form-control form-control-md"
                         min="0"
                         type="number"
-                        placeholder="Geben Sie Ihre Postleitzahl ein."
+                        placeholder={lang === 'en' ? 'Please enter your zip code.' : 'Bitte geben Sie Ihre Postleitzahl ein.'}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
                         value={props.values.zipCode}
@@ -386,45 +400,17 @@ class VerificationDocumentComponent extends Component<any, any> {
                       <div className="invalid-feedback">{props.errors.zipCode}</div>
                     </Form.Group>
                   </Col>
-                  {/* <Col md={12} xs={12}>
-                  <Form.Group>
-                    <Form.Label>Twitter</Form.Label>
-                    <FormControl
-                      name="twitter"
-                      className="form-control form-control-md"
-                      type="text"
-                      placeholder="Type your twitter"
-                      onChange={props.handleChange}
-                      onBlur={props.handleBlur}
-                      value={props.values.twitter}
-                    />
-                  </Form.Group>
-                </Col> */}
-                  {/* <Col md={12} xs={12}>
-                  <Form.Group>
-                    <Form.Label>Instagram</Form.Label>
-                    <FormControl
-                      name="instagram"
-                      className="form-control form-control-md"
-                      type="text"
-                      placeholder="Type your instagram"
-                      onChange={props.handleChange}
-                      onBlur={props.handleBlur}
-                      value={props.values.instagram}
-                    />
-                  </Form.Group>
-                </Col> */}
                   <Col md={6} xs={12}>
                     <Form.Group>
-                      <Form.Label>Dokumenttyp</Form.Label>
+                      <Form.Label>{lang === 'en' ? 'Document Type' : 'Dokumententyp'}</Form.Label>
                       <FormControl
                         as="select"
                         value={this.state.type}
                         onChange={(e: any) => this.setState({ type: e.target.value })}
                       >
-                        <option value="ID">Identifikation</option>
-                        <option value="passport">Reisepass</option>
-                        <option value="driverCard">Führerschein</option>
+                        <option value="ID">{lang === 'en' ? 'Identification' : 'Identifikation'}</option>
+                        <option value="passport">{lang === 'en' ? 'Passport' : 'Reisepass'}</option>
+                        <option value="driverCard">{lang === 'en' ? 'Driver\'s License' : 'Fahrerschein'}</option>
                       </FormControl>
                     </Form.Group>
                   </Col>
@@ -434,7 +420,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                       <Form.Label>
                         {certText}
                         {' '}
-                        Nummer
+                        {lang === 'en' ? 'Number' : 'Nummer'}
                         <span className="text-required required-red"> *</span>
                       </Form.Label>
                       <FormControl
@@ -442,7 +428,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         className="form-control form-control-md"
                         type="number"
                         min="0"
-                        placeholder={`Geben Sie Ihre ${certText}-Nummer ein.`}
+                        placeholder={lang === 'en' ? 'Please enter your number.' : `Geben Sie Ihre ${certText}-Nummer ein.`}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
                         value={props.values.number}
@@ -454,7 +440,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                       <Form.Label>
                         {certText}
                         {' '}
-                        Ablaufdatum
+                        {lang === 'en' ? 'Expired Date' : 'Ablaufdatum'}
                         <span className="text-required required-red"> *</span>
                       </Form.Label>
                       <FormControl
@@ -494,9 +480,9 @@ class VerificationDocumentComponent extends Component<any, any> {
                   <Col md={12} xs={12}>
                     <Form.Group>
                       <Form.Label>
-                      Foto von
+                      {lang === 'en' ? 'Front Side' : 'Foto von'}
                         {' '}
-                        {certText !== 'ID' ? `Ihr ${certText}` : `Die Vorderseite Ihres ${certText}`}
+                        {certText !== 'ID' ? `Ihr ${certText}` : lang === 'en' ? ` ${certText}` :  `Die Vorderseite Ihres ${certText}`}
                         {' '}
                         <span className="text-required required-red">*</span>
                       </Form.Label>
@@ -532,7 +518,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                     <Col md={12} xs={12}>
                       <Form.Group>
                         <Form.Label>
-                        Foto von der Rückseite Ihres
+                        {lang === 'en' ? 'Back Side' : 'Foto von der Rückseite Ihres'}
                           {' '}
                           {certText}
                           {' '}
@@ -564,7 +550,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                   <Col md={12} xs={12}>
                     <Form.Group>
                       <Form.Label>
-                      Foto, auf dem Sie Ihr
+                      {lang === 'en' ? 'Holding Photo' : 'Foto, auf dem Sie Ihr'}
                         {' '}
                         {certText}
                         {' '}
@@ -597,7 +583,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         type="checkbox"
                         name="isConfirm"
                         id="isConfirm"
-                        label="Ich werde sexuell explizite / pornografische Inhalte veröffentlichen"
+                        label={lang === 'en' ? 'I will post sexually explicit/pornographic content' : 'Ich werde sexuell explizite / pornografische Inhalte veröffentlichen'}
                         onBlur={props.handleBlur}
                         onChange={props.handleChange}
                         checked={props.values.isConfirm}
@@ -607,7 +593,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                 </Row>
               </div>
               <Button variant="primary" type="submit">
-              Aktualisieren Sie das Verifizierungsdokument.
+              {lang === 'en' ? 'Update Verification Document' : 'Aktualisieren Sie das Verifizierungsdokument.'}
               </Button>
             </form>
           )}

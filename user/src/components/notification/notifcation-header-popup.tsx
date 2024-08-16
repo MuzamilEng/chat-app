@@ -1,5 +1,6 @@
 import { loadNotificationUnread, readAllNotifcations, readNotifcation } from '@redux/notification/actions';
 import { notificationService } from '@services/notification.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import Link from 'next/link';
 import Router from 'next/router';
 import { useEffect } from 'react';
@@ -13,6 +14,7 @@ export default function NotificationHeaderPopup() {
   const ids = useSelector((state: any) => state.notification.ids) as string[];
   const mapping = useSelector((state: any) => state.notification.mapping) as Record<string, INotification>;
   const take = 5;
+  const { t , lang} = useTranslationContext();
   const readAll = async () => {
     await notificationService.readAll();
     dispatch(readAllNotifcations());
@@ -22,7 +24,7 @@ export default function NotificationHeaderPopup() {
     await notificationService.read(id);
     dispatch(readNotifcation(id));
     dispatch(loadNotificationUnread({ take }));
-    Router.push('/earning');
+    Router.push(`/${lang}/earning`);
   };
 
   useEffect(() => {
@@ -32,8 +34,8 @@ export default function NotificationHeaderPopup() {
   return (
     <div>
       <div className="d-flex p-2">
-        <span>Kürzlich eingegangene Benachrichtigungen</span>
-        {ids.length > 0 && <a href="#" onClick={readAll} className="ml-auto">Als gelesen markieren</a>}
+        <span>{lang === 'de' ? 'Kürzlich eingegangene Benachrichtigungen' : 'Recent received notifications'}</span>
+        {ids.length > 0 && <a href="#" onClick={readAll} className="ml-auto">{lang === 'de' ? 'Alle als gelesen markieren' : 'Mark all as read'}</a>}
       </div>
       <ListGroup variant="flush">
         {ids?.length > 0 && ids.map((id) => (
@@ -55,11 +57,11 @@ export default function NotificationHeaderPopup() {
           </ListGroup.Item>
 
         ))}
-        {ids.length === 0 && <p className="minw-300 text-center">Es gibt keine neuen Benachrichtigungen!</p>}
+        {ids.length === 0 && <p className="minw-300 text-center">{lang === 'de' ? 'Es gibt keine neuen Benachrichtigungen!' : 'No new notifications'}</p>}
       </ListGroup>
 
       <div className="p-2 text-center">
-        <Link href="/notifications">Mehr lesen</Link>
+        <Link href="/notifications">{lang === 'de' ? 'Mehr lesen' : 'Read more'}</Link>
       </div>
     </div>
   );

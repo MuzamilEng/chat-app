@@ -28,7 +28,7 @@ function Register({
   const checkAuthUser = () => {
     if (authUser.isLoggedIn) {
       if (!authUser.isCompletedProfile || !authUser.isApproved) {
-        router.push('/profile/update?requireUpdate=1');
+        router.push(`/${lang}/profile/update?requireUpdate=1`);
         return;
       }
       router.push('/conversation');

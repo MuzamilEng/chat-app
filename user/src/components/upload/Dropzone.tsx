@@ -60,7 +60,18 @@ class Dropzone extends Component<any, any> {
     return array;
   }
 
+  getLangFromUrl = () => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const lang = path.split('/')[1];
+      return lang && lang.length === 2 ? lang : 'en';
+    }
+    return 'en';
+  };
+  
+
   render() {
+    const lang = this.getLangFromUrl();
     return (
       <div
         className="image-upload-wrap"
@@ -79,7 +90,7 @@ class Dropzone extends Component<any, any> {
           onChange={this.onFilesAdded}
         />
         <div className="drag-text">
-          <h3>Ziehen Sie eine Datei hierhin oder wählen Sie 'Bild hinzufügen'.</h3>
+          <h3>{lang === 'en' ? "Drag & Drop or click here" : "Ziehen Sie eine Datei hierhin oder wählen Sie 'Bild hinzufügen'."}</h3>
         </div>
       </div>
     );
