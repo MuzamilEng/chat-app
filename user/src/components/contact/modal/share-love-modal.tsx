@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'context/TranslationContext';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import {
   Button, Form, FormControl, Modal
@@ -17,6 +18,8 @@ function ShareLoveModal({
   onShare,
   onCancel = () => { }
 }: any) {
+
+  const {lang} = useTranslationContext()
   return (
     <Modal
       dialogClassName="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-dialog-zoom"
@@ -26,7 +29,7 @@ function ShareLoveModal({
     >
       <Modal.Header>
         <h5 className="modal-title" id="inviteUsersLabel">
-        Teilen Sie einen Tipp
+        {lang === "en" ? 'Share a Tip' : 'Teilen Sie einen Tipp'}
         </h5>
         <Button type="button" aria-label="Close" onClick={onCancel}>
           <i className="fa fa-xmark " />
@@ -74,7 +77,7 @@ function ShareLoveModal({
                 Close
               </button>
               <Button type="submit" className="btn btn-primary">
-              Teilen Sie einen Tipp
+              {lang === "en" ? 'Share a Tip' : "Teilen Sie einen Tipp"}
               </Button>
             </Modal.Footer>
           </form>

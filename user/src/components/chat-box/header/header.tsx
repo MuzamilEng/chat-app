@@ -2,6 +2,7 @@ import SendTipButton from '@components/contact/send-tip-button';
 import PageTitle from '@components/page-title';
 import { conversationService } from '@services/conversation.service';
 import classNames from 'classnames';
+import { useTranslationContext } from 'context/TranslationContext';
 import Router from 'next/router';
 import { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -53,6 +54,8 @@ function ChatHeader({
     selectedConversation.blockedIds.findIndex((blockedId) => blockedId === recipient._id) > -1
   );
 
+  const {lang} = useTranslationContext()
+
   const onMouseDown = (e: any) => {
     if (document.getElementById('action-selector')?.contains(e.target)) {
       // Clicked in box
@@ -84,17 +87,17 @@ function ChatHeader({
     try {
       await conversationService.block(conversationId, { blockedId });
       if (authUser?.type === 'model') {
-        toast.success('Du hast diesen Benutzer blockiert. Du wirst keine Nachrichten senden oder empfangen können.');
+        toast.success( lang === 'en' ? 'You have blocked this user. You will not be able to send or receive messages.' :  'Du hast diesen Benutzer blockiert. Du wirst keine Nachrichten senden oder empfangen können.');
       } else if (authUser?.type === 'user') {
-        toast.success('Du hast dieses Modell blockiert. Du wirst keine Nachrichten senden oder empfangen können.');
+        toast.success( lang === 'en' ? 'You have blocked this model. You will not be able to send or receive messages.' : 'Du hast dieses Modell blockiert. Du wirst keine Nachrichten senden oder empfangen können.');
       }
       dpBlockConversation({ conversationId, blockedId });
     } catch (e) {
       const error = await e;
       if (authUser?.type === 'model') {
-        toast.error(error?.message || 'Das Blockieren dieses Benutzers ist fehlgeschlagen!');
+        toast.error(error?.message || lang === 'en' ? 'The user could not be blocked.' : 'Das Blockieren dieses Benutzers ist fehlgeschlagen!');
       } else if (authUser?.type === 'user') {
-        toast.error(error?.message || 'Das Blockieren dieses Modells ist fehlgeschlagen!');
+        toast.error(error?.message || lang === 'en' ? 'The model could not be blocked.' : 'Das Blockieren dieses Modells ist fehlgeschlagen!');
       }
     }
   };
@@ -105,17 +108,17 @@ function ChatHeader({
     try {
       await conversationService.unBlock(conversationId, { blockedId });
       if (authUser?.type === 'model') {
-        toast.success('Du hast diesen Benutzer entsperrt.');
+        toast.success( lang === 'en' ? 'You have unblocked this user.' : 'Du hast diesen Benutzer entsperrt.');
       } else if (authUser?.type === 'user') {
-        toast.success('Du hast dieses Modell entsperrt.');
+        toast.success( lang === 'en' ? 'You have unblocked this model.' : 'Du hast dieses Modell entsperrt.');
       }
       dpUnBlockConversation({ conversationId, blockedId });
     } catch (e) {
       const error = await e;
       if (authUser?.type === 'model') {
-        toast.error(error?.message || 'Das Entsperren dieses Benutzers ist fehlgeschlagen!');
+        toast.error(error?.message || lang === 'en' ? 'The user could not be unblocked.' : 'Das Entsperren dieses Benutzers ist fehlgeschlagen!');
       } else if (authUser?.type === 'user') {
-        toast.error(error?.message || 'Das Entsperren dieses Modells ist fehlgeschlagen!');
+        toast.error(error?.message ||  lang === 'en' ? 'The model could not be unblocked.' : 'Das Entsperren dieses Modells ist fehlgeschlagen!');
       }
     }
   };
@@ -148,12 +151,12 @@ function ChatHeader({
   const deletedConversation = async (conversationId: string) => {
     try {
       const resp = await conversationService.delete(conversationId);
-      toast.success(resp.data.data.message || 'Das Löschen des Gesprächs war erfolgreich!');
+      toast.success(resp.data.data.message || lang === 'en' ? 'Conversation deleted successfully!' : 'Das Löschen des Gesprächs war erfolgreich!');
       dpDeleteConversation(conversationId);
       Router.push('/conversation');
     } catch (e) {
       const error = await e;
-      toast.error(error?.message || 'Das Löschen des Gesprächs ist fehlgeschlagen!');
+      toast.error(error?.message || lang === 'en' ? 'Failed to delete conversation!' : 'Das Löschen des Gesprächs ist fehlgeschlagen!');
     }
   };
 
@@ -251,7 +254,7 @@ function ChatHeader({
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     />
                   </svg>
-                  <span>Löschen</span>
+                  <span>{lang === 'en' ? 'Delete' : 'Löschen'}</span>
                 </a>
                 <a
                   aria-hidden
@@ -315,7 +318,7 @@ function ChatHeader({
                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                     />
                   </svg>
-                  <span>Suche</span>
+                  <span>{lang === 'de' ? 'Suche' : 'Search'}</span>
                 </a>
                 <a
                   aria-hidden
@@ -333,7 +336,7 @@ function ChatHeader({
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     />
                   </svg>
-                  <span>Löschen</span>
+                  <span>{lang === 'de' ? 'Löschen' : 'Delete'}</span>
                 </a>
                 <a
                   aria-hidden
@@ -371,7 +374,7 @@ function ChatHeader({
       {usingSearchBar && (
         <div className="text-center">
           <span aria-hidden className="badge badge-secondary" onClick={handleLoadAllMessage}>
-            <small>Alle Nachrichten</small>
+            <small>{lang === 'en' ? 'Load all messages' : 'Alle Nachrichten'}</small>
           </span>
         </div>
       )}

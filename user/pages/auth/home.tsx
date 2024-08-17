@@ -46,9 +46,9 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
         // router.push("/auth/login");
       }
       if (authUser && (!authUser.isCompletedProfile || !authUser.isApproved)) {
-        Router.push("/profile/update?requireUpdate=1");
+        Router.push(`/${lang}/profile/update?requireUpdate=1`);
       } else {
-        router.push("/conversation");
+        router.push(`/${lang}/conversation`);
       }
     }
   };
@@ -100,7 +100,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
 
   const handlechatclick = () => {
     if (authUser) {
-      router.push("/models");
+      router.push(`/${lang}/models`);
     } else {
       setIsModalOpen(true);
     }
@@ -166,7 +166,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
   const handleByCoinsClick = (value) => {
     if (value === true) {
       if (authUser) {
-        router.push("/tokens");
+        router.push(`/${lang}/tokens`);
       } else {
         setIsModalOpen(true);
       }
@@ -175,7 +175,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
   const handleByfavoritesClick = (value) => {
     if (value === true) {
       if (authUser) {
-        router.push("/favorites");
+        router.push(`/${lang}/favorites`);
       } else {
         setIsModalOpen(true);
       }
@@ -184,7 +184,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
   const handlemodelsClick = (value) => {
     if (value === true) {
       if (authUser) {
-        router.push("/models");
+        router.push(`/${lang}/models`);
       } else {
         setIsModalOpen(true);
       }
@@ -193,7 +193,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
   const handleconversationClick = (value) => {
     if (value === true) {
       if (authUser) {
-        router.push("/conversation");
+        router.push(`/${lang}/conversation`);
       } else {
         setIsModalOpen(true);
       }
@@ -232,10 +232,10 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
                     value={selectedGender}
                     onChange={(e) => setSelectedGender(e.target.value)}
                   >
-                    <option value="">Alle</option>
-                    <option value="male">Männlich</option>
-                    <option value="female">Weiblich</option>
-                    <option value="transgender">Transsexuelle</option>
+                    <option value="">{lang === 'en' ? 'All' : 'Alle'}</option>
+                    <option value="male">{lang === 'en' ? 'Male' : 'Maennlich'}</option>
+                    <option value="female">{lang === 'en' ? 'Female' : 'Weiblich'}</option>
+                    <option value="transgender">{lang === 'en' ? 'Transgender' : 'Transsexuelle'}</option>
                   </select>
                 </div>
 
@@ -253,8 +253,8 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
                       }
                     }}
                   >
-                     <option value="county">Dein Land</option>
-                    <option value="">Alle Land</option>
+                     <option value="county">{lang === 'en' ? 'Country' : 'Dein Land'}</option>
+                    <option value="">{lang === 'en' ? 'All countries' : 'Alle Land'}</option>
                    
                   </select>
                 </div>

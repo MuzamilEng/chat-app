@@ -18,7 +18,7 @@ const ConversationSideBar = dynamic(() => import('src/components/common-layout/s
 function ConversationHomePage({
   authUser
 }: PropsFromRedux) {
-  const {t} = useTranslationContext()
+  const {t, lang} = useTranslationContext()
 
   return (
     <>
@@ -60,7 +60,7 @@ function ConversationHomePage({
                 <p className="text-muted">
                {t?.conversationMsg}
                   {' '}
-                  <a onClick={() => Router.push('/models')}>“Alle Modelle”</a>
+                  <a onClick={() => Router.push('/models')}>{lang === 'en' ? 'All Models' : 'Alle Modelle'}</a>
                   {' '}
                   oben.
                 </p>

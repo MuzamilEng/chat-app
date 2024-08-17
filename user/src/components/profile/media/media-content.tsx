@@ -1,5 +1,6 @@
 import Loading from '@components/common-layout/loading/loading';
 import { sellItemService } from '@services/sell-item.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import { useEffect, useState } from 'react';
 import {
   Button,
@@ -34,6 +35,7 @@ function MediaContent({
   const [pendingVideoItems, setPendingVideoItems] = useState([]);
   const [pendingVideoFolders, setPendingVideoFolders] = useState([])
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const {lang} = useTranslationContext()
 
 
   const getSellItemPhoto = async () => {
@@ -45,7 +47,7 @@ function MediaContent({
       setTotalPhoto(resp.data?.folders?.length);
     } catch (e) {
       const err = await e;
-      toast.error(err?.message || 'Das Laden meines Verkaufsartikelfotos ist fehlgeschlagen');
+      toast.error(err?.message || lang === 'en' ? 'Failed to load my sell item photos' : 'Das Laden meines Verkaufsartikelfotos ist fehlgeschlagen');
     } finally {
       setLoading(false);
     }
@@ -59,7 +61,7 @@ function MediaContent({
       setTotalPhoto(resp.data?.folders?.length);
     } catch (e) {
       const err = await e;
-      toast.error(err?.message || 'Das Laden meines Verkaufsartikelfotos ist fehlgeschlagen');
+      toast.error(err?.message || lang === 'en' ? 'Failed to load my sell item photos' : 'Das Laden meines Verkaufsartikelfotos ist fehlgeschlagen');
     } finally {
       setLoading(false);
     }
@@ -73,7 +75,7 @@ function MediaContent({
       setTotalVideo(resp.data?.folders?.length);
     } catch (e) {
       const err = await e;
-      toast.error(err?.message || 'Das Laden meines Verkaufsartikelfotos ist fehlgeschlagen');
+      toast.error(err?.message || lang === 'en' ? 'Failed to load my sell item photos' : 'Das Laden meines Verkaufsartikelfotos ist fehlgeschlagen');
     } finally {
       setLoading(false);
     }
@@ -88,7 +90,7 @@ function MediaContent({
       setTotalVideo(resp.data?.folders?.length);
     } catch (e) {
       const err = await e;
-      toast.error(err?.message || 'Das Laden meines Verkaufsartikelvideos ist fehlgeschlagen.');
+      toast.error(err?.message || lang === 'en' ? 'Failed to load my sell item videos' : 'Das Laden meines Verkaufsartikelvideos ist fehlgeschlagen.');
     } finally {
       setLoading(false);
     }
@@ -99,44 +101,44 @@ function MediaContent({
       try {
         await sellItemService.updateSellItem(data.id, data.data);
         getSellItemPhoto();
-        toast.success('Das Aktualisieren des Artikelfotos war erfolgreich');
+        toast.success( lang === 'en' ? 'Photo updated successfully' : 'Das Aktualisieren des Artikelfotos war erfolgreich');
       } catch (e) {
         const error = await e;
-        toast.success(error?.message || 'Das Aktualisieren des Artikelfotos ist fehlgeschlagen.');
+        toast.success(error?.message || lang === 'en' ? 'Failed to update photo' : 'Das Aktualisieren des Artikelfotos ist fehlgeschlagen.');
       }
     }
     if (type === 'video') {
       try {
         await sellItemService.updateSellItem(data.id, data.data);
-        toast.success('Das Aktualisieren des Artikelvideos war erfolgreich.');
+        toast.success( lang === 'en' ? 'Video updated successfully' : 'Das Aktualisieren des Artikelvideos war erfolgreich.');
         getSellItemVideo();
       } catch (e) {
         const error = await e;
-        toast.success(error?.message || 'Das Aktualisieren des Artikelvideos ist fehlgeschlagen');
+        toast.success(error?.message || lang === 'en' ? 'Failed to update video' : 'Das Aktualisieren des Artikelvideos ist fehlgeschlagen');
       }
     }
   };
 
   const handleRemove = async (itemId: string, key: string) => {
-    if (window.confirm('Sind Sie sicher, dass Sie diesen Artikel löschen möchten?')) {
+    if (window.confirm( lang === 'en' ? 'Are you sure you want to delete this item?' : 'Sind Sie sicher, dass Sie diesen Artikel löschen möchten?')) {
       if (key === 'photo') {
         try {
           await sellItemService.removeSellItem(itemId);
           getSellItemPhoto();
-          toast.success('Das Entfernen des Artikelfotos war erfolgreich.');
+          toast.success( lang === 'en' ? 'Photo deleted successfully' : 'Das Entfernen des Artikelfotos war erfolgreich.');
         } catch (e) {
           const error = await e;
-          toast.success(error?.message || 'Das Entfernen des Artikelfotos ist fehlgeschlagen');
+          toast.success(error?.message || lang === 'en' ? 'Failed to delete photo' : 'Das Entfernen des Artikelfotos ist fehlgeschlagen');
         }
       }
       if (key === 'video') {
         try {
           await sellItemService.removeSellItem(itemId);
-          toast.success('Das Entfernen des Artikelvideos war erfolgreich.');
+          toast.success( lang === 'en' ? 'Video deleted successfully' : 'Das Entfernen des Artikelvideos war erfolgreich.');
           getSellItemVideo();
         } catch (e) {
           const error = await e;
-          toast.success(error?.message || 'Das Entfernen des Artikelvideos ist fehlgeschlagen.');
+          toast.success(error?.message || lang === 'en' ? 'Failed to delete video' : 'Das Entfernen des Artikelvideos ist fehlgeschlagen.');
         }
       }
     }
@@ -221,7 +223,7 @@ function MediaContent({
                   <Col xs={12} sm={6} md={4} lg={4} key={item._id + index} data-toggle="tooltip" title={item.name} >
                     <div className="image-box mt-1 mb-1 active">
                       <img alt="media_thumb_photo" src={item?.media?.thumbUrl} onError={(e) => (e.currentTarget.src = defaultImg)} />
-                      <h5> <i className="far fa-eye" /> Vorschau</h5>
+                      <h5> <i className="far fa-eye" /> {lang === 'en' ? 'View' : 'Vorschau'}</h5>
                       <a className="edit" onClick={() => handleOpenModalUpdate(item, 'photo')}> <i className="fas fa-pencil-alt" /> </a>
                       <a className="remove" onClick={() => handleRemove(item._id, 'photo')}> <i className="fas fa-trash" /></a>
                       <a href="#" className="popup" role="button" onClick={() => handleOpenMedia(item)} ></a>
@@ -234,7 +236,7 @@ function MediaContent({
           </article>
         ))}
     </Row>
-  ) : ( <p className="text-alert-danger">Sie haben kein Foto verfügbar!</p>)}
+  ) : ( <p className="text-alert-danger">{lang === 'en' ? 'No photos available' : 'Sie haben kein Foto verfügbar!'}</p>)}
   {itemsPhoto?.length > 0 && totalPhoto > 0 &&
     totalPhoto > take && (
       <MainPaginate  currentPage={pagePhoto} pageTotal={totalPhoto} pageNumber={take} setPage={setPagePhoto}/>
@@ -470,7 +472,7 @@ function MediaContent({
         ))}
     </Row>
   ) : (
-    <p className="text-alert-danger">Sie haben kein Foto verfügbar!</p>
+    <p className="text-alert-danger">{lang === 'de' ? 'Keine Photos verfügbar' : 'No photos available'}!</p>
   )}
   {itemsPhoto?.length > 0 &&
     totalPhoto > 0 &&
@@ -556,7 +558,7 @@ function MediaContent({
                                 }
                               />
                               <h5>
-                                <i className="far fa-eye" /> Vorschau
+                                <i className="far fa-eye" /> {lang === 'en' ? 'View' : 'Vorschau'}
                               </h5>
                               <a
                                 className="edit"
@@ -587,7 +589,7 @@ function MediaContent({
                 ))}
             </Row>
           ) : (
-            <p className="text-alert-danger">Sie haben kein Video verfügbar!</p>
+            <p className="text-alert-danger">{lang === 'de' ? 'Keine Videos verfügbar' : 'No videos available'}!</p>
           )}
           {itemsVideo?.length > 0 &&
             totalVideo > 0 &&

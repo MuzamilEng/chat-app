@@ -34,7 +34,7 @@ function ForgotPassword({
       if (authUser && (!authUser.isCompletedProfile || !authUser.isApproved)) {
         Router.push(`/${lang}/profile/update?requireUpdate=1`);
       } else {
-        router.push('/conversation');
+        router.push(`/${lang}/conversation`);
       }
     }
   };
@@ -68,17 +68,17 @@ function ForgotPassword({
               <a href="/" className="header-logo-mobile">
                 <img src={transparentLogo} alt="Logo" width="327" />
               </a>
-              <h3 className="text-center text-uppercase">Passwort vergessen</h3>
+              <h3 className="text-center text-uppercase">{lang === 'en' ? 'Forgot Password' : 'Passwort vergessen'}</h3>
               <hr />
               <div className="xchat-form">
                 <ForgotPasswordForm />
               </div>
               <div className="text-center">
                 <p>
-                Kein Benutzerkonto vorhanden?
+                {lang === 'en' ? 'Don\'t have an account?' : 'Kein Benutzerkonto vorhanden?'}
                   <Link legacyBehavior href="/auth/register" as="/register" key="register">
                     <a className="switcher-text2 inline-text">
-                    Registrieren
+                    {lang === 'en' ? 'Register' : 'Registrieren'}
                     </a>
                   </Link>
                 </p>

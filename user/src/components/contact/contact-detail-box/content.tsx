@@ -1,3 +1,5 @@
+import { useTranslationContext } from "context/TranslationContext";
+
 interface IProps {
   contact: any;
 }
@@ -22,13 +24,14 @@ function ContactContent({ contact }: IProps) {
 
     return addr;
   };
+  const {lang} = useTranslationContext()
   return (
     <div className="card">
       <ul className="list-group list-group-flush">
         <li className="list-group-item">
           <div className="media align-items-center">
             <div className="media-body">
-              <p className="small text-muted mb-0">Biografie</p>
+              <p className="small text-muted mb-0">{lang === 'en' ? 'Biography' : 'Biografie'}</p>
               <p className="mb-0">{contact?.bio}</p>
             </div>
             <svg
@@ -52,7 +55,7 @@ function ContactContent({ contact }: IProps) {
         <li className="list-group-item">
           <div className="media align-items-center">
             <div className="media-body">
-              <p className="small text-muted mb-0">Geschlecht</p>
+              <p className="small text-muted mb-0">{lang === 'en' ? 'Gender' : 'Geschlecht' }</p>
               <p className="mb-0">{contact?.gender}</p>
             </div>
             <svg
@@ -91,7 +94,7 @@ function ContactContent({ contact }: IProps) {
         <li className="list-group-item">
           <div className="media align-items-center">
             <div className="media-body">
-              <p className="small text-muted mb-0">Alter</p>
+              <p className="small text-muted mb-0">{lang === 'en' ? 'Age' : 'Alter'}</p>
               <p className="mb-0">{contact?.age}</p>
             </div>
             <svg className="text-muted hw-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -104,22 +107,6 @@ function ContactContent({ contact }: IProps) {
             </svg>
           </div>
         </li>
-        {/* <li className="list-group-item">
-          <div className="media align-items-center">
-            <div className="media-body">
-              <p className="small text-muted mb-0">Adresse</p>
-              <p className="mb-0">{address()}</p>
-            </div>
-            <svg className="text-muted hw-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-          </div>
-        </li> */}
       </ul>
     </div>
   );

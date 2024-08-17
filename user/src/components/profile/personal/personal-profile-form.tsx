@@ -160,7 +160,7 @@ class PersonalProfileForm extends Component<any, any> {
                           className="form-control form-control-md"
                           type="text"
                           id="username"
-                          placeholder=" Geben Sie Ihre Benutzernamen ein"
+                          placeholder={lang === 'en' ? 'Enter your name' : 'Geben Sie Ihren Namen ein'}
                           onChange={props.handleChange}
                           onBlur={props.handleBlur}
                           value={props.values.username}
@@ -177,7 +177,7 @@ class PersonalProfileForm extends Component<any, any> {
                           name="email"
                           className="form-control form-control-md"
                           type="email"
-                          placeholder="Geben Sie Ihre E-Mail Adresse ein"
+                          placeholder={lang === 'en' ? 'Enter your email' : 'Geben Sie Ihre E-Mail Adresse ein'}
                           onChange={props.handleChange}
                           onBlur={props.handleBlur}
                           value={props.values.email}

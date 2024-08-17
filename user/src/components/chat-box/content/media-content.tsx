@@ -1,5 +1,6 @@
 import { purchaseItem } from '@redux/purchase-item/actions';
 import { mediaService } from '@services/media.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import { useEffect, useState } from 'react';
 import { NumericFormat } from 'react-number-format';
 import { useDispatch } from 'react-redux';
@@ -21,6 +22,7 @@ function MediaContent({ items, type, sender, download = true, messageLength }: I
   const dispatch = useDispatch();
   const [userType, setUserType] = useState('');
   const [mediaItems, setMediaItems] = useState(items);
+  const {lang} = useTranslationContext()
 
   const handleDownloadFile = async (mediaId: string, item: any) => {
     if((item.sellItemId && item.isPurchased === true) || (item.sellItemId === false)){
@@ -32,11 +34,11 @@ function MediaContent({ items, type, sender, download = true, messageLength }: I
         a.click();
       } catch (e) {
         const error = await e;
-        toast.error(error?.message || 'Datei konnte nicht heruntergeladen werden!');
+        toast.error(error?.message || lang === 'en' ? 'File could not be downloaded' : 'Datei konnte nicht heruntergeladen werden!');
       }
     } 
      else{
-      toast.error('Sie sind nicht berechtigt, diese Inhalte zu erwerben.');
+      toast.error( lang === 'en' ? 'You are not allowed to download this file' : 'Sie sind nicht berechtigt, diese Inhalte zu erwerben.');
     }
   };
 
@@ -46,8 +48,8 @@ function MediaContent({ items, type, sender, download = true, messageLength }: I
 
   const handlePurchase = (item: any) => {
     if (authUser.type === 'model') {
-      toast.error('Es tut uns leid. Nur Benutzer können Premium-Inhalte erwerben.');
-    } else if (window.confirm('Sind Sie sicher, dass Sie dieses Element kaufen möchten?')) {
+      toast.error( lang === 'en' ? 'Only users can purchase premium content.' : 'Es tut uns leid. Nur Benutzer können Premium-Inhalte erwerben.');
+    } else if (window.confirm( lang === 'en' ? 'Are you sure you want to buy this item?' : 'Sind Sie sicher, dass Sie dieses Element kaufen möchten?')) {
       dispatch(purchaseItem({ sellItemId: item.sellItemId }))
       const updatedItems = mediaItems.map(mediaItem => {
         if (mediaItem._id === item._id) {
@@ -99,7 +101,7 @@ function MediaContent({ items, type, sender, download = true, messageLength }: I
                     <span>
                       <i className="far fa-eye" />
                       {' '}
-                      Vorschau
+                      {lang === 'en' ? 'View' : 'Vorschau'}
                     </span>
                   ) : (
                     <span>
@@ -114,7 +116,7 @@ function MediaContent({ items, type, sender, download = true, messageLength }: I
                   className="btn btn-primary pointer"
                   onClick={() => handlePurchase(item)}
                 >
-                  Jetzt kaufen
+                  {lang === 'en' ? 'Buy now' : 'Jetzt kaufen'}
                 </a>}
                 <div className="overlay" />
               </div>

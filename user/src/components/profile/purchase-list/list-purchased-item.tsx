@@ -1,5 +1,6 @@
 import Loading from '@components/common-layout/loading/loading';
 import { purchaseItemService } from '@services/purchase-item.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import { useEffect, useState } from 'react';
 import {
   Col, Row, Tab, Tabs
@@ -22,7 +23,7 @@ function ListPurchasedItems({
   const [pageVideo, setPageVideo] = useState(1);
   const [loading, setLoading] = useState(false);
   const take = 9;
-
+ const {lang} = useTranslationContext()
   const getPurchasedItemPhoto = async () => {
     try {
       setLoading(true);
@@ -31,7 +32,7 @@ function ListPurchasedItems({
       setTotalPhoto(resp.data.count);
     } catch (e) {
       const err = await e;
-      toast.error(err?.message || 'Das Laden meines gekauften Artikel-Fotos ist fehlgeschlagen!');
+      toast.error(err?.message || lang === 'en' ? 'Failed to load purchased item photos' : 'Das Laden meines gekauften Artikel-Fotos ist fehlgeschlagen!');
     } finally {
       setLoading(false);
     }
@@ -45,7 +46,7 @@ function ListPurchasedItems({
       setTotalVideo(resp.data.count);
     } catch (e) {
       const err = await e;
-      toast.error(err?.message || 'Das Laden meines gekauften Artikelvideos ist fehlgeschlagen!');
+      toast.error(err?.message || lang === 'en' ? 'Failed to load purchased item videos' : 'Das Laden meines gekauften Artikelvideos ist fehlgeschlagen!');
     } finally {
       setLoading(false);
     }
@@ -57,25 +58,25 @@ function ListPurchasedItems({
   };
 
   const deletePurchasedItem = async (itemId: string, key: string) => {
-    if (!window.confirm('Möchten Sie diesen Artikel löschen?')) return;
+    if (!window.confirm( key === 'photo' ? 'Möchten Sie dieses Foto löschen?' : 'Möchten Sie diesen Artikel löschen?')) return;
     if (key === 'photo') {
       try {
         await purchaseItemService.deleteItem(itemId);
         getPurchasedItemPhoto();
-        toast.success('Artikelfoto erfolgreich entfernt.');
+        toast.success( lang === 'en' ? 'Photo deleted successfully' : 'Artikelfoto erfolgreich entfernt.');
       } catch (e) {
         const error = await e;
-        toast.success(error?.message || 'Entfernen des Artikelfotos fehlgeschlagen.');
+        toast.success(error?.message || lang === 'en' ? 'Failed to delete photo' : 'Entfernen des Artikelfotos fehlgeschlagen.');
       }
     }
     if (key === 'video') {
       try {
         await purchaseItemService.deleteItem(itemId);
-        toast.success('Artikelvideo erfolgreich entfernt.');
+        toast.success( lang === 'en' ? 'Video deleted successfully' : 'Artikelvideo erfolgreich entfernt.');
         getPurchasedItemVideo();
       } catch (e) {
         const error = await e;
-        toast.success(error?.message || 'Entfernen des Artikelvideos fehlgeschlagen.');
+        toast.success(error?.message || lang === 'en' ? 'Failed to delete video' : 'Entfernen des Artikelvideos fehlgeschlagen.');
       }
     }
   };
@@ -117,14 +118,14 @@ function ListPurchasedItems({
                           <a href="#" className="popup preview-delete" role="button" onClick={(e) => handleView(e, item)}>
                             <i className="far fa-eye" />
                             {' '}
-                            Vorschau
+                            {lang === 'en' ? 'View' : 'Vorschau'}
                           </a>
                         </h5>
                         <h5>
                           <a href="#" className="popup preview-delete" role="button" onClick={() => deletePurchasedItem(item._id, 'photo')}>
                             <i className="far fa-trash-alt icon-delete-purchased-item" />
                             {' '}
-                            Löschen
+                            {lang === 'en' ? 'Delete' : 'Löschen'}
                           </a>
                         </h5>
                         <div className="overlay" />
@@ -135,7 +136,7 @@ function ListPurchasedItems({
                     </Col>
                   ))}
                 </Row>
-              ) : (<p className="text-alert-danger">Sie haben kein Foto des gekauften Artikels verfügbar!</p>)}
+              ) : (<p className="text-alert-danger">{lang === 'en' ? 'No photos found' : 'Sie haben kein Foto des gekauften Artikels verfügbar!'}</p>)}
             {itemsPhoto.length > 0 && totalPhoto > 0 && totalPhoto > take && <MainPaginate currentPage={pagePhoto} pageTotal={totalPhoto} pageNumber={take} setPage={setPagePhoto} />}
           </Tab>
           <Tab eventKey="video" title={`Films (${totalVideo})`}>
@@ -156,7 +157,7 @@ function ListPurchasedItems({
                           <a href="#" className="popup preview-delete" role="button" onClick={(e) => handleView(e, item)}>
                             <i className="far fa-eye" />
                             {' '}
-                            Vorschau
+                            {lang === 'en' ? 'View' : 'Vorschau'}
                           </a>
                         </h5>
                         <a className="edit" onClick={() => deletePurchasedItem(item._id, 'video')}>
@@ -171,7 +172,7 @@ function ListPurchasedItems({
                   ))}
                   {itemsVideo.length > 0 && totalVideo > 0 && totalVideo > take && <MainPaginate currentPage={pageVideo} pageTotal={totalVideo} pageNumber={take} setPage={setPageVideo} />}
                 </Row>
-              ) : (<p className="text-alert-danger">Sie haben kein Video des gekauften Artikels verfügbar!</p>)}
+              ) : (<p className="text-alert-danger">{lang === 'en' ? 'No videos found' : 'Sie haben keine Video-Lesezeichen verfügbar!'}</p>)}
             {itemsVideo.length > 0 && totalVideo > 0 && totalVideo > take && <MainPaginate currentPage={pageVideo} pageTotal={totalVideo} pageNumber={take} setPage={setPageVideo} />}
           </Tab>
         </Tabs>

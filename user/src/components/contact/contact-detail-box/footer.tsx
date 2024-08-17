@@ -1,4 +1,5 @@
 import { sellItemService } from '@services/sell-item.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import { useEffect, useState } from 'react';
 import {
   Col, Row, Tab, Tabs
@@ -48,6 +49,7 @@ function ContactFooter({
   const [videoFolders, setVideoFolders] = useState([]);
   const take = 8;
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const {lang} = useTranslationContext()
 
   const handleFolderClick = (folderId: string) => {
     setSelectedFolderId(folderId === selectedFolderId ? null : folderId);
@@ -93,8 +95,8 @@ function ContactFooter({
 
   const handlePurchase = (item: any) => {
     if (authUser.type === 'model') {
-      toast.error('Es tut uns leid. Nur Benutzer können Premium-Inhalte erwerben.');
-    } else if (window.confirm('Sind Sie sicher, dass Sie dieses Element kaufen möchten?')) {
+      toast.error( lang === 'en' ? 'Only users can purchase premium content.' : 'Es tut uns leid. Nur Benutzer können Premium-Inhalte erwerben.');
+    } else if (window.confirm( lang === 'en' ? 'Are you sure you want to buy this item?' : 'Sind Sie sicher, dass Sie dieses Element kaufen möchten?')) {
       dispatch(purchaseItem({ sellItemId: item._id }));
       loadSellItems();
     }
@@ -110,7 +112,7 @@ function ContactFooter({
   return (
     <div className="tab-box">
       <Tabs defaultActiveKey="photo" transition={false} id="tab-sell-item" onSelect={(key: any) => setType(key)}>
-      <Tab eventKey="photo" title="Fotos">
+      <Tab eventKey="photo" title={lang === 'en' ? 'Photos' : 'Fotos'}>
   {isLoading && <Loader />}
   {!isLoading && items && items.length > 0 && (
     <Row>
@@ -150,7 +152,7 @@ function ContactFooter({
                           <span>
                             <i className="far fa-eye" />
                             {' '}
-                            Vorschau
+                            {lang === 'en' ? 'Preview' : 'Vorschau'}
                           </span>
                         ) : (
                           <span>
@@ -165,7 +167,7 @@ function ContactFooter({
                         className="btn btn-primary pointer"
                         onClick={() => (isFriend ? handlePurchase(item) : toast.error('Bitte fügen Sie das Modell zu Ihren Favoriten hinzu, um den Artikel zu kaufen.'))}
                       >
-                        Jetzt kaufen
+                        {lang === 'en' ? 'Buy now' : 'Jetzt kaufen'}
                       </a>
                       <a
                         aria-hidden
@@ -183,7 +185,7 @@ function ContactFooter({
               ))
             ) : (
               <Col>
-                <p className="text-alert-danger">Sie haben kein Foto verfügbar!</p>
+                <p className="text-alert-danger">{lang === 'en' ? 'No photos found' : 'Keine Fotos gefunden'}</p>
               </Col>
             )
           )}
@@ -232,7 +234,7 @@ function ContactFooter({
                         <span>
                           <i className="far fa-eye" />
                           {' '}
-                          Vorschau
+                          {lang === 'en' ? 'Preview' : 'Vorschau'}
                         </span>
                       ) : (
                         <span>
@@ -247,7 +249,7 @@ function ContactFooter({
                       className="btn btn-primary pointer"
                       onClick={() => (isFriend ? handlePurchase(item) : toast.error('Bitte fügen Sie das Modell zu Ihren Favoriten hinzu, um den Artikel zu kaufen.'))}
                     >
-                      Jetzt kaufen
+                      {lang === 'en' ? 'Buy Now' : 'Jetzt kaufen'}
                     </a>
                     <a
                       aria-hidden
@@ -267,7 +269,7 @@ function ContactFooter({
             ))
           ) : (
             <Col>
-              <p className="text-alert-danger">Sie haben kein Video verfügbar!</p>
+              <p className="text-alert-danger">{lang === 'en' ? 'No videos are available' : 'Sie haben kein Video verfügbar!'}</p>
             </Col>
           )
         )}
@@ -281,12 +283,11 @@ function ContactFooter({
       </Tabs>
       {!isLoading && (!items || (items && items.length === 0)) && (
         <p className="text-alert-danger">
-          nein
+          {lang === 'en' ? 'no' : 'nein'}
           {' '}
           {type}
-          s
           {' '}
-          sind verfügbar!
+          {lang === 'en' ? 'are available' : 'sind verfügbar!'}
         </p>
       )}
       {total > 0 && total > take ? <MainPaginate currentPage={page} pageTotal={photoFolders.length} pageNumber={take} setPage={setPage} /> : null}

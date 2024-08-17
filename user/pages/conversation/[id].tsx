@@ -1,4 +1,5 @@
 import { conversationService } from '@services/conversation.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import dynamic from 'next/dynamic';
 import Router from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -53,6 +54,7 @@ function MessagePage({
   const [loading, setLoading] = useState(false);
   const take = 20;
   const chatRef = useRef<any>();
+  const { t, lang } = useTranslationContext();
 
   const fetchMessages = async () => {
     dispatch(loadMessage({ conversationId, query: { page, take } }));
@@ -64,7 +66,7 @@ function MessagePage({
       const resp = await conversationService.findOne(id);
       dispatch(setSelectedConversation(resp.data));
     } catch {
-      Router.push('/conversation');
+      Router.push(`/${lang}/conversation`);
     } finally {
       setLoading(false);
     }
@@ -75,7 +77,7 @@ function MessagePage({
       fetchMessages();
       getConversation(conversationId);
     } else {
-      Router.push('/conversation');
+      Router.push(`/${lang}/conversation`);
     }
   }, [conversationId]);
 
@@ -89,7 +91,7 @@ function MessagePage({
       }, 500);
     }
     if (!sendMessageStore.requesting && !sendMessageStore.success && sendMessageStore.error) {
-      toast.error(sendMessageStore.error?.data?.message || 'Senden der Nachricht fehlgeschlagen!');
+      toast.error(sendMessageStore.error?.data?.message || lang === 'en' ? 'Failed to send message!' : 'Senden der Nachricht fehlgeschlagen!');
       dispatch(removeSendMessgeStatus());
     }
   }, [sendMessageStore]);
