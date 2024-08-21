@@ -21,10 +21,10 @@ function ContactUsForm() {
 
   const _intervalCountdown = useRef(null);
   const schema = Yup.object().shape({
-    name: Yup.string().required('Name wird benötigt'),
+    name: Yup.string().required( lang === 'en' ? 'Name is required' : 'Name wird benötigt'),
     email: Yup.string()
-      .email('E-Mail-Format ist nicht korrekt')
-      .required('E-Mail wird benötigt')
+      .email( lang === 'en' ? 'E-Mail-Format is not correct' : 'E-Mail-Format ist nicht korrekt')
+      .required( lang === 'en' ? 'E-Mail is required' : 'E-Mail wird benötigt')
   });
   
   const coundown = () => {

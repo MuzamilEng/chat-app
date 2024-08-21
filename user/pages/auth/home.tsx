@@ -267,7 +267,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
                         className="form-control search border-right-0 transparent-bg pr-0"
                         name="username"
                         id="username"
-                        placeholder="Modellname eingeben"
+                        placeholder={lang === 'en' ? "Model name" : "Modellname eingeben"}
                         onChange={(e) => console.log(e.target.value)}
                       />
                       <div className="input-group-append">
