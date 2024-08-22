@@ -23,17 +23,6 @@ interface FormValues {
 
 const validatePassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-const schema = Yup.object().shape({
-  email: Yup.string().email('E-Mail-Format ist nicht korrekt').required('E-Mail wird benötigt'),
-  password: Yup.string()
-    .matches(
-      validatePassword,
-      'Passwort muss mindestens 8 Zeichen lang sein, mindestens 1 Zahl, 1 Großbuchstaben, 1 Kleinbuchstaben und 1 Sonderzeichen enthalten'
-    )
-    .required('Passwort wird benötigt'),
-  isKeepLogin: Yup.boolean().default(false)
-});
-
 
 const mapDispatch = {
   dispatchSetLogin: setLogin
@@ -50,6 +39,18 @@ function LoginForm({
   const [showPw, setShowPw] = useState(false);
   const router = useRouter();
   const { t , lang} = useTranslationContext();
+
+  const schema = Yup.object().shape({
+    email: Yup.string().email( lang === 'en' ? 'Email is not valid' : 'E-Mail-Format ist nicht korrekt').required( lang === 'en' ? 'Email is required' : 'E-Mail wird benötigt'),
+    password: Yup.string()
+      .matches(
+        validatePassword,
+        lang === 'en' ? 'Password must be at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character' :
+        'Passwort muss mindestens 8 Zeichen lang sein, mindestens 1 Zahl, 1 Großbuchstaben, 1 Kleinbuchstaben und 1 Sonderzeichen enthalten'
+      )
+      .required( lang === 'en' ? 'Password is required' : 'Passwort wird benötigt'),
+    isKeepLogin: Yup.boolean().default(false)
+  });
 
   const login = async (values) => {
     try {

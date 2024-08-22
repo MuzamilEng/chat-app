@@ -354,7 +354,7 @@ function MediaContent({
         ))}
     </Row>
   ) : (
-    <p className="text-alert-danger">Sie haben kein Video verfügbar!</p>
+    <p className="text-alert-danger">{lang === 'de' ? 'Keine Videos gefunden' : 'No videos found'}</p>
   )}
   {itemsVideo?.length > 0 &&
     totalVideo > 0 &&

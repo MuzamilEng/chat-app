@@ -122,7 +122,7 @@ function ListBookmarkedMessage() {
               changePage={(value) => onChangPage({ page: value.data })}
             />
           </Tab>
-          <Tab eventKey="photo" title="Fotos">
+          <Tab eventKey="photo" title={lang === 'en' ? 'Photos' : 'Fotos'}>
             {loading && <Loading />}
             {!loading && listBookmarked && listBookmarked.length > 0
               && (

@@ -54,7 +54,7 @@ function RegisterForm() {
     if (!isAgreeToS) {
       toast.error( lang === 'en' ? 'Please agree to our terms and conditions' : 'Bitte bestätigen Sie, ob Sie unseren Geschäftsbedingungen zustimmen.');
 
-    } else if (!isAgreeToPrivacyPolicy){
+    } else if (type === 'model' && !isAgreeToPrivacyPolicy){
       toast.error( lang === 'en' ? 'Please agree to our agreement' : 'Bitte bestätigen Sie, ob Sie unsere Nutzungsbedingungen zustimmen.');
     }
     else if (confirmPassword !== password) {
