@@ -314,7 +314,7 @@ function FormMedia() {
                 <div style={{ display: 'flex' , alignItems: 'center'}} className="flex">
                   <input style={{marginTop: '-9px'}} checked={isChecked}
                   onChange={handleCheckboxChange} className='' type="checkbox" name="confirm" id="confirm" />
-                  <p className='ml-2 mt-1'>{lang === 'de' ? 'Ich akzeptiere' : 'I accept'}</p>
+                  <p className='ml-2 mt-1'>{lang === 'de' ? 'Ich bin einverstanden' : 'I consent to upload sexual content and I understand that uploaded content is reviewed before publication .'}</p>
                 </div>
                   <Button
                     type="submit"
