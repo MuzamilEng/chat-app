@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { sellItemService } from '@services/sell-item.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import {
   Field, Formik, FormikHelpers, FormikProps
 } from 'formik';
@@ -20,17 +21,6 @@ interface FormValues {
   // folderName: string;
 }
 
-const schema = Yup.object().shape({
-  name: Yup.string()
-    .min(2, 'The name is too Short!')
-    .max(50, 'The name is too Long!')
-    .required('Name is Required'),
-  price: Yup.number().min(0).required('Price is Required'),
-  description: Yup.string().required('Description is Required'),
-  mediaType: Yup.string().required('Type is Required'),
-  free: Yup.boolean().required(),
-  // folderName: Yup.string().required('Folder Name is Required'),
-});
 
 function FormMedia() {
   const [fileUpload, setFileUpload] = useState(null);
@@ -45,7 +35,20 @@ function FormMedia() {
   const router = useRouter();
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState('');
-  const [newFolderName, setNewFolderName] = useState('');  
+  const [newFolderName, setNewFolderName] = useState('');
+  const {lang} = useTranslationContext();
+  
+  const schema = Yup.object().shape({
+    name: Yup.string()
+      .min(2, lang === 'de' ? 'Der Name ist zu kurz' : 'The name is too Short!')
+      .max(50, lang === 'de' ? 'Der Name ist zu lang' : 'The name is too Long!')
+      .required( lang === 'de' ? 'Name ist erforderlich' : 'Name is Required'),
+    price: Yup.number().min(0).required( lang === 'de' ? 'Preis ist erforderlich' : 'Price is Required'),
+    description: Yup.string().required( lang === 'de' ? 'Beschreibung ist erforderlich' : 'Description is Required'),
+    mediaType: Yup.string().required( lang === 'de' ? 'Typ ist erforderlich' : 'Type is Required'),
+    free: Yup.boolean().required(),
+    // folderName: Yup.string().required('Folder Name is Required'),
+  });
 
   const fetchFolders = async () => {
     const response = await sellItemService.getFolders();      
@@ -59,7 +62,7 @@ function FormMedia() {
   const createFolder = async () => {
     const folderExists = folders.some(folder => folder.name === newFolderName);
     if (folderExists) {
-      alert('Folder already exists. Try to create a new one.');
+      alert( lang === 'de' ? 'Ordner existiert bereits. Versuchen Sie es erneut' : 'Folder already exists. Try to create a new one.');
       return;
     }
     const response = await sellItemService.createFolder({ name: newFolderName });
@@ -96,11 +99,11 @@ function FormMedia() {
   };
   const upload = async (formValues) => {
     if (!isChecked) {
-      toast.error('Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
+      toast.error( lang === 'en' ? 'Please check the checkbox to continue.' : 'Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
       return;
     }
     if(!selectedFolder){
-      toast.error('Bitte wählen Sie einen Ordner aus.');
+      toast.error( lang === 'en' ? 'Please select a folder.' : 'Bitte wählen Sie einen Ordner aus.');
       return;
     }
     try {
@@ -109,12 +112,12 @@ function FormMedia() {
         ...formValues,
         mediaId, folderId: selectedFolder
       });
-      toast.success('Medieninhalt wurde erfolgreich hochgeladen. Bitte warten Sie auf die Genehmigung durch den Administrator.');
+      toast.success( lang === 'en' ? 'Media content has been successfully uploaded. Please wait for approval by the administrator.' : 'Medieninhalt wurde erfolgreich hochgeladen. Bitte warten Sie auf die Genehmigung durch den Administrator.');
       setTimeout(() => router.push('/profile/media-content'), 3000);
     } catch (e) {
       setDisabled(false);
       const err = await e;
-      toast.error(err?.data?.msg || err?.data?.message || err?.message || 'Ihr Medieninhalt konnte nicht hochgeladen werden.');
+      toast.error(err?.data?.msg || err?.data?.message || err?.message || lang === 'en' ? 'Media content could not be uploaded.' : 'Ihr Medieninhalt konnte nicht hochgeladen werden.');
     }
   };
 
@@ -146,7 +149,7 @@ function FormMedia() {
                   <div className="row">
                     <div className="col-md-12 col-12">
                       <Form.Group>
-                        <Form.Label>Wählen Sie den Typ aus.</Form.Label>
+                        <Form.Label>{lang === 'de' ? 'Wählen Sie den Typ aus.' : 'Please select the type.'} </Form.Label>
                         <Field
                           className="form-control form-control-md"
                           name="mediaType"
@@ -154,20 +157,20 @@ function FormMedia() {
                           value={props.values.mediaType}
                           onChange={(e) => onChangeType(e, props)}
                         >
-                          <option value="photo">Foto</option>
+                          <option value="photo">{lang === 'de' ? 'Foto' : 'Photo'}</option>
                           <option value="video">Video</option>
                         </Field>
                       </Form.Group>
                     </div>
                      <div className="col-md-6 col-12">
                       <Form.Group>
-                        <Form.Label>Ordnername</Form.Label>
+                        <Form.Label>{lang === 'de' ? 'Ordnername' : 'Folder Name'}</Form.Label>
                         <FormControl
                           type="text"
                           name="name"
                           id="name"
                           className="form-control form-control-md"
-                          placeholder="Bitte geben Sie den Namen ein."
+                          placeholder={lang === 'de' ? 'Bitte geben Sie den Namen ein' : 'Please enter the name'}
                           onChange={(e) => setNewFolderName(e.target.value)}
                           value={newFolderName}
                         />
@@ -180,13 +183,13 @@ function FormMedia() {
                     key="button-upload"
                     disabled={!fileUpload || disabled}
                     onClick={createFolder}>
-                    Ordner erstellen
+                    {lang === 'de' ? 'Ordner erstellen' : 'Create Folder'}
                   </Button>
                       </Form.Group>
                     </div>
               <div >
               <Form.Group>
-                        <Form.Label>Ordner auswählen</Form.Label>
+                        <Form.Label>{lang === 'de' ? 'Ordner auswählen' : 'Select Folder'}</Form.Label>
                         <Field
                           className="form-control form-control-md"
                           name="mediaType"
@@ -232,7 +235,7 @@ function FormMedia() {
                           name="name"
                           id="name"
                           className="form-control form-control-md"
-                          placeholder="Bitte geben Sie den Namen ein."
+                          placeholder={lang === 'de' ? 'Bitte geben Sie den Namen ein' : 'Please enter the name'}
                           onChange={props.handleChange}
                           value={props.values.name}
                         />
@@ -268,7 +271,7 @@ function FormMedia() {
 
                     <div className="col-md-6 col-12">
                       <Form.Group>
-                        <Form.Label>Beschreibung</Form.Label>
+                        <Form.Label>{lang === 'de' ? 'Beschreibung' : 'Description'}</Form.Label>
                         <FormControl
                           className="form-control"
                           isInvalid={
@@ -280,7 +283,7 @@ function FormMedia() {
                           rows={3}
                           name="description"
                           id="description"
-                          placeholder="Beschreibung"
+                          placeholder={lang === 'de' ? 'Bitte geben Sie eine Beschreibung ein.' : 'Please enter a description.'}
                           onChange={props.handleChange}
                           value={props.values.description}
                         />
@@ -311,7 +314,7 @@ function FormMedia() {
                 <div style={{ display: 'flex' , alignItems: 'center'}} className="flex">
                   <input style={{marginTop: '-9px'}} checked={isChecked}
                   onChange={handleCheckboxChange} className='' type="checkbox" name="confirm" id="confirm" />
-                  <p className='ml-2 mt-1'>Ich akzeptiere</p>
+                  <p className='ml-2 mt-1'>{lang === 'de' ? 'Ich akzeptiere' : 'I accept'}</p>
                 </div>
                   <Button
                     type="submit"
@@ -319,7 +322,7 @@ function FormMedia() {
                     key="button-upload"
                     disabled={!fileUpload || disabled}
                   >
-                    Eingeben
+                    {lang === 'de' ? 'Eingeben' : 'Submit'}
                   </Button>
                 </div>
               </form>
