@@ -25,6 +25,7 @@ interface FormValues {
 function FormMedia() {
   const [fileUpload, setFileUpload] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
+  const [isContentChecked, setIsContentChecked] = useState(false);
   const ENDPOINT: string = process.env.NEXT_PUBLIC_API_ENDPOINT || 'https://api.girls2dream.com/v1';
   const { publicRuntimeConfig: config } = getConfig();
   const [mediaId, setMediaId] = useState('');
@@ -97,9 +98,17 @@ function FormMedia() {
     const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
+
+  const handleCheckboxChange2 = () => {
+    setIsContentChecked(!isContentChecked);
+  };
   const upload = async (formValues) => {
     if (!isChecked) {
       toast.error( lang === 'en' ? 'Please check the checkbox to continue.' : 'Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
+      return;
+    }
+    if (!isContentChecked) {
+      toast.error( lang === 'en' ? 'Please check the 2nd checkbox to continue.' : 'Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
       return;
     }
     if(!selectedFolder){
@@ -310,13 +319,20 @@ function FormMedia() {
                     </div>
                   </div>
                 </div>
-                <div className="card-footer d-flex justify-content-between">
+                <div className="card-footer d-flex justify-content-between align-items-center">
+                <section>
                 <div style={{ display: 'flex' , alignItems: 'center'}} className="flex">
                   <input style={{marginTop: '-9px'}} checked={isChecked}
                   onChange={handleCheckboxChange} className='' type="checkbox" name="confirm" id="confirm" />
                   <p className='ml-2 mt-1'>{lang === 'de' ? 'Ich bin einverstanden' : 'I consent to upload sexual content and I understand that uploaded content is reviewed before publication .'}</p>
                 </div>
-                  <Button
+                <div style={{ display: 'flex' , alignItems: 'start'}} className="flex">
+                  <input style={{marginTop: '0.4vw'}} checked={isContentChecked}
+                  onChange={handleCheckboxChange2} className='' type="checkbox" name="confirm" id="confirm" />
+                  <p style={{width: '100%', maxWidth: '50vw'}} className='ml-2 mt-1'>{lang === 'de' ? 'Ich bin einverstanden' : 'Use of Your Comments, Photos, Videos and Digital Media: In accordance to our gerneral terms and conditons and by submitting and/or uploading data and files such as but not limited to; your story, comments, photos, videos, digital content of any means ( “Your Content” ) on our wall, website and domains, you are authorizing PMS to use, publish, and otherwise reproduce, modify, distribute and grant unlimited downloads to other users and members of Your Content with or without your name in perpetuity, worldwide in any and all PMS related media for any lawful purpose'}</p>
+                </div>
+                </section>
+                  <Button style={{ height: '2vw'}}
                     type="submit"
                     variant="primary"
                     key="button-upload"
