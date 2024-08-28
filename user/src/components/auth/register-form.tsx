@@ -2,7 +2,7 @@ import { useTranslationContext } from 'context/TranslationContext';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import dynamic from 'next/dynamic';
 import { useRef, useState } from 'react';
-import { Form, FormControl, Modal } from 'react-bootstrap';
+import { Button, Form, FormControl, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { authService } from 'src/services/auth.service';
 import * as Yup from 'yup';
@@ -29,6 +29,7 @@ function RegisterForm() {
   const [requesting, setRequesting] = useState(false);
   const [type, setType] = useState('user');
   const { t, lang } = useTranslationContext();
+  const [isContentChecked, setIsContentChecked] = useState(false);
 
   const schema = Yup.object().shape({
     username: Yup.string().required(lang === 'en' ? 'Username is required' : 'Benutzername ist erforderlich'),
@@ -47,6 +48,10 @@ function RegisterForm() {
     isAgreeToPrivacyPolicy: Yup.boolean().required(lang === 'en' ? 'Please accept the agreement contract' : 'Bitte bestätigen Sie die Nutzungsbedingungen.').default(false)
   });
 
+  const handleCheckboxChange2 = () => {
+    setIsContentChecked(!isContentChecked);
+  };
+
   const register = async (data: any) => {
     const {
       username, email, password, confirmPassword, isAgreeToS, isAgreeToPrivacyPolicy
@@ -54,7 +59,11 @@ function RegisterForm() {
     if (!isAgreeToS) {
       toast.error( lang === 'en' ? 'Please agree to our terms and conditions' : 'Bitte bestätigen Sie, ob Sie unseren Geschäftsbedingungen zustimmen.');
 
-    } else if (type === 'model' && !isAgreeToPrivacyPolicy){
+    } else if (type === 'model' && !isContentChecked) {
+      toast.error( lang === 'en' ? 'Please check the last checkbox to continue.' : 'Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
+      // return;
+    }
+     else if (type === 'model' && !isAgreeToPrivacyPolicy){
       toast.error( lang === 'en' ? 'Please agree to our agreement' : 'Bitte bestätigen Sie, ob Sie unsere Nutzungsbedingungen zustimmen.');
     }
     else if (confirmPassword !== password) {
@@ -230,6 +239,22 @@ function RegisterForm() {
         onChange={props.handleChange}
         onBlur={props.handleBlur}
       />
+
+           {type === 'model' && <div style={{marginTop: '1vw'}} className="card-footer d-flex justify-content-between align-items-center">
+                <div style={{ display: 'flex' , alignItems: 'start'}} className="flex">
+                  <input style={{marginTop: '0.4vw'}} checked={isContentChecked}
+                  onChange={handleCheckboxChange2} className='' type="checkbox" name="confirm" id="confirm" />
+                  <p style={{width: '100%', maxWidth: '60vw'}} className='ml-2 mt-1'>{lang === 'de' ? 'Ich bin einverstanden' : 'Use of Your Comments, Photos, Videos and Digital Media: In accordance to our gerneral terms and conditons and by submitting and/or uploading data and files such as but not limited to; your story, comments, photos, videos, digital content of any means ( “Your Content” ) on our wall, website and domains, you are authorizing PMS to use, publish, and otherwise reproduce, modify, distribute and grant unlimited downloads to other users and members of Your Content with or without your name in perpetuity, worldwide in any and all PMS related media for any lawful purpose'}</p>
+                </div>
+                  {/* <Button style={{ height: '2vw'}}
+                    type="submit"
+                    variant="primary"
+                    key="button-upload"
+                    // disabled={!}
+                  >
+                    {lang === 'de' ? 'Eingeben' : 'I accept'}
+                  </Button> */}
+                </div>}
 
     </Form.Group>
           <Form.Group className="form-group">
