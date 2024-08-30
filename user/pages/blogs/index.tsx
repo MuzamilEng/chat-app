@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { withAuth } from '@redux/withAuth';
 import { sellItemService } from '@services/sell-item.service';
+import { useTranslationContext } from 'context/TranslationContext';
 import {
   Field, Formik, FormikHelpers, FormikProps
 } from 'formik';
@@ -20,14 +21,6 @@ interface FormValues {
   // folderName: string;
 }
 
-const schema = Yup.object().shape({
-  name: Yup.string()
-    .min(2, 'The name is too Short!')
-    .max(50, 'The name is too Long!')
-    .required('Name is Required'),
-  description: Yup.string().required('Description is Required'),
-  mediaType: Yup.string().required('Type is Required'),
-});
 
 const mapStates = (state: any) => ({
   authUser: state.auth.authUser
@@ -46,6 +39,17 @@ function Blogs({ authUser }: PropsFromRedux) {
   const [url, setUrl] = useState(`${ENDPOINT}/media/photos`);
   const [disabled, setDisabled] = useState(false);
   const router = useRouter();
+  const {lang} = useTranslationContext()
+  
+  const schema = Yup.object().shape({
+    name: Yup.string()
+      .min(2, lang === 'en' ? 'The name is too Short!' : 'The name is too Short!')
+      .max(50, lang === 'en' ? 'The name is too Long!' : 'The name is too Long!')
+      .required( lang === 'en' ? 'Name is Required' : 'Name is Required'),
+    description: Yup.string().required('Description is Required'),
+    mediaType: Yup.string().required('Type is Required'),
+  });
+
 
   const onCompleteFile = (resp) => {
     setMediaId(resp.data.id);
@@ -57,7 +61,7 @@ function Blogs({ authUser }: PropsFromRedux) {
   };
   const upload = async (formValues) => {
     if (!isChecked) {
-      toast.error('Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
+      toast.error( lang === 'en' ? 'Please check the last checkbox to continue.' : 'Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
       return;
     }
     try {
@@ -66,12 +70,12 @@ function Blogs({ authUser }: PropsFromRedux) {
         ...formValues,
         mediaId,
       });
-      toast.success('Medieninhalt wurde erfolgreich hochgeladen. Bitte warten Sie auf die Genehmigung durch den Administrator.');
+      toast.success( lang === 'en' ? 'Media content was successfully uploaded. Please wait for approval by the administrator.' : 'Medieninhalt wurde erfolgreich hochgeladen. Bitte warten Sie auf die Genehmigung durch den Administrator.');
       setTimeout(() => router.push(`/blogs/allblogs/${authUser?._id}`), 3000);
     } catch (e) {
       setDisabled(false);
       const err = await e;
-      toast.error(err?.data?.msg || err?.data?.message || err?.message || 'Ihr Medieninhalt konnte nicht hochgeladen werden.');
+      toast.error(err?.data?.msg || err?.data?.message || err?.message || lang === 'en' ? 'Something went wrong!' : 'Ihr Medieninhalt konnte nicht hochgeladen werden.');
     }
   };
 
@@ -111,7 +115,7 @@ function Blogs({ authUser }: PropsFromRedux) {
                           name="name"
                           id="name"
                           className="form-control form-control-md"
-                          placeholder="Bitte geben Sie den Namen ein."
+                          placeholder={lang === 'en' ? 'Enter Name' : 'Bitte geben Sie den Namen ein.'}
                           onChange={props.handleChange}
                           value={props.values.name}
                         />
@@ -122,7 +126,7 @@ function Blogs({ authUser }: PropsFromRedux) {
                     </div>
                     <div className="col-md-6 col-12">
                       <Form.Group>
-                        <Form.Label>Beschreibung</Form.Label>
+                        <Form.Label>{lang === 'en' ? 'Description' : 'Beschreibung'}</Form.Label>
                         <FormControl
                           className="form-control"
                           isInvalid={
@@ -134,7 +138,7 @@ function Blogs({ authUser }: PropsFromRedux) {
                           rows={3}
                           name="description"
                           id="description"
-                          placeholder="Beschreibung"
+                          placeholder={lang === 'en' ? 'Enter Description' : 'Bitte geben Sie eine Beschreibung ein.'}
                           onChange={props.handleChange}
                           value={props.values.description}
                         />
@@ -165,7 +169,7 @@ function Blogs({ authUser }: PropsFromRedux) {
                 <div style={{ display: 'flex' , alignItems: 'center'}} className="flex">
                   <input style={{marginTop: '-9px'}} checked={isChecked}
                   onChange={handleCheckboxChange} className='' type="checkbox" name="confirm" id="confirm" />
-                  <p className='ml-2 mt-1'>Ich akzeptiere</p>
+                  <p className='ml-2 mt-1'>{lang === 'en' ? 'I accept' : 'Ich akzeptiere'}</p>
                 </div>
                   <Button
                     type="submit"
@@ -173,7 +177,7 @@ function Blogs({ authUser }: PropsFromRedux) {
                     key="button-upload"
                     disabled={!fileUpload || disabled}
                   >
-                    Eingeben
+                    {lang === 'en' ? 'Upload' : 'Eingeben'}
                   </Button>
                 </div>
               </form>
