@@ -347,6 +347,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
                           objectFit: "cover",
                           borderRadius: "11px",
                         }}
+                        onError={(e) => (e.currentTarget.src = "https://img.freepik.com/premium-photo/3d-bohemian-styled-woman_397139-28113.jpg?size=626&ext=jpg")}
                       />
                       <div
                         style={{
