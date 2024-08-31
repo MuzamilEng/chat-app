@@ -167,11 +167,12 @@ function Blogs({ authUser }: PropsFromRedux) {
                 </div>
                 <div className="card-footer d-flex justify-content-between">
                 <div style={{ display: 'flex' , alignItems: 'center'}} className="flex">
-                  <input style={{marginTop: '-9px'}} checked={isChecked}
+                  <input style={{marginTop: '-1.5vw'}} checked={isChecked}
                   onChange={handleCheckboxChange} className='' type="checkbox" name="confirm" id="confirm" />
-                  <p className='ml-2 mt-1'>{lang === 'en' ? 'I accept' : 'Ich akzeptiere'}</p>
+                  <p style={{width: '100%', maxWidth: '30vw'}} className='ml-2 mt-1'>{lang === 'en' ? 'I consent to upload sexual content and I understand that uploaded content is reviewed before publication ' :
+                   'Ich bin mit dem Hochladen von sexuellem Inhalt einverstanden und ich verstehe, dass hochgeladene Inhalte vor der Veroeffentlichung geprüft werden'}</p>
                 </div>
-                  <Button
+                  <Button style={{height: '2vw'}}
                     type="submit"
                     variant="primary"
                     key="button-upload"
