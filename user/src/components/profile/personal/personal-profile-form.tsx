@@ -281,7 +281,7 @@ class PersonalProfileForm extends Component<any, any> {
                           onBlur={props.handleBlur}
                           value={props.values.country}
                         >
-                          <option value="">Dein Land</option>
+                          <option value="">{lang === 'en' ? 'Country' : 'Land'}</option>
                           {countries.length
                               && countries.map((i) => (
                                 <option value={i.name} key={i.isoCode}>
@@ -304,7 +304,7 @@ class PersonalProfileForm extends Component<any, any> {
                           onBlur={props.handleBlur}
                           value={props.values.state}
                         >
-                          <option value="">Ihr Staat</option>
+                          <option value="">{lang === 'en' ? 'State' : 'Ihr Staat'}</option>
                           {states.length
                               && states.map((i, index) => (
                                 <option value={i.name} key={`${i.name}_${index}` as any}>
@@ -327,7 +327,7 @@ class PersonalProfileForm extends Component<any, any> {
                           onBlur={props.handleBlur}
                           value={props.values.city}
                         >
-                          <option value="">Ihr Stadt</option>
+                          <option value="">{lang === 'en' ? 'City' : 'Ihr Stadt'}</option>
                           {cities.length
                               && cities.map((i, index) => (
                                 <option value={i.name} key={`${i.name}_${index}` as any}>
