@@ -17,6 +17,7 @@ interface FormValues {
   confirmPassword: string;
   isAgreeToS: boolean;
   isAgreeToPrivacyPolicy: boolean;
+  isAgreeToImages: boolean;
 }
 
 const validatePassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -45,7 +46,8 @@ function RegisterForm() {
       .oneOf([Yup.ref('password')], lang === 'en' ? 'Password confirmation does not match' : 'Passwortbestätigung stimmt nicht mit Passwort überein')
       .required( lang === 'en' ? 'Password confirmation is required' : 'Passwortbestätigung wird benötigt'),
     isAgreeToS: Yup.boolean().default(false),
-    isAgreeToPrivacyPolicy: Yup.boolean().required(lang === 'en' ? 'Please accept the agreement contract' : 'Bitte bestätigen Sie die Nutzungsbedingungen.').default(false)
+    isAgreeToPrivacyPolicy: Yup.boolean().required(lang === 'en' ? 'Please accept the agreement contract' : 'Bitte bestätigen Sie die Nutzungsbedingungen.').default(false),
+    isAgreeToImages: Yup.boolean().required(lang === 'en' ? 'Please accept the medida showing agreement' : 'Bitte bestätigen Sie die Nutzungsbedingungen. ').default(false)
   });
 
   const handleCheckboxChange2 = () => {
@@ -54,7 +56,7 @@ function RegisterForm() {
 
   const register = async (data: any) => {
     const {
-      username, email, password, confirmPassword, isAgreeToS, isAgreeToPrivacyPolicy
+      username, email, password, confirmPassword, isAgreeToS, isAgreeToPrivacyPolicy, isAgreeToImages
     } = data;
     if (!isAgreeToS) {
       toast.error( lang === 'en' ? 'Please agree to our terms and conditions' : 'Bitte bestätigen Sie, ob Sie unseren Geschäftsbedingungen zustimmen.');
@@ -65,6 +67,9 @@ function RegisterForm() {
     }
      else if (type === 'model' && !isAgreeToPrivacyPolicy){
       toast.error( lang === 'en' ? 'Please agree to our agreement' : 'Bitte bestätigen Sie, ob Sie unsere Nutzungsbedingungen zustimmen.');
+    } else if (type === 'model' && !isAgreeToImages) {
+      toast.error( lang === 'en' ? 'Please check the 2nd last checkbox to continue.' : 'Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
+      // return;
     }
     else if (confirmPassword !== password) {
       toast.error( lang === 'en' ? 'Password confirmation does not match' : 'Passwortbestätigung ist falsch.');
@@ -91,7 +96,7 @@ function RegisterForm() {
     <Formik
       validationSchema={schema}
       initialValues={{
-        username: '', email: '', password: '', confirmPassword: '', isAgreeToS: false, isAgreeToPrivacyPolicy: false
+        username: '', email: '', password: '', confirmPassword: '', isAgreeToS: false, isAgreeToPrivacyPolicy: false, isAgreeToImages: false
       }}
       onSubmit={(values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
         setRequesting(true);
@@ -239,6 +244,26 @@ function RegisterForm() {
         onChange={props.handleChange}
         onBlur={props.handleBlur}
       />
+      {type === 'model' && (
+        <Form.Group className="mb-10 form-group">
+        <Form.Check
+          type="checkbox"
+          id="isAgreeToImages"
+          name="isAgreeToImages"
+          label={(
+            <>
+            {/* /posts/terms-and-conditions   link commented by muzi*/}
+              {lang === 'de' ? 'Ich habe die Geschäftsbedingungen gelesen und (bin damit einverstanden) ich bin damit einverstanden ' : 'I acknowledge and agree that my images will be used and displayed publicly on the website'}
+               {/* commented by muzi */}
+              {/*  <a href="#">Geschäftsbedingungen</a> zu */} 
+            </>
+          )}
+          checked={props.values.isAgreeToImages}
+          onChange={props.handleChange}
+          onBlur={props.handleBlur}
+        />
+      </Form.Group>
+      )}
 
            {type === 'model' && <div style={{marginTop: '1vw'}} className="card-footer d-flex justify-content-between align-items-center">
                 <div style={{ display: 'flex' , alignItems: 'start'}} className="flex">
@@ -246,17 +271,9 @@ function RegisterForm() {
                   onChange={handleCheckboxChange2} className='' type="checkbox" name="confirm" id="confirm" />
                   <p style={{width: '100%', maxWidth: '60vw'}} className='ml-2 mt-1'>{lang === 'de' ? 'Ich bin einverstanden' : 'Use of Your Comments, Photos, Videos and Digital Media: In accordance to our gerneral terms and conditons and by submitting and/or uploading data and files such as but not limited to; your story, comments, photos, videos, digital content of any means ( “Your Content” ) on our wall, website and domains, you are authorizing PMS to use, publish, and otherwise reproduce, modify, distribute and grant unlimited downloads to other users and members of Your Content with or without your name in perpetuity, worldwide in any and all PMS related media for any lawful purpose'}</p>
                 </div>
-                  {/* <Button style={{ height: '2vw'}}
-                    type="submit"
-                    variant="primary"
-                    key="button-upload"
-                    // disabled={!}
-                  >
-                    {lang === 'de' ? 'Eingeben' : 'I accept'}
-                  </Button> */}
                 </div>}
 
-    </Form.Group>
+          </Form.Group>
           <Form.Group className="form-group">
             <button type="submit" className="xchat-btn-fill" disabled={requesting}>
               {requesting ? <Loader /> : 'Register'}
