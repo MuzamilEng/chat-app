@@ -12,10 +12,10 @@ import { useTranslationContext } from 'context/TranslationContext';
 function PurchaseTokenList() {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {t} = useTranslationContext()
+  const {t, lang} = useTranslationContext()
 
   const purchasePackage = async (tokenPackage) => {
-    if (!window.confirm('Möchten Sie dieses Paket kaufen?')) {
+    if (!window.confirm( lang === 'en' ? 'Are you sure you want to buy this package?' : 'Möchten Sie dieses Paket kaufen?')) {
       return;
     }
 
@@ -86,7 +86,7 @@ function PurchaseTokenList() {
             <b className={classNames('text_name', styles.text_name)}>{item?.name}</b>
             <p className={classNames('text_description', styles.text_description)}>{item?.description}</p>
             <a onClick={() => purchasePackage(item)} className="btn px-4 py-2 text-white mt-4 btn-primary">
-            Jetzt kaufen
+            {lang === 'en' ? 'Buy Now' : 'Jetzt kaufen'}
             </a>
           </div>
         </div>
