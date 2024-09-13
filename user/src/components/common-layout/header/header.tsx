@@ -85,7 +85,7 @@ function Header({
     if (isLoggedIn) {
       getTotalUnreadmessage();
     } else {
-      Router.push('/');
+      // Router.push('/');
     }
   }, []);
 
@@ -124,6 +124,17 @@ function Header({
                   </span>
                 </p>
               ) }
+            </li>
+            <li className="nav-item" data-toggle="tooltip" title="Friends">
+              <a 
+                aria-hidden style={{ cursor: 'pointer', color: 'white', borderRadius: '0.2vw'}}
+                className={`nav-link custom-btn btn-chatroom ${activeRoute === 'friends' && 'active'}`}
+                onClick={() => onClickMenu(`/${lang}/friends`, `/${lang}/friends`)}
+              >
+                <i className="fa fa-users" />
+                {' '}
+                <span className="hide-mobile">{lang === 'en' ? 'Friends' : 'Freunde'}</span>
+              </a>
             </li>
             {authUser?.type === 'user'
               && (

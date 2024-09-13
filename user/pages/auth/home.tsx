@@ -320,7 +320,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
                    <div className="" style={{ margin: "auto" }}><Loader /></div>
                    ) : (
                    data?.items?.map((data, index) => (
-                 <Link href={`/${lang}/auth/login`} key={index} className="d-block"
+                 <div  key={index} className="d-block"
                  style={{ position: "relative", margin: "auto", }}
 
                  >
@@ -416,6 +416,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
                               zIndex: 1,
                             }}
                           >
+                            <Link href={`/${lang}/model/${data.username}`} >
                             <button
                               className="btn btn-primary btn-secondary"
                               type="button"
@@ -428,6 +429,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
                                 {t?.modelLists?.profile}
                               </span>
                             </button>
+                            </Link>
                           </div>
                         </div>
                       )}
@@ -471,7 +473,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
                       </div>
                     </div>
                   </div>
-                 </Link>
+                 </div>
                     ))
                )}
               </div>

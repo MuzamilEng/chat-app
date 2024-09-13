@@ -53,7 +53,9 @@ function UserMenu({
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <img alt="avatar_user" src={avatarUrl || '/images/user.jpg'} />
+          <img alt="avatar_user" src={avatarUrl || '/images/user.jpg'}
+          onError={(e) => e.currentTarget.src = 'https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg'}
+          />
         <div className="username hide-mobile">{username || ' N/A '}</div>
       </Dropdown.Toggle>
       <Dropdown.Menu className="dropdown-menu dropdown-menu-link dropdown-menu-profile" aria-labelledby="navbarDropdownMenuLink">
@@ -81,11 +83,18 @@ function UserMenu({
                 {formatNumber(balance)}
               </a>
             </Dropdown.Item>
+            
             <Dropdown.Item
           onClick={() => onClickMenu(`/${lang}/blogs/allblogs/${user._id}`, `/${lang}/blogs/allblogs/${user._id}`)}
           active={activeRoute === `/blogs/allblogs/${user._id}`}
         >
          {t?.dropdown?.blogs}
+        </Dropdown.Item>
+        <Dropdown.Item
+          onClick={() => onClickMenu(`/${lang}/profile/interests`, `/${lang}/profile/interests`)}
+          active={activeRoute === `/profile/interests`}
+        >
+         {lang === 'en' ? 'Interests': 'Interesses'}
         </Dropdown.Item>
             <Dropdown.Item
               onClick={() => onClickMenu('/profile/media-content', `/${lang}/media-content`)}

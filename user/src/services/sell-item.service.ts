@@ -14,7 +14,10 @@ class SellItemService extends APIRequest {
     return this.get(`/blogs/${userId}`);
   }
   
-
+// get profile video
+getProfileVidoe(id) {
+  return this.get(`/getProfileVideo/${id}`);
+}
   getBlogById(id) {
     return this.get(`/getBlogPost/${id}`);
   }
@@ -24,6 +27,11 @@ class SellItemService extends APIRequest {
   }
   getModelSellItems(data: IGetSellItem) {
     return this.get('/sell-items/model', data as any);
+  }
+
+  // default
+  getDefaultModelSellItems(data: IGetSellItem) {
+    return this.get('/default-sell-items/model', data as any);
   }
 
   getMySellItem(data: IGetSellItem) {
@@ -54,6 +62,32 @@ class SellItemService extends APIRequest {
     
     getFolderImages() {
       return this.get('/folder-images');
+    }
+
+    //     '/v1/getAllLikedVideos',
+
+    getAllLikedVideos() {
+      return this.get('/getAllLikedVideos');
+    }
+
+    updateLikes(data: any) {
+      return this.post('/update-likes', data);
+    }
+
+    sendFriendRequest(data: any) {
+      return this.post('/send-friend-request', data);
+    }
+
+    getAllFriendRequests(userId: string ) {
+      return this.get(`/friend-requests/${userId}`);
+    }
+
+    updateFriendRequest(data: any) {
+      return this.put('/update-friend-request', data);
+    }
+    // /v1/update-interests/:userId
+    updateInterests(data: any ) {
+      return this.put(`/update-interests`, data);
     }
 }
 

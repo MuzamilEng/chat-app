@@ -9,8 +9,11 @@ class UserService extends APIRequest {
 
   findByUsername(username) {
     return this.get(`/users/findByUsername/${username}`);
-  }
+  } 
 
+  defautltFindByUsername(username) {
+    return this.get(`/users/defautltFindByUsername/${username}`);
+  } 
   // todo - update get otp code
   getOTP() {
     return this.get('/users/otp/');

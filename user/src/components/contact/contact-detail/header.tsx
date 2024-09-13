@@ -9,31 +9,19 @@ import { toast } from 'react-toastify';
 import SendTipButton from '../send-tip-button';
 import Link from 'next/link';
 import { useTranslationContext } from 'context/TranslationContext';
-import { sellItemService } from '@services/sell-item.service';
 
 interface IProps {
   contact: any;
-  authUser: any;
 }
 
-const mapStates = (state: any) => ({
-  authUser: state.auth.authUser
-});
 
-const connetor = connect(mapStates);
 
 function ContactHeader({
-  authUser,
   contact
 }: IProps) {
   const router = useRouter();
   const {setModelId, lang} = useTranslationContext();
 
-  useEffect(() => {
-    if (authUser?.type === 'model') {
-      setModelId(contact?._id);
-    }
-  })
 
   // const isFriend = React.useRef<boolean>(contact.isFriend);
   const [isFriend, setIsFriend] = useState(contact?.isFriend);
@@ -50,9 +38,6 @@ function ContactHeader({
   };
 
   const addContact = async () => {
-    if (authUser?.type === 'model') {
-      toast.error('Es tut uns leid. Nur Benutzer können Modelle zu Favoriten hinzufügen.');
-    } else {
       try {
         await contactService.add({
           userId: contact._id
@@ -63,21 +48,8 @@ function ContactHeader({
         const err = await e;
         toast.error(err?.data?.message || 'Ein Fehler ist aufgetreten, bitte versuchen Sie es später erneut!');
       }
-    }
+    
   };
-
-  const sendRequest = async (friendId) => {
-    try {
-      await sellItemService.sendFriendRequest({
-        userId: authUser._id,
-        friendId: friendId
-      });
-      toast.success( lang === 'en' ? 'Request sent!' :  'Anfrage wurde gesendet!');
-    } catch (e) {
-      const err = await e;
-      toast.error(err?.data?.message ||  lang === 'en' ? 'Error while sending request' : 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut!');
-    }
-  }
 
   return (
     <div className="row">
@@ -104,16 +76,17 @@ function ContactHeader({
               </div>
             </div>
             <div className="avatar avatar-lg mb-3">
-              <img className="avatar-img" src={contact?.avatarUrl || '/images/user1.jpg'} alt="" />
+              <img className="avatar-img" src={contact?.avatarUrl || contact?.user?.avatarUrl || '/images/user1.jpg'} alt=""
+               onError={(e) => (e.currentTarget.src = "https://img.freepik.com/premium-photo/3d-bohemian-styled-woman_397139-28113.jpg?size=626&ext=jpg")}
+                        />
             </div>
 
             <div className="d-flex flex-column align-items-center">
-              <h5 className="mb-1">{contact?.username}</h5>
-              <div className="text-center">
-                {authUser?.type === 'user' && contact?.type === 'model' && <SendTipButton model={contact} />}
+              <h5 className="mb-1">{contact?.username || contact?.user?.username}</h5>
+              <div className="text-center" onClick={() => router.push(`/${lang}/auth/login`)} >
+                { <SendTipButton model={contact} />}
                 <ChatButton isFriend={isFriend} user={contact} />
-                {authUser?.type === 'user' && <Link className="btn btn-primary btn-sm" style={{marginLeft: '0.3vw'}} href={`/blogs/allblogs/${contact?._id}`}>Blogs</Link>}
-                {authUser?.type === 'user' && <button className="btn btn-primary btn-sm" style={{marginLeft: '0.3vw'}} onClick={() => sendRequest(contact?._id)} > {lang === 'de' ? 'Friend Request senden' : 'Friend Request'} </button>}
+                { <Link className="btn btn-primary btn-sm" href={`/${lang}/auth/login`}>Blogs</Link>}
               </div>
               <div>
                 (
@@ -131,7 +104,7 @@ function ContactHeader({
               className="btn btn-secondary btn-icon btn-minimal btn-sm text-muted"
               type="button"
               data-close=""
-              onClick={() => router.push(`/${lang}/models`)}
+              onClick={() => router.push(`/${lang}/auth/login`)}
             >
               <svg className="hw-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -149,4 +122,4 @@ function ContactHeader({
   );
 }
 
-export default connetor(ContactHeader);
+export default ContactHeader;

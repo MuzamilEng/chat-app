@@ -18,7 +18,15 @@ module.exports = (router) => {
     Middleware.Response.success('create')
   );
 
+// updateLikes
 
+router.post(
+  '/v1/update-likes',
+  Middleware.isAuthenticated,
+  sellItemController.updateLikes,
+  Middleware.Response.success('updateLikes')
+);
+// getLikedMedia
  
   /**
    * @apiGroup Sell Item
@@ -33,6 +41,13 @@ module.exports = (router) => {
     Middleware.hasRole('admin'),
     sellItemController.search,
     Middleware.Response.success('search')
+  );
+
+  router.get(
+    '/v1/getAllLikedVideos',
+    Middleware.isAuthenticated,
+    sellItemController.getLikedMedia,
+    Middleware.Response.success('getLikedMedia')
   );
 
   /**
@@ -55,6 +70,13 @@ module.exports = (router) => {
     Middleware.isAuthenticated,
     sellItemController.modelSellItems,
     Middleware.Response.success('modelSellItem')
+  );
+  // default-sell-items/model
+
+  router.get(
+    '/v1/default-sell-items/model',
+    sellItemController.modelDefaultSellItems,
+    Middleware.Response.success('modelDefaultSellItems')
   );
   /**
    * @apiGroup Sell Item
@@ -183,7 +205,56 @@ router.get(
   Middleware.Response.success('getBlogById')
 );
 
-router.get(
-  '/v1/test', sellItemController.test)
-};
+router.get('/v1/test', sellItemController.test)
 
+
+  // friend request controller
+  router.post(
+    '/v1/send-friend-request',
+    Middleware.isAuthenticated,
+    sellItemController.sendFriendRequest,
+    Middleware.Response.success('sendFriendRequest')
+  );
+  
+  
+  
+  router.get(
+    '/v1/friend-requests/:userId',
+    Middleware.isAuthenticated,
+    sellItemController.getAllFriendRequests,
+    Middleware.Response.success('getAllFriendRequests')
+  );
+  
+  
+  
+  router.put(
+    '/v1/update-friend-request',
+    Middleware.isAuthenticated,
+    sellItemController.updateFriendRequest,
+    Middleware.Response.success('updateFriendRequest')
+  );
+
+
+
+  // update interests
+  router.put(
+    '/v1/update-interests',
+    Middleware.isAuthenticated,
+    sellItemController.updateInterests,
+    Middleware.Response.success('updateInterests')
+  );
+
+
+
+  // get profile video
+  router.get(
+    '/v1/getProfileVideo/:userId',
+    Middleware.isAuthenticated,
+    sellItemController.getProfileVideo,
+    Middleware.Response.success('getProfileVideo')
+  );
+
+
+
+
+};

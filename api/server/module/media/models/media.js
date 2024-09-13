@@ -63,6 +63,15 @@ const schema = new Schema(
     meta: {
       type: Schema.Types.Mixed
     },
+    likeCount: { 
+      type: Number,
+      default: 0
+    },
+    likedBy: [{ 
+      type: Schema.Types.ObjectId, 
+      ref: 'User', 
+      default: [] 
+    }],
     createdAt: {
       type: Date
     },

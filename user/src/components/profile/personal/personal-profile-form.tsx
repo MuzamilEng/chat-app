@@ -1,3 +1,5 @@
+import Upload from '@components/upload/Upload';
+import { sellItemService } from '@services/sell-item.service';
 import { useTranslationContext } from 'context/TranslationContext';
 import { City, Country, State } from 'country-state-city';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
@@ -31,13 +33,15 @@ class PersonalProfileForm extends Component<any, any> {
       countries: [],
       states: [],
       cities: [],
-      lang: 'en' // Default language
+      lang: 'en', // Default language
+      profileVideoUrl : null
     };
   }
 
   componentDidMount() {
     const lang = this.getLangFromUrl(); // Extract lang from URL
     this.setState({ lang }, () => this.getCountry()); // Set the lang state and then fetch countries
+    this.getProfileVideo(); // Fetch the profile video on mount
   }
 
   componentDidUpdate(prevProps: any) {
@@ -87,12 +91,28 @@ class PersonalProfileForm extends Component<any, any> {
     return selectedCountry[0]?.isoCode;
   }
 
+  async getProfileVideo() {
+    try {
+      const res = await sellItemService.getProfileVidoe(this.props.authUser._id);
+      if (res?.data?.data?.fileUrl) {
+        this.setState({ profileVideoUrl: res.data?.data.fileUrl })
+      }
+    } catch (error) {
+      console.error('Error fetching profile video:', error);
+    }
+  }
+
+  onComplete = (res) => {
+    if (res?.data) {
+      this.getProfileVideo(); // Fetch the updated video after upload
+    }
+  };
+
   render() {
     const { authUser } = this.props;
     const { countries, states, cities } = this.state;
     const { t} = this.props;
     const lang = this.getLangFromUrl();
-
     const schema = Yup.object().shape({
       username: Yup.string()
         .matches(/^[a-zA-Z0-9]*$/, {
@@ -141,12 +161,30 @@ class PersonalProfileForm extends Component<any, any> {
               <form onSubmit={props.handleSubmit}>
                 <div className="card-body">
                   <Row>
-                    <Col md={12} xs={12}>
-                      <AvatarComponent
-                        avatarUrl={authUser.avatarUrl}
-                        onUploadAvatarComplete={this.props.setAvatar.bind(this)}
-                      />
-                    </Col>
+                  <Row>
+                  <Col>
+                    <AvatarComponent
+                      avatarUrl={authUser.avatarUrl}
+                      onUploadAvatarComplete={this.props.setAvatar.bind(this)}
+                    />
+                  </Col>
+                  <div className="mt-3">
+                      <video style={{ width: '15vw', height: '15vw', borderRadius: '2%', objectFit: 'cover' }} controls src={this.state.profileVideoUrl} />
+                    </div>
+                  <Col>
+                    <Upload
+                      key="upload"
+                      fileName='profile_video'
+                      onComplete={this.onComplete.bind(this)}
+                      url={`https://api.girls2dream.com/v1/media/videos`}
+                      isChecked={true}
+                      config={{
+                        multiple: false,
+                        accept: 'video/mp4'
+                      }}
+                    />
+                  </Col>
+                </Row>
                     <Col md={12} xs={12}>
                       <Form.Group>
                         <Form.Label>

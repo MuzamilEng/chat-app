@@ -1,40 +1,18 @@
-import { sellItemService } from "@services/sell-item.service";
 import { useTranslationContext } from "context/TranslationContext";
-import { useEffect, useState } from "react";
 
 interface IProps {
   contact: any;
 }
 function ContactContent({ contact }: IProps) {
   const {lang} = useTranslationContext()
-  const [profileVideoUrl, setProfileVideoUrl] = useState(null)
-
-  async function getProfileVideo() {
-    try {
-      const res = await sellItemService.getProfileVidoe(contact?._id);
-      if (res?.data?.data?.fileUrl) {
-        setProfileVideoUrl(res.data?.data.fileUrl)
-      }
-    } catch (error) {
-      console.error('Error fetching profile video:', error);
-    }
-  }
-
- useEffect(()=>{
-  getProfileVideo()
- }, [contact?._id])
-
   return (
     <div className="card">
       <ul className="list-group list-group-flush">
         <li className="list-group-item">
-          { !profileVideoUrl && <div className="mt-3">
-                      <video style={{ width: '40vw', height: '15vw', borderRadius: '2%', objectFit: 'cover' }} controls src={profileVideoUrl} />
-                    </div>}
-          <div className="media mt-3 align-items-center">
+          <div className="media align-items-center">
             <div className="media-body">
               <p className="small text-muted mb-0">{lang === 'en' ? 'Biography' : 'Biografie'}</p>
-              <p className="mb-0">{contact?.bio}</p>
+              <p className="mb-0">{contact?.bio || contact?.user?.bio}</p>
             </div>
             <svg
               className="text-muted hw-20"
@@ -58,7 +36,7 @@ function ContactContent({ contact }: IProps) {
           <div className="media align-items-center">
             <div className="media-body">
               <p className="small text-muted mb-0">{lang === 'en' ? 'Gender' : 'Geschlecht' }</p>
-              <p className="mb-0">{contact?.gender}</p>
+              <p className="mb-0">{contact?.gender || contact?.user?.gender}</p>
             </div>
             <svg
               className="text-muted hw-20"
@@ -97,7 +75,7 @@ function ContactContent({ contact }: IProps) {
           <div className="media align-items-center">
             <div className="media-body">
               <p className="small text-muted mb-0">{lang === 'en' ? 'Age' : 'Alter'}</p>
-              <p className="mb-0">{contact?.age}</p>
+              <p className="mb-0">{contact?.age || contact?.user?.age}</p>
             </div>
             <svg className="text-muted hw-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path

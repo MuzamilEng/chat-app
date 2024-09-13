@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const Schema = require('mongoose').Schema;
 
 const authTypes = ['github', 'twitter', 'facebook', 'google', 'phone'];
 
@@ -21,6 +22,33 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String
+    },
+    friendRequests: [
+      {
+        friendId: {
+          type: String,
+        },
+        senderId: {
+          type: String,
+        },
+        status: {
+          type: String,
+          enum: ['pending', 'accepted', 'rejected'],
+          default: 'pending',
+        }
+      }
+    ],
+    languages: {
+      type: Array,
+      default: []
+    },
+    interests: {
+      type: Array,
+      default: []
+    },
+    hobbies: {
+      type: Array,
+      default: []
     },
     provider: {
       type: String,

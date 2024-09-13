@@ -54,6 +54,7 @@
     "redux-saga": "^1.2.1",
     "reselect": "^4.1.7",
     "socket.io-client": "^4.5.4",
+    "string-similarity": "^4.0.4",
     "suneditor": "^2.44.3",
     "yup": "^0.32.11"
   },

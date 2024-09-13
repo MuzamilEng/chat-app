@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { sendMessage } from 'src/redux/message/actions';
 import { conversationService, mediaService, sellItemService } from 'src/services';
 import { useTranslationContext } from 'context/TranslationContext';
+import stringSimilarity from 'string-similarity';
 
 interface IProps {
   selectedConversation: any;
@@ -21,9 +22,7 @@ interface IProps {
 interface FormValues {
   message: string;
 }
-const schema = Yup.object().shape({
-  message: Yup.string().required('Nachricht erforderlich.')
-});
+
 
 function ChatFooter({
   selectedConversation,
@@ -34,14 +33,34 @@ function ChatFooter({
   haveBeenBlockStatus
 }: IProps) {
   const [sendFileBox, openSendFileBox] = useState(false);
-  const {t} = useTranslationContext()
+  const {t, lang} = useTranslationContext()
   const [isBlocked, setIsBlocked] = useState(false);
-  const [placeHolder, setPlaceHolder] = useState('Bitte geben Sie Ihre Nachricht hier ein...');
+  const [placeHolder, setPlaceHolder] = useState( lang === 'en' ? 'Enter message here...' : 'Bitte geben Sie Ihre Nachricht hier ein...');
   const [showDialog, setShowDialog] = useState(false);
   const [price, setPrice] = useState(0);
   const [isFree, setIsFree] = useState(true);
   const [userType, setUserType] = useState('');
   const [tokenPerMessage, setTokenPerMessage] = useState(0);
+
+  const schema = Yup.object().shape({
+    message: Yup.string().required( lang === 'en' ? 'Message is required.' : 'Nachricht erforderlich.')
+  });
+
+  const [recentMessage, setRecentMessage] = useState('');
+const [messageSimilarityThreshold, setMessageSimilarityThreshold] = useState(0.8); // Similarity threshold (0-1)
+
+// Function to save the recent message to localStorage and state
+const saveRecentMessage = (message) => {
+  setRecentMessage(message);
+  localStorage.setItem('recentMessage', message); // Persist to localStorage
+};
+
+// Function to check similarity (using a basic string comparison for demonstration)
+const isMessageSimilar = (message1, message2) => {
+  const similarity = stringSimilarity.compareTwoStrings(message1, message2);
+  return similarity > 0.8; // Adjust threshold as needed
+};
+
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('userType'));
@@ -78,19 +97,19 @@ function ChatFooter({
     if (receiver.isBlocked || !receiver.isActive) {
       // user is deactivate
       setIsBlocked(true);
-      setPlaceHolder('Dieser Benutzer ist nicht verfügbar.');
+      setPlaceHolder( lang === 'en' ? 'This user is not available.' : 'Dieser Benutzer ist nicht verfügbar.');
     } else if (selectedConversation.blockedIds && selectedConversation.blockedIds.length > 0) {
       setIsBlocked(true);
       if (selectedConversation.blockedIds.findIndex((blockedId) => blockedId === authUser._id) > -1) {
         // auth user have been blocked
-        setPlaceHolder('Du bist blockiert.');
+        setPlaceHolder( lang === 'en' ? 'You have been blocked.' : 'Du bist blockiert.');
       } else {
         // auth user is blocking receiver user
-        setPlaceHolder('Du hast diesen Benutzer blockiert.');
+        setPlaceHolder( lang === 'en' ? 'You are blocking this user.' : 'Du hast diesen Benutzer blockiert.');
       }
     } else {
       setIsBlocked(false);
-      setPlaceHolder('Bitte geben Sie Ihre Nachricht hier ein...');
+      setPlaceHolder( lang === 'en' ? 'Enter message here...' : 'Bitte geben Sie Ihre Nachricht hier ein...');
     }
   }, [selectedConversation, haveBeenBlockStatus, blockConvStore, unBlockConvStore]);
 
@@ -101,7 +120,7 @@ function ChatFooter({
   }
   const handleSendMedia = async (dataFiles: any) => {
     if (dataFiles && dataFiles.length > 3) {
-      return toast.error('Kann nicht mehr als 3 Medien auf einmal senden');
+      return toast.error( lang === 'en' ? 'Cannot send more than 3 files at once.' : 'Kann nicht mehr als 3 Medien auf einmal senden');
     } 
     if (userType === 'model' && !isFree && price <= 0) {
       return toast.error('Please enter a price greater than 0.');
@@ -142,7 +161,7 @@ function ChatFooter({
   };
   const handleSendFile = async (files: any) => {
     if (files && files.length > 1) {
-      return toast.error('Kann nicht mehr als eine Datei auf einmal senden');
+      return toast.error( lang === 'en' ? 'Cannot send more than one file at once.' : 'Kann nicht mehr als eine Datei auf einmal senden');
     }
     return Promise.all(
       files.map((file) => {
@@ -163,24 +182,31 @@ function ChatFooter({
     });
   };
 
-  const handleSendMessage = (message: any) => {
+  const handleSendMessage = (message) => {
     if (/\S/.test(message)) {
-      const data = {
-        text: message,
-        conversationId: selectedConversation._id,
-        type: 'text'
-      };
-      sendMess(data);
-    }
-    if(authUser.type === 'user' || userType === 'user'){
-      const data = {
-        userId: authUser._id,
-        tokenPerMessage: tokenPerMessage
-
-      };
-       conversationService.deductBalance(data);
+      if (isMessageSimilar(message, recentMessage)) {
+        toast.info('Try something different or a new message!');
+      } else {
+        // Proceed with sending the message
+        const data = {
+          text: message,
+          conversationId: selectedConversation._id,
+          type: 'text'
+        };
+        sendMess(data);
+        saveRecentMessage(message); // Update recent message
+      }
+  
+      if (authUser.type === 'user' || userType === 'user') {
+        const data = {
+          userId: authUser._id,
+          tokenPerMessage: tokenPerMessage
+        };
+        conversationService.deductBalance(data);
+      }
     }
   };
+  
 
 
   return (
@@ -305,7 +331,7 @@ function ChatFooter({
                 id="message"
                 placeholder={t?.messagePlaceHolder || placeHolder}
                 disabled={isBlocked}
-                onChange={props.handleChange.bind(this)}
+                onChange={props.handleChange}
               />
               <Button className="btn btn-primary btn-icon send-icon rounded-circle text-light mb-1" type="submit">
                 <svg className="hw-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -315,6 +341,7 @@ function ChatFooter({
             </form>
           )}
         </Formik>
+
       </div>
       {/* <!-- Chat Footer End--> */}
     </>

@@ -193,7 +193,9 @@ function ChatContent({ items = null, authUser = null }: IProps) {
               <div className="message-options">
                 {authUser._id !== message.senderId && (
                 <div className="avatar avatar-sm">
-                  <img alt="" src={message.sender.avatarUrl || '/images/user1.jpg'} />
+                  <img alt="" src={message.sender.avatarUrl || '/images/user1.jpg'} 
+                   onError={(e) => e.currentTarget.src = 'https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg'}
+                   />
                 </div>
                 )}
                 <span className="message-date">{renderDate(message.createdAt)}</span>

@@ -32,18 +32,7 @@ exports.create = async (req, res, next) => {
       return next(PopulateResponse.notFound({ message: 'Conversation not found' }));
     }
 
-    if (req.user.type !== 'model') {
-      // check spam message
-      const checkSpam = await Service.Message.checkSpam({
-        conversationId: validate.value.conversationId,
-        userId: _.find(conversation.memberIds, (member) => member.toString() !== req.user._id.toString())
-      });
-  
-      if (!checkSpam) {
-        return next(PopulateResponse.error({ message: 'Please wait for your Model to reply' }));
-      }
-    }
-
+    // Get recipient
     const recipientId = _.find(conversation.memberIds, (member) => member.toString() !== req.user._id.toString());
     const recipient = await DB.User.findOne({ _id: recipientId });
     if (!recipient) {
@@ -53,12 +42,52 @@ exports.create = async (req, res, next) => {
       return next(PopulateResponse.error({ message: 'Cannot send message, this profile has been deactivated!' }));
     }
 
-    // check user token is available when user sends message to model
-    if (recipient.type === 'model' && recipient?.tokenPerMessage > req.user?.balance) {
-      return next(PopulateResponse.error({ message: 'Token is not enough' }));
+    // Check if user is a model and hasn't received a reply from the user
+    if (req.user.type === 'model') {
+      // Find the latest messages between model and user
+      const lastMessages = await DB.Message.find({
+        conversationId: validate.value.conversationId
+      })
+        .sort({ createdAt: -1 }) // Get the latest messages first
+        .limit(5);
+
+      // Count unreplied messages from model
+      let unrepliedMessageCount = 0;
+      for (const message of lastMessages) {
+        if (message.senderId.toString() === req.user._id.toString()) {
+          unrepliedMessageCount++;
+        } else {
+          // If user replied, reset the count
+          unrepliedMessageCount = 0;
+          break;
+        }
+      }
+
+      if (unrepliedMessageCount >= 5) {
+        return next(PopulateResponse.error({ message: 'You cannot send more than 5 messages without a reply from the user.' }));
+      }
     }
 
-    const messageData = Object.assign(validate.value, { senderId: req.user._id, recipientId });
+    // Define regex patterns for email and phone numbers
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b/;
+    const phoneRegex = /\+?\d{1,4}[\s-]?\(?\d{1,3}?\)?[\s-]?\d{3,4}[\s-]?\d{3,4}/;
+
+    let messageText = validate.value.text;
+
+    // Check and remove sensitive information in the text
+    let sensitiveInfoFound = false;
+    if (messageText && (emailRegex.test(messageText) || phoneRegex.test(messageText))) {
+      messageText = messageText
+        .replace(emailRegex, 'Sensitive information removed')
+        .replace(phoneRegex, 'Sensitive information removed');
+      sensitiveInfoFound = true;
+    }
+
+    const messageData = Object.assign(validate.value, { 
+      senderId: req.user._id, 
+      recipientId, 
+      text: messageText // Use sanitized text
+    });
     const message = new DB.Message(messageData);
     await message.save();
 
@@ -96,12 +125,19 @@ exports.create = async (req, res, next) => {
     const newMessage = message.toObject();
     newMessage.sender = req.user.getPublicProfile();
     newMessage.recipient = recipient.getPublicProfile();
+
+    if (sensitiveInfoFound) {
+      newMessage.info = 'Sensitive information was removed from your message.'; // Notify about sensitive info removal
+    }
+
     res.locals.create = newMessage;
     return next();
   } catch (e) {
     return next(e);
   }
 };
+
+
 
 
 /**

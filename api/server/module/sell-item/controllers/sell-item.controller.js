@@ -362,8 +362,6 @@ exports.modelSellItems = async (req, res, next) => {
   try {
     // Retrieve folders for the specified model
     const folders = await Folder.find({ userId: req.query.modelId  || '6683cce9a5e475a6ac5c0731' });
-    console.log(folders, "folders");
-
     // Get count of sell items that are approved
     const count = await DB.SellItem.count({
       userId: req.query.modelId  || '6683cce9a5e475a6ac5c0731',
@@ -431,9 +429,82 @@ exports.modelSellItems = async (req, res, next) => {
   }
 };
 
+exports.modelDefaultSellItems = async (req, res, next) => {
+  const page = Math.max(0, req.query.page - 1) || 0; // using a zero-based page index for use with skip()
+  const take = parseInt(req.query.take, 10) || 10;
+  try {
+    // Retrieve folders for the specified model
+    const folders = await Folder.find({ userId: req.query.modelId  || '6683cce9a5e475a6ac5c0731' });
+    console.log(folders, "folders");
 
+    // Get count of sell items that are approved
+    const count = await DB.SellItem.count({
+      userId: req.query.modelId  || '6683cce9a5e475a6ac5c0731',
+      mediaType: req.query.mediaType,
+      isApproved: true
+    });
 
+    // Initialize variables to store results
+    let totalPhotoCount = 0;
+    let totalVideoCount = 0;
+    let photos = [];
+    let videos = [];
 
+    const foldersWithImages = await Promise.all(
+      folders.map(async (folder) => {
+        // Retrieve sell items for each folder
+        const sellItems = await DB.SellItem.find({
+          folderId: folder._id,
+          mediaType: req.query.mediaType,
+          isApproved: true
+        }).populate('media').sort({ createdAt: -1 }).skip(page * take).limit(take).exec();
+
+        const photoItems = sellItems.filter(item => item.mediaType === 'photo');
+        const videoItems = sellItems.filter(item => item.mediaType === 'video');
+
+        photos = [...photos, ...photoItems];
+        videos = [...videos, ...videoItems];
+
+        totalPhotoCount += photoItems.length;
+        totalVideoCount += videoItems.length;
+
+        // Find and populate purchase item data for each sell item
+        const sellItemIds = sellItems.map(item => item._id);
+        const purchaseItems = await DB.PurchaseItem.find({
+          userId: req?.user?._id || '66c7477dff96c6486ffc6325',
+          sellItemId: {
+            $in: sellItemIds
+          }
+        });
+
+        const data = sellItems.map(item => {
+          item.set('isPurchased', purchaseItems.some(p => p.sellItemId.toString() === item._id.toString()));
+          item.set('purchasedItem', purchaseItems.find(p => p.sellItemId.toString() === item._id.toString()));
+
+          return item;
+        });    
+
+        return {
+          ...folder.toObject(),
+          sellItems: data,
+        };
+      })
+    );
+
+    res.locals.modelDefaultSellItems = {
+      count,
+      folders: foldersWithImages,
+      totalPhotoCount,
+      totalVideoCount
+    };
+    return next();
+  } catch (e) {
+    console.log(e);
+    return next(e);
+  }
+};
+
+// modelDefaultSellItems
 // blogs posts 
 exports.createBlogPost = async (req, res, next) => {
   try {
@@ -524,4 +595,278 @@ exports.test = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
+}
+
+// model likes controller
+
+exports.updateLikes = async (req, res, next) => {
+  try {
+    const { userId, mediaId } = req.body; // Assuming userId is passed in the request body to track the user's like status
+
+    if (!mediaId || !userId) {
+      return res.status(400).json({ error: 'Invalid request, mediaId and userId are required' });
+    }
+
+    // Find the media by mediaId
+    const media = await DB.Media.findOne({ _id: mediaId });
+    if (!media) {
+      return res.status(404).json({ error: 'Media not found' });
+    }
+
+    // Check if the user has already liked the media
+    const userAlreadyLiked = media.likedBy.includes(userId);
+
+    if (userAlreadyLiked) {
+      // If the user has already liked the media, unlike it by decreasing the count and removing the user from the likedBy array
+      media.likeCount = Math.max(media.likeCount - 1, 0); // Ensure the like count doesn't go below zero
+      media.likedBy = media.likedBy.filter(id => id !== userId);
+    } else {
+      // If the user hasn't liked the media yet, like it by increasing the count and adding the user to the likedBy array
+      media.likeCount += 1;
+      media.likedBy.push(userId);
+    }
+
+    // Save the updated media document
+    await media.save();
+
+    res.locals.updateLikes = {
+      success: true,
+      message: userAlreadyLiked ? 'Like removed' : 'Like added',
+      likeCount: media.likeCount,
+    };
+
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
+
+// get all liked media
+exports.getLikedMedia = async (req, res, next) => {
+  try {
+    const likedMedia = await DB.Media.find();
+  
+   const likedVideos = likedMedia.filter((media)=> media.type === 'video').sort((a, b) => a.likeCount < b.likeCount ? 1 : -1);
+    if (!likedMedia.length) {
+      return next(PopulateResponse.notFound());
+    }
+    res.locals.getLikedMedia = {
+      code: 200,
+      message: 'OK',
+      data: likedVideos
+    }
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
+// friend request controller-----
+
+exports.sendFriendRequest = async (req, res, next) => {
+  try {
+    const { userId, friendId } = req.body;
+
+    if (!userId || !friendId) {
+      return res.status(400).json({ error: 'Invalid request, userId and friendId are required' });
+    }
+
+    // Find the user by userId
+    const user = await DB.User.findOne({ _id: userId });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const firendObj = {
+      friendId: friendId,
+      senderId : userId,
+      status: 'pending',
+    }
+    let message = '';
+    // Check if the user has already sent a friend request to the friendId
+    const friendRequestExists = user.friendRequests.some(request => request.friendId === friendId);
+
+    if (friendRequestExists) {
+      message = 'friend request already exists'
+      // If the user has already sent a friend request, ignore it
+      return res.status(200).json({ success: false, message: 'Friend request already sent' });
+    }
+    message = 'friend request sent'
+    // Add the friendId to the user's friendRequests array
+    user.friendRequests.push(firendObj);
+
+    // Save the updated user document
+    await user.save();
+
+    res.locals.sendFriendRequest = {
+      success: true,
+      message: message,
+    };
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
+
+
+
+
+// update friend request status
+exports.updateFriendRequest = async (req, res, next) => {
+  try {
+    const { userId, friendId, status } = req.body;
+    
+    if (!userId || !friendId || !status) {
+      return res.status(400).json({ error: 'Invalid request, userId, friendId, and status are required' });
+    }
+
+    // Find the user
+    const user = await DB.User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Find the index of the matching friend request
+    const friendRequestIndex = user.friendRequests.findIndex(request => 
+      (request.friendId.toString() === friendId || request.senderId.toString() === friendId) &&
+      (request.friendId.toString() === userId || request.senderId.toString() === userId)
+    );
+
+    if (friendRequestIndex === -1) {
+      return res.status(404).json({ error: 'Friend request not found or does not match criteria' });
+    }
+
+    // Update the status of the matching friend request
+    user.friendRequests[friendRequestIndex].status = status;
+
+    // Save the updated user document
+    await user.save();
+
+    res.locals.updateFriendRequest = {
+      success: true,
+      message: `Friend request status updated to ${status}`,
+    };
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+};
+;
+
+
+
+
+// get all friend requests
+exports.getAllFriendRequests = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'Invalid request, userId is required' });
+    }
+
+    // Find all users
+    const users = await DB.User.find();
+    
+    // Initialize an array to collect all matching friend requests
+    let matchingFriendRequests = [];
+
+    // Loop through each user and check their friend requests
+    for (const user of users) {
+      for (const request of user.friendRequests) {
+        // Check if userId matches either friendId or senderId in any request
+        if (request.friendId.toString() === userId || request.senderId.toString() === userId) {
+          // Find the friend and sender based on their IDs
+          const friend = await DB.User.findOne({ _id: request.friendId }).select('username email avatar type');
+          const sender = await DB.User.findOne({ _id: request.senderId }).select('username email avatar type');
+
+          // Push the matching request with friend and sender details
+          matchingFriendRequests.push({
+            userId: user._id,
+            friendId: friend,
+            senderId: sender,
+            status: request.status,
+            _id: request._id
+          });
+        }
+      }
+    }
+
+    // If no matching friend requests are found
+    if (matchingFriendRequests.length === 0) {
+      return res.status(404).json({ error: 'No friend requests found for this user' });
+    }
+
+    // Return the matching friend requests
+    res.locals.getAllFriendRequests = {
+      code: 200,
+      message: 'OK',
+      data: matchingFriendRequests,
+    };
+
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+};
+
+
+
+// update interests controller 
+exports.updateInterests = async (req, res, next) => {
+  try {
+    const {userId, interests, languages, hobbies } = req.body;
+    // Fetch the user either by id or the current user in session
+    const user = await DB.User.findOne({ _id: userId })
+
+    if (!user) {
+      return next(PopulateResponse.notFound());
+    }
+
+
+    user.interests = interests;
+    user.languages = languages;
+    user.hobbies = hobbies;
+
+    // Save the updated user record
+    await user.save();
+
+    // Respond with the updated user
+    res.locals.updateInterests = user;
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
+
+
+
+// get profile video
+
+exports.getProfileVideo = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'Invalid request, userId is required' });
+    }
+// i want to get only that video whose name = 'profile-video'
+    const userVideo = await DB.Media.findOne({ ownerId : userId , name: 'profile-video' })
+
+    if (!userVideo) {
+      return res.status(404).json({ error: 'No profile video found for this user' });
+    }
+    res.locals.getProfileVideo = {
+      data: userVideo
+    }
+    return next();
+
+  } catch (error) {
+    return next(error);
+  }
+
 }

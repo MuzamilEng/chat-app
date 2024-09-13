@@ -149,6 +149,23 @@ exports.findByUsername = async (req, res, next) => {
   }
 };
 
+// default find 
+exports.defaultFindByUsername = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const user = await DB.User.findOne({ username });
+    if (!user) {
+      return next(PopulateResponse.notFound({ message: 'User is not found' }));
+    }
+    res.locals.user = {
+      user
+    }
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
 /**
  * update user avatar
  */

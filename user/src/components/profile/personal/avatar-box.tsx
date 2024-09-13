@@ -30,7 +30,9 @@ function AvatarComponent({ avatarUrl, onUploadAvatarComplete }: IProps) {
   return (
     <>
       <div className="avatar avatar-user mb-3" onClick={() => showModalUpload(true)}>
-        <img className="avatar-img" src={avatarUrl || '/images/user.jpg'} alt="" />
+        <img className="avatar-img" src={avatarUrl || '/images/user.jpg'} alt="" 
+                onError={(e) => (e.currentTarget.src = 'https://cdn.vectorstock.com/i/500p/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg')}
+                />
         <a className="pro-edit">
           <i className="fas fa-pencil-alt text-white" />
         </a>

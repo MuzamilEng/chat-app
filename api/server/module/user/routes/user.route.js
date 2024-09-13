@@ -94,6 +94,12 @@ module.exports = (router) => {
     Middleware.Response.success('user')
   );
 
+  router.get(
+    '/v1/users/defautltFindByUsername/:username',
+    userController.defaultFindByUsername,
+    Middleware.Response.success('user')
+  );
+
   /**
    * @apiGroup User
    * @apiVersion 1.0.0

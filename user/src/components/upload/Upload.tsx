@@ -23,6 +23,8 @@ interface IProps {
   onRemove?: Function;
   // eslint-disable-next-line react/require-default-props
   isChecked: boolean;
+  // eslint-disable-next-line react/require-default-props
+  fileName?: string;
 } 
 
 class Upload extends Component<IProps, any> {
@@ -118,7 +120,7 @@ class Upload extends Component<IProps, any> {
       });
 
       const formData = new FormData();
-      formData.append('file', file, file.name);
+      formData.append('file', file, this.props.fileName? this.props.fileName : file.name);
 
       if (this.props.customFields) {
         Object.keys(this.props.customFields).forEach((key) => {

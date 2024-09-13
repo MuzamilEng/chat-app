@@ -6,6 +6,7 @@ import { loadConversation, setSelectedConversation } from 'src/redux/conversatio
 
 import SearchBar from './search-bar';
 import { useTranslationContext } from 'context/TranslationContext';
+import { userService } from '@services/user.service';
 
 const AlertDanger = dynamic(() => import('src/components/common-layout/alert/alert-danger'), { ssr: false });
 
@@ -42,6 +43,7 @@ function ConversationSideBar({
   const ditspatch = useDispatch();
   const {t, lang} = useTranslationContext()
 
+
   const filter = () => {
     const newConversations = conversations.filter((con) => {
       const hasMatch = con.members.find((m) => m.username.toLowerCase().includes(searchRef.current.toLowerCase()));
@@ -49,6 +51,7 @@ function ConversationSideBar({
     });
     setConversationList(newConversations);
   };
+
 
   const handleSearch = ({ username = '' }) => {
     searchRef.current = username;

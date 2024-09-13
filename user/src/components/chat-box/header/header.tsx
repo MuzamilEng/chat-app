@@ -181,7 +181,9 @@ function ChatHeader({
             className={`avatar mr-3 ${recipient?.isOnline ? ' avatar-online' : 'avatar-offline'
             }`}
           >
-            <img src={recipient?.avatarUrl || '/images/user1.jpg'} alt="" />
+            <img src={recipient?.avatarUrl || '/images/user1.jpg'} alt=""
+              onError={(e) => e.currentTarget.src = 'https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg'}
+             />
           </div>
 
           <div className="media-body align-self-center">

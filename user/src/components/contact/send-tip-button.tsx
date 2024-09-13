@@ -23,7 +23,7 @@ function SendTipButton({
     try {
       await contactService.shareLove({
         token,
-        modelId: model._id
+        modelId: model?._id
       });
       toast.success('Das Trinkgeld wurde gesendet!');
       setShowModal(false);
@@ -34,7 +34,7 @@ function SendTipButton({
   };
 
   const handleShareTip = async () => {
-    if (authUser._id === model._id) {
+    if (authUser._id === model?._id) {
       toast.error('Sie können das Trinkgeld nicht selbst teilen.');
     } else {
       setShowModal(true);
@@ -53,7 +53,7 @@ function SendTipButton({
       </a>
       <ShareLoveModal
         show={showModal}
-        modelId={model._id}
+        modelId={model?._id}
         onShare={sendTip}
         onCancel={() => setShowModal(!showModal)}
       />

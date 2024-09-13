@@ -118,6 +118,9 @@ function PayoutRequestModal({
           <form onSubmit={props.handleSubmit}>
             <Modal.Body>
               <div className="row">
+                { authUser?.balance < 49 &&  <p className="text-danger" style={{ fontSize: '1.5vw', width: '100%', textAlign: 'center' }}>
+                        {lang === 'en' ? 'you cannot ask for a payout less than 50 ' : ' Sie können eine Auszahlungsnachfrage mind. 50 Tokens angeben.'}
+                        </p>}
                 <div className="col-md-6 col-12">
                   <Form.Group>
                     <Form.Label>Tokens</Form.Label>
@@ -132,10 +135,10 @@ function PayoutRequestModal({
                     />
                     <div className="invalid-feedback">{props.errors.token}</div>
                     <small className="text-muted">
-                      {`Mindestauszahlungsanforderung ${config?.minPayoutRequest || 1}`}
+                      {` ${lang === 'en' ? 'Enter number of tokens' : 'Mindestauszahlungsanforderung'} ${config?.minPayoutRequest || 1}`}
                       <br />
-                      {`Verfügbare Tokens für Auszahlung ${authUser?.balance}`}
-                    </small>
+                      {` ${lang === 'en' ? 'Available tokens for payout' : 'Verfügbare Tokens für Auszahlung'} ${authUser?.balance}`}
+                    </small> 
                   </Form.Group>
                 </div>
                 {OTPForm && (
@@ -158,7 +161,7 @@ function PayoutRequestModal({
               </div>
             </Modal.Body>
             <Modal.Footer>
-              <Button type="submit" variant="primary">
+              <Button disabled={authUser?.balance < 49} type="submit" variant="primary">
               {lang === 'en' ? 'Submit' : 'Absenden'}
               </Button>
             </Modal.Footer>

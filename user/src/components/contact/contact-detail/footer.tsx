@@ -12,8 +12,9 @@ import Loader from 'src/components/common-layout/loader/loader';
 import ViewMediaItem from 'src/components/media/view-media-item';
 import MainPaginate from 'src/components/paginate/main-paginate';
 // Actions
-import { purchaseItem } from 'src/redux/purchase-item/actions';
 import { getSellItem } from 'src/redux/sell-item/actions';
+import Router, { useRouter } from "next/router";
+
 
 interface IProps {
   authUser?: any;
@@ -43,13 +44,14 @@ function ContactFooter({
   const [type, setType] = useState('video');
   const [isOpenMedia, setIsOpenMedia] = useState(false);
   const [mediaItem, setMediaItem] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [titleModal, setTitleModal] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [photoFolders, setPhotoFolders] = useState([]);
   const [videoFolders, setVideoFolders] = useState([]);
   const take = 8;
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const {lang} = useTranslationContext()
+  const router = useRouter();
 
   const handleFolderClick = (folderId: string) => {
     setSelectedFolderId(folderId === selectedFolderId ? null : folderId);
@@ -70,11 +72,11 @@ function ContactFooter({
   };
 
   const fetchData  = async ()=> {
-    const resp2 = await sellItemService.getModelSellItems({ page: 1, mediaType: 'photo', take: 9, modelId: contact?._id });
+    const resp2 = await sellItemService.getDefaultModelSellItems({ page: 1, mediaType: 'photo', take: 9, modelId: contact?._id });
     setPhotoFolders(resp2?.data?.folders);
   }
   const fetchVideoData  = async ()=> {
-    const resp2 = await sellItemService.getModelSellItems({ page: 1, mediaType: 'video', take: 9, modelId: contact?._id });
+    const resp2 = await sellItemService.getDefaultModelSellItems({ page: 1, mediaType: 'video', take: 9, modelId: contact?._id });
     setVideoFolders(resp2?.data?.folders);
   }
 
@@ -94,15 +96,13 @@ function ContactFooter({
   }, [type]);
 
   const handlePurchase = (item: any) => {
-    if (authUser.type === 'model') {
-      toast.error( lang === 'en' ? 'Only users can purchase premium content.' : 'Es tut uns leid. Nur Benutzer können Premium-Inhalte erwerben.');
-    } else if (window.confirm( lang === 'en' ? 'Are you sure you want to buy this item?' : 'Sind Sie sicher, dass Sie dieses Element kaufen möchten?')) {
-      dispatch(purchaseItem({ sellItemId: item._id }));
-      loadSellItems();
-    }
+    toast.error('Please register to purchase');
+    window.location.href = `/${lang}/auth/login`;
   };
   const handleView = async (e, item: any) => {
     e.preventDefault();
+    toast.error('Please register to purchase');
+    window.location.href = `/${lang}/auth/login`;
     if (!item.isPurchased && !item.free) return;
     await setMediaItem(item.media);
     setTitleModal(item?.name);
@@ -114,9 +114,9 @@ function ContactFooter({
       <Tabs defaultActiveKey="photo" transition={false} id="tab-sell-item" onSelect={(key: any) => setType(key)}>
       <Tab eventKey="photo" title={lang === 'en' ? 'Photos' : 'Fotos'}>
   {isLoading && <Loader />}
-  {!isLoading && items && items.length > 0 && (
+  {!isLoading && photoFolders && (
     <Row>
-      {photoFolders?.filter(folder => folder.sellItems.length > 0).map((folder, index) => (
+      {photoFolders?.map((folder, index) => (
         <Row className="min-h" key={index}>
           <Col xs={12}>
             <section
@@ -140,7 +140,7 @@ function ContactFooter({
           {selectedFolderId === folder._id && (
             folder.sellItems.length > 0 ? (
               folder.sellItems.map((item, indx) => (
-                <article key={folder._id + indx} style={{ width: selectedFolderId === folder._id ? '50vw' : '30%' }}>
+                <article key={folder._id + indx} style={{ width: selectedFolderId === folder._id ? '50vw' : '30%' }} onClick={()=> router.push(`/${lang}/auth/login`)}>
                   <Col xs={6} sm={3} md={3} lg={4} className="responsive-width" key={item._id}>
                     <div className={item.isPurchased || item.free ? 'image-box mt-3 active' : 'image-box mt-3'}>
                       <img
@@ -197,7 +197,7 @@ function ContactFooter({
 
         <Tab eventKey="videos" title={`Videos`}>
   {isLoading && <Loader />}
-  {!isLoading && videoFolders.length > 0 && (
+  {!isLoading && videoFolders?.length > 0 && (
     <Row>
     {videoFolders?.filter(folder => folder.sellItems.length > 0).map((folder, index) => (
       <Row className="min-h" key={index}>
@@ -281,7 +281,7 @@ function ContactFooter({
 </Tab>
 
       </Tabs>
-      {!isLoading && (!items && (items && items.length === 0)) && (
+      {!isLoading && (!items || (items && items.length === 0)) && (
         <p className="text-alert-danger">
           {lang === 'en' ? 'no' : 'nein'}
           {' '}
@@ -301,6 +301,5 @@ function ContactFooter({
   );
 }
 
-const mapStateToProps = (state: any) => ({ ...state.sellItem, authUser: state.auth.authUser });
 
-export default connect(mapStateToProps)(ContactFooter);
+export default ContactFooter;

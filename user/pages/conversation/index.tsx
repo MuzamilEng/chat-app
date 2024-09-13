@@ -49,7 +49,9 @@ function ConversationHomePage({
             <div className="d-flex flex-column justify-content-center text-center h-100 w-100">
               <div className="container">
                 <div className="avatar avatar-lg mb-2">
-                  <img className="avatar-img" src={authUser.avatarUrl || '/images/user.jpg'} alt="" />
+                  <img className="avatar-img" src={authUser.avatarUrl || '/images/user.jpg'} alt=""
+                    onError={(e) => e.currentTarget.src = 'https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg'}
+                   />
                 </div>
 
                 <h5>
