@@ -50,8 +50,8 @@ function Login({
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-6 col-12 xchat-bg-wrap">
-            {/* <div className="xchat-bg-img" style={{ backgroundImage: `url(${bg})` }}> */}
-            <div className="xchat-bg-img" style={{ backgroundImage: `` }}>
+            <div className="xchat-bg-img" style={{ backgroundImage: `url(${bg})` }}>
+            {/* <div className="xchat-bg-img" style={{ backgroundImage: `` }}> */}
               {transparentLogo
               && (
               <div className="xchat-header">
