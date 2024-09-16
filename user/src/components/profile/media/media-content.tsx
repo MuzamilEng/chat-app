@@ -314,7 +314,7 @@ function MediaContent({
                         style={{ width: '100%', height: '13vw' }}
                         controls
                         src={
-                          item.media.fileUrl ||
+                          item.media?.fileUrl ||
                           '/images/default_thumbnail_video.png'
                         }
                         onError={(e) =>

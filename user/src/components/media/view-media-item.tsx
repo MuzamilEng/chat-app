@@ -62,7 +62,8 @@ function ViewMediaItem({
             <video controls autoPlay src={mediaUrl} className="w-100 h-100" />
           )}
         </div>
-        <i 
+        {authUser?.type === 'user' && (
+          <i 
           style={{ 
             cursor: 'pointer', 
             marginLeft: '2vw', 
@@ -73,6 +74,7 @@ function ViewMediaItem({
           className="fas fa-heart" 
           onClick={onLikesSubmit} 
         />
+        )}
       </Modal.Body>
     </Modal>
   );
