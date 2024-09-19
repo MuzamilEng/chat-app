@@ -15,6 +15,10 @@ const UserSchema = new mongoose.Schema(
       // allow unique if not null
       sparse: true
     },
+    nickname: {
+      type: String,
+      unique: true,
+    },
     role: {
       type: String,
       default: 'user',

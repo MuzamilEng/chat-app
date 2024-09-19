@@ -38,10 +38,13 @@ class AuthService extends APIRequest {
 
   me(headers?: { [key: string]: string }) {
     return this.get('/users/me', undefined, headers);
-  }
+  } 
 
   register(data: IRegister) {
     return this.post('/auth/register', data);
+  }
+  checkEmail(data: any) {
+    return this.post(`/users/email-verify`, data);
   }
 
   forgot(data: { email: string }) {
@@ -70,6 +73,16 @@ class AuthService extends APIRequest {
 
   updateTokenPerMessage(data: IUpdateTokenPerMessage) {
     return this.put('/users/token-per-message', data);
+  }
+
+  // /v1/update-nickname
+
+  updateNickname(data: any) {
+    return this.put('/update-nickname', data);
+  }
+
+  updateAvatar(data: any) {
+    return this.post('/users/avatar', data);
   }
 }
 

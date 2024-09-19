@@ -93,6 +93,74 @@ exports.update = async (req, res, next) => {
   }
 };
 
+exports.updateNickname = async (req, res, next) => {
+
+  // Validate the request body
+  const schema = Joi.object().keys({
+    nickname: Joi.string().required(),
+    userId: Joi.string().required()
+  });
+
+  const validate = schema.validate(req.body);
+  if (validate.error) {
+    return next(PopulateResponse.validationError(validate.error));
+  }
+
+  const { nickname, userId } = validate.value;
+
+  try {
+    // Check for duplicate nickname
+    const count = await DB.User.countDocuments({
+      $and: [
+        { nickname: nickname }, // Check for duplicates in the nickname field
+        { _id: { $ne: userId } } // Exclude the current user
+      ]
+    });
+
+    if (count > 0) {
+      return next(PopulateResponse.error({ message: 'This nickname is already taken. Please choose another one.' }, 'ERR_NICKNAME_ALREADY_TAKEN'));
+    }
+
+    // Find user by ID
+    const user = await DB.User.findById(userId);
+    if (!user) {
+      return next(PopulateResponse.error({ message: 'User not found.' }, 'ERR_USER_NOT_FOUND'));
+    }
+
+    // Update the user's nickname
+    user.nickname = nickname; // Ensure this matches the correct field in your User model
+
+    // Save the updated user
+    await user.save();
+
+    res.locals.updateNickname = PopulateResponse.success(
+      { message: 'Nickname has been updated successfully.' },
+      'NICKNAME_UPDATED'
+    );
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
+
+exports.checkEmailVarification = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await DB.User.findOne({ email });
+    if (!user) {
+      return next(PopulateResponse.notFound({ message: 'User is not found' }));
+    }
+    res.locals.checkEmailVarification = {
+      user
+    }
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+}
+
+
 exports.me = (req, res, next) => {
   res.locals.me = req.user.getPublicProfile();
   next();
@@ -186,7 +254,7 @@ exports.updateAvatar = async (req, res, next) => {
     const height = Helper.Number.isNumber(size[1]) ? size[1] : 200;
     // create thumb for the avatar
     const thumbPath = await Image.resize({
-      input: req.file.path,
+      input: req?.file?.path,
       width,
       height,
       resizeOption: '^'

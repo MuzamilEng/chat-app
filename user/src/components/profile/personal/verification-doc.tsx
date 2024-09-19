@@ -34,7 +34,7 @@ interface FormValues {
 }
 
 
-class VerificationDocumentComponent extends Component<any, any> {
+class VerificationDocument extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -55,6 +55,7 @@ class VerificationDocumentComponent extends Component<any, any> {
     this.getCountry();
   }
 
+
   // eslint-disable-next-line consistent-return
   componentDidUpdate(prevProps: any) {
     const { requesting, success, error } = this.props.updateDocumentStore;
@@ -63,9 +64,18 @@ class VerificationDocumentComponent extends Component<any, any> {
     }
 
     if (prevProps.updateDocumentStore?.requesting && !requesting && !success && error) {
-      return toast.error(error?.data?.message || this.props.lang === 'en' ? 'Verification document update failed!' : 'Verifizierungsdokumentaktualisierung fehlgeschlagen!');
+      return toast.error(error?.data?.message || this.state.lang === 'en' ? 'Verification document update failed!' : 'Verifizierungsdokumentaktualisierung fehlgeschlagen!');
     }
   }
+
+  getLangFromUrl = () => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const lang = path.split('/')[1];
+      return lang && lang.length === 2 ? lang : 'en';
+    }
+    return 'en';
+  };
 
   getCountry() {
     this.setState(
@@ -82,16 +92,8 @@ class VerificationDocumentComponent extends Component<any, any> {
   }
 
 
-  getLangFromUrl = () => {
-    if (typeof window !== 'undefined') {
-      const path = window.location.pathname;
-      const lang = path.split('/')[1];
-      return lang && lang.length === 2 ? lang : 'en';
-    }
-    return 'en';
-  };
   
-
+  
   async getStateAndCity(country: string) {
     const countryCode = this.getCodeByCountry(country);
     // State data
@@ -108,10 +110,11 @@ class VerificationDocumentComponent extends Component<any, any> {
     return selectedCountry[0]?.isoCode;
   }
 
+
   // eslint-disable-next-line consistent-return
   updateVerificationDocument(values: any) {
     if (!values.isConfirm) {
-      return toast.error( this.state.lang === 'en' ? 'Please confirm that you are sexually explicit / pornographic content!' : 'Bitte bestätigen Sie, dass Sie sexuell explizite / pornografische Inhalte veröffentlichen werden!');
+      return toast.error( this.state.lang === 'en' ? 'Please confirm that you are sexually explicit / pornographic content!' :  'Bitte bestätigen Sie, dass Sie sexuell explizite / pornografische Inhalte veröffentlichen werden!');
     }
     if (!values.isExpired && !values.expiredDate) {
       return toast.error( this.state.lang === 'en' ? 'Please enter the expiry date of the document!' : 'Bitte geben Sie das Ablaufdatum des Dokuments ein!');
@@ -209,7 +212,6 @@ class VerificationDocumentComponent extends Component<any, any> {
           }}
           onSubmit={(values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
             this.updateVerificationDocument(values);
-            window.location.href = `/${lang}/conversation`;
             formikHelpers.setSubmitting(false);
           }}
           render={(props: FormikProps<FormValues>) => (
@@ -611,4 +613,4 @@ const mapStateToProps = (state: any) => ({
 
 const mapDispatch = { updateDocument };
 
-export default connect(mapStateToProps, mapDispatch)(VerificationDocumentComponent);
+export default connect(mapStateToProps, mapDispatch)(VerificationDocument);

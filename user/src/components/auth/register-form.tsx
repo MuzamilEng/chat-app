@@ -1,6 +1,8 @@
+import { setLogin } from '@redux/auth/actions';
 import { useTranslationContext } from 'context/TranslationContext';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 import { Button, Form, FormControl, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
@@ -20,28 +22,21 @@ interface FormValues {
   isAgreeToImages: boolean;
 }
 
-const validatePassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-
-
-function RegisterForm() {
+function RegisterForm({onSuccess}) {
   const [showPw, setShowPw] = useState(false);
   const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
   const [requesting, setRequesting] = useState(false);
   const [type, setType] = useState('user');
-  const { t, lang } = useTranslationContext();
+  const { lang, setCurrentUser, setCurrentStep } = useTranslationContext();
   const [isContentChecked, setIsContentChecked] = useState(false);
+  const router = useRouter()
 
   const schema = Yup.object().shape({
     username: Yup.string().required(lang === 'en' ? 'Username is required' : 'Benutzername ist erforderlich'),
     email: Yup.string().email( lang === 'en' ? 'Email format is not correct' : 'E-Mail-Format ist nicht korrekt').required( lang === 'en' ? 'Email is required' : 'E-Mail wird benötigt'),
     password: Yup.string()
-      .required( lang === 'en' ? 'Password is required' : 'Passwort wird benötigt')
-      .matches(
-        validatePassword,
-        lang === 'en' ? 'Password must be at least 8 characters long, contain at least 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character' :
-        'Passwort muss mindestens 8 Zeichen lang sein, mindestens 1 Zahl, 1 Großbuchstaben, 1 Kleinbuchstaben und 1 Sonderzeichen enthalten'
-      ),
+    .required(lang === 'en' ? 'Password is required' : 'Passwort wird benötigt')
+    .min(6, lang === 'en' ? 'Password must be at least 6 characters long' : 'Passwort muss mindestens 6 Zeichen lang sein'),  
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password')], lang === 'en' ? 'Password confirmation does not match' : 'Passwortbestätigung stimmt nicht mit Passwort überein')
       .required( lang === 'en' ? 'Password confirmation is required' : 'Passwortbestätigung wird benötigt'),
@@ -53,6 +48,30 @@ function RegisterForm() {
   const handleCheckboxChange2 = () => {
     setIsContentChecked(!isContentChecked);
   };
+
+  const login = async (values) => {
+    try {
+      const resp = await authService.login({email: values.email, password: values.password});
+      const { token } = resp.data;
+      authService.setAuthHeaderToken(token);
+      authService.setToken(token);
+      const me = await authService.me({
+        Authorization: `Bearer ${token}`
+      });
+      setLogin(me.data);
+      setCurrentUser(me.data);
+      if(me.data?.type === 'user'){
+        router.push(`/${lang}/auth/login`);
+      } else{
+        window.location.reload();
+      }
+      localStorage.setItem('userType', JSON.stringify(me.data?.type));
+      localStorage.setItem('userEmail', JSON.stringify(me.data?._id));
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
 
   const register = async (data: any) => {
     const {
@@ -80,9 +99,11 @@ function RegisterForm() {
         })
         .then((resp) => {
           toast.success(resp?.data?.data?.message || lang === 'en' ? 'Registration successful!' : 'Registrierung erfolgreich!');
-          setTimeout(() => {
-            window.location.href = `/${lang}/auth/login`;
-          }, 1000);
+          login({email: email, password: password})
+          onSuccess(true)
+          // setTimeout(() => {
+          //   window.location.href = `/${lang}/auth/login`;
+          // }, 1000);
         })
         .catch(async (e) => {
           const error = await Promise.resolve(e);
@@ -91,6 +112,9 @@ function RegisterForm() {
     }
     setRequesting(false);
   };
+
+
+
 
   return (
     <Formik
@@ -286,22 +310,3 @@ function RegisterForm() {
 }
 
 export default RegisterForm;
-
-
-
-      {/* <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{lang === 'de' ? 'Datenschutzbestimmungen' : 'Agreement Details'}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            As a Girls2Dream Content Provider, I agree to the following: Any prohibited activity, illegal or otherwise violates standards, shall not be used in any manner on the site. Written consent will be obtained by influencer and kept on record of all persons depicted in the content specific to:
-            <ul>
-              <li>Consent to be depicted in the content</li>
-              <li>Consent to allow for the public distribution of the content and to upload the content to your site</li>
-              <li>If the content will be made available for downloading by other users, consent to have the content downloaded</li>
-              <li>Verify the identity and age of all persons depicted in content to ensure that all persons depicted are adults (18+) and be able to provide supporting documents upon request</li>
-            </ul>
-          </p>
-        </Modal.Body>
-      </Modal> */}

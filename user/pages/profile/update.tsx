@@ -73,7 +73,7 @@ function UpdateProfile({
                 </div>
 
                 <DeactiveProfileForm />
-                {authUser?.type === 'model' && !authUser?.isApproved && (
+                {authUser?.type === 'model' && !authUser?.isApproved && !authUser?.verificationDocument?.firstName && (
                 <div className="card mb-3">
                   <div className="card-header">
                     <h6 className="mb-1">{lang === 'en' ? 'Verification Document' : 'Überprüfungsdokument'}</h6>

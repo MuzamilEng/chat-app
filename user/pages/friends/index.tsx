@@ -19,10 +19,6 @@ function Friends() {
         userId: friendId,
         status,
       });
-      // setFriends(res.data?.data || []);
-      console.log('====================================');
-      console.log(res, "response");
-      console.log('====================================');
     } catch (error) {
       console.error('Error accepting friend request:', error);
     }

@@ -176,6 +176,9 @@ module.exports = (router) => {
    */
   router.get('/v1/users/me', Middleware.isAuthenticated, userController.me, Middleware.Response.success('me'));
 
+  // email verificatio
+  router.post('/v1/users/email-verify', Middleware.isAuthenticated, userController.checkEmailVarification, Middleware.Response.success('checkEmailVarification'));
+
   /**
    * @apiGroup User
    * @apiVersion 1.0.0
@@ -366,4 +369,18 @@ module.exports = (router) => {
   );
 
   router.post('/v1/users/updatePassword', userController.updatePassword, Middleware.Response.success('updatePassword'));
+
+
+  // update nickname
+
+  router.put(
+    '/v1/update-nickname',
+    Middleware.isAuthenticated,
+    userController.updateNickname,
+    Middleware.Response.success('updateNickname')
+  );
+
+
+
+
 };
