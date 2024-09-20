@@ -51,22 +51,14 @@ function RegisterForm({onSuccess}) {
 
   const login = async (values) => {
     try {
-      const resp = await authService.login({email: values.email, password: values.password});
-      const { token } = resp.data;
-      authService.setAuthHeaderToken(token);
-      authService.setToken(token);
-      const me = await authService.me({
-        Authorization: `Bearer ${token}`
-      });
-      setLogin(me.data);
-      setCurrentUser(me.data);
-      if(me.data?.type === 'user'){
+     const resp = await authService.checkEmail({email: values.email});
+      setCurrentUser(resp.data?.user);
+      if(resp.data?.user.type === 'user'){
         router.push(`/${lang}/auth/login`);
       } else{
+        localStorage.setItem('userRegisterationRecords', JSON.stringify(resp.data?.user));
         window.location.reload();
       }
-      localStorage.setItem('userType', JSON.stringify(me.data?.type));
-      localStorage.setItem('userEmail', JSON.stringify(me.data?._id));
     } catch (e) {
       console.warn(e);
     }
@@ -99,7 +91,7 @@ function RegisterForm({onSuccess}) {
         })
         .then((resp) => {
           toast.success(resp?.data?.data?.message || lang === 'en' ? 'Registration successful!' : 'Registrierung erfolgreich!');
-          login({email: email, password: password})
+          login({email: email})
           onSuccess(true)
           // setTimeout(() => {
           //   window.location.href = `/${lang}/auth/login`;

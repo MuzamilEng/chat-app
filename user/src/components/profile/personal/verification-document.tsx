@@ -1,5 +1,6 @@
 import { City, Country, State } from 'country-state-city';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
+import axios from 'axios';
 import { pick } from 'lodash';
 import moment from 'moment';
 import getConfig from 'next/config';
@@ -31,20 +32,24 @@ interface FormValues {
   expiredDate: string;
   isConfirm: boolean;
   isExpired: boolean;
+  id?: string;
 }
+
+// Your component logic remains the same
+
 
 
 class VerificationDocumentComponent extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      type: props.authUser.verificationDocument?.type || 'ID',
+      type: props.authUser?.verificationDocument?.type || 'ID',
       uploadHolding: false,
       uploadFrontSide: false,
       uploadBackSide: false,
-      frontSideUrl: this.props.authUser.verificationDocument?.frontSideUrl,
-      backSideUrl: this.props.authUser.verificationDocument?.backSideUrl,
-      holdingUrl: this.props.authUser.verificationDocument?.holdingUrl || '',
+      frontSideUrl: this.props.authUser?.verificationDocument?.frontSideUrl,
+      backSideUrl: this.props.authUser?.verificationDocument?.backSideUrl,
+      holdingUrl: this.props.authUser?.verificationDocument?.holdingUrl || '',
       countries: [],
       states: [],
       cities: [],
@@ -57,14 +62,14 @@ class VerificationDocumentComponent extends Component<any, any> {
 
   // eslint-disable-next-line consistent-return
   componentDidUpdate(prevProps: any) {
-    const { requesting, success, error } = this.props.updateDocumentStore;
-    if (prevProps.updateDocumentStore?.requesting && !requesting && success && !error) {
-      return toast.success(this.props.lang === 'en' ? 'Verification documents successfully updated; please wait for approval by the administrator.': 'Verifizierungsdokumente erfolgreich aktualisiert; bitte warten Sie auf die Genehmigung durch den Administrator.');
-    }
+    // const { requesting, success, error } = this.props.updateDocumentStore;
+    // if (prevProps.updateDocumentStore?.requesting && !requesting && success && !error) {
+    //   return toast.success(this.props.lang === 'en' ? 'Verification documents successfully updated; please wait for approval by the administrator.': 'Verifizierungsdokumente erfolgreich aktualisiert; bitte warten Sie auf die Genehmigung durch den Administrator.');
+    // }
 
-    if (prevProps.updateDocumentStore?.requesting && !requesting && !success && error) {
-      return toast.error(error?.data?.message || this.props.lang === 'en' ? 'Verification document update failed!' : 'Verifizierungsdokumentaktualisierung fehlgeschlagen!');
-    }
+    // if (prevProps.updateDocumentStore?.requesting && !requesting && !success && error) {
+    //   return toast.error(error?.data?.message || this.props.lang === 'en' ? 'Verification document update failed!' : 'Verifizierungsdokumentaktualisierung fehlgeschlagen!');
+    // }
   }
 
   getCountry() {
@@ -73,9 +78,9 @@ class VerificationDocumentComponent extends Component<any, any> {
         countries: Country.getAllCountries().map((i) => ({ isoCode: i.isoCode, name: i.name }))
       },
       () => {
-        const { verificationDocument } = this.props.authUser;
-        if (verificationDocument?.country) {
-          this.getStateAndCity(verificationDocument.country);
+        const verificationDocument = this.props.currentUser;
+        if (verificationDocument?.verificationDocument?.country) {
+          this.getStateAndCity(verificationDocument?.verificationDocument.country);
         }
       }
     );
@@ -159,10 +164,27 @@ class VerificationDocumentComponent extends Component<any, any> {
     return toast.success( 'Foto erfolgreich hochgeladen!');
   }
 
+  submitDocument = async (data: any) => {
+    console.log('Submitting document with data:', data);
+    try {
+      const response = await axios.post(`https://api.girls2dream.com/v1/users/document`, data);
+      if(response.status === 200 || response.data) {
+        localStorage.removeItem('userRegisterationRecords');
+      }
+      return response.data; // Adjust based on your API response
+    } catch (error) {
+      console.error("Error submitting document:", error);
+      throw error; // Rethrow to handle it in the calling function
+    }
+  };
+  
   render() {
-    const { verificationDocument } = this.props.authUser || this.props.currentUser;
+    const { currentUser } = this.props;
     const { countries, states, cities } = this.state;
     const lang = this.getLangFromUrl();
+    // const 
+
+
 
     // eslint-disable-next-line no-nested-ternary
     const certText = this.state.type === 'ID' ? 'ID' : this.state.type === 'passport' ? 'Passport' : 'Driving Lisence';
@@ -192,26 +214,38 @@ class VerificationDocumentComponent extends Component<any, any> {
         <Formik
           validationSchema={schema}
           initialValues={{
-            firstName: verificationDocument?.firstName,
-            lastName: verificationDocument?.lastName,
-            address: verificationDocument?.address,
-            country: verificationDocument?.country,
-            state: verificationDocument?.state,
-            city: verificationDocument?.city,
-            zipCode: verificationDocument?.zipCode,
-            birthday: verificationDocument?.birthday,
-            twitter: verificationDocument?.twitter,
-            instagram: verificationDocument?.instagram,
-            number: verificationDocument?.number,
-            expiredDate: verificationDocument?.expiredDate,
-            isExpired: verificationDocument?.isExpired,
-            isConfirm: verificationDocument?.isConfirm
+            firstName: currentUser?.verificationDocument?.firstName || '',
+            lastName: currentUser?.verificationDocument?.lastName || '',
+            address: currentUser?.verificationDocument?.address || '',
+            country: currentUser?.verificationDocument?.country || '',
+            state: currentUser?.verificationDocument?.state || '',
+            city: currentUser?.verificationDocument?.city || '',
+            zipCode: currentUser?.verificationDocument?.zipCode || '',
+            birthday: currentUser?.verificationDocument?.birthday || '',
+            twitter: currentUser?.verificationDocument?.twitter || '',
+            instagram: currentUser?.verificationDocument?.instagram || '',
+            number: currentUser?.verificationDocument?.number || '',
+            expiredDate: currentUser?.verificationDocument?.expiredDate || '',
+            isExpired: currentUser?.verificationDocument?.isExpired || false,
+            isConfirm: currentUser?.verificationDocument?.isConfirm || false,
+            id: currentUser?._id || ''
           }}
-          onSubmit={(values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
-            this.updateVerificationDocument(values);
-            window.location.href = `/${lang}/conversation`;
-            formikHelpers.setSubmitting(false);
+          onSubmit={async (values: FormValues) => {
+            console.log("Form submitted with values:", values);
+            try {
+              // Make sure to await the API response
+              const response = await this.submitDocument(values);
+          
+              console.log("Document submitted successfully:", response);
+              
+              // Redirect the user upon success
+              window.location.href = `/${lang}/conversation`;
+            } catch (error) {
+              console.error("Error during document submission:", error);
+              toast.error("There was an error submitting your document. Please try again.");
+            }
           }}
+          
           render={(props: FormikProps<FormValues>) => (
             <form className="form-signin form-update-profile" onSubmit={props.handleSubmit}>
               <div className="card-body">
@@ -604,11 +638,4 @@ class VerificationDocumentComponent extends Component<any, any> {
   }
 }
 
-const mapStateToProps = (state: any) => ({
-  authUser: state.auth.authUser,
-  updateDocumentStore: state.auth.updateDocumentStore
-});
-
-const mapDispatch = { updateDocument };
-
-export default connect(mapStateToProps, mapDispatch)(VerificationDocumentComponent);
+export default VerificationDocumentComponent

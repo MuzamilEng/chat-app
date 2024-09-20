@@ -21,6 +21,7 @@
     "@mui/material": "^6.1.0",
     "@reduxjs/toolkit": "^1.9.0",
     "@types/material-ui": "^0.21.17",
+    "axios": "^1.7.7",
     "bootstrap": "^5.2.3",
     "classnames": "^2.3.2",
     "country-state-city": "^3.1.2",

@@ -280,6 +280,49 @@ exports.updateAvatar = async (req, res, next) => {
   }
 };
 
+exports.updateAvatar2 = async (req, res, next) => {
+  try {
+    // Fetch the user by the provided ID in the body
+    const user = req.body.id ? await DB.User.findOne({ _id: req.body.id }) : null;
+    if (!user) {
+      return next(PopulateResponse.notFound());
+    }
+
+    const avatarSize = await DB.Config.findOne({ key: SYSTEM_CONST.AVATAR_SIZE });
+    if (!avatarSize || !avatarSize.value) {
+      return next(PopulateResponse.serverError({ msg: 'Missing avatar size!' }));
+    }
+
+    const size = avatarSize.value.split('x');
+    const width = Helper.Number.isNumber(size[0]) ? size[0] : 200;
+    const height = Helper.Number.isNumber(size[1]) ? size[1] : 200;
+
+    // Create thumb for the avatar
+    const thumbPath = await Image.resize({
+      input: req?.file?.path,
+      width,
+      height,
+      resizeOption: '^'
+    });
+
+    // Update the user's avatar
+    await DB.User.updateOne({ _id: user._id }, { $set: { avatar: thumbPath } });
+
+    // Unlink old avatar if it exists
+    if (user.avatar && !Helper.String.isUrl(user.avatar) && fs.existsSync(path.resolve(user.avatar))) {
+      fs.unlinkSync(path.resolve(user.avatar));
+    }
+
+    res.locals.updateAvatar2 = {
+      url: DB.User.getAvatarUrl(thumbPath),
+    };
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
+
 async function checkAndConvertFriend(models, user) {
   const query = {
     $or: [
@@ -524,15 +567,17 @@ exports.updateProfile = async (req, res, next) => {
       country: Joi.string().allow('', null).optional(),
       phoneNumber: Joi.string().allow('', null).optional(),
       email: Joi.string().email().required(),
-      postCode: Joi.string().allow('', null).optional()
+      postCode: Joi.string().allow('', null).optional(),
+      id: Joi.string().allow('', null).optional()
     });
+
 
     const validate = schema.validate(req.body);
     if (validate.error) {
       return next(PopulateResponse.validationError(validate.error));
     }
 
-    const user = await DB.User.findOne({ _id: req.user._id }); // ? User update profile
+    const user = await DB.User.findOne({ _id: validate.value.id || req.user._id })
 
     if (!user) {
       return next(PopulateResponse.error({ msg: 'User is not found!' }));
@@ -576,15 +621,17 @@ exports.updateDocument = async (req, res, next) => {
       isConfirm: Joi.boolean().required(),
       isExpired: Joi.boolean().allow(null, '').default(false).optional(),
       expiredDate: Joi.string().allow(null, '').optional(),
-      isApproved: Joi.boolean().optional() // ? admin approve the document
+      isApproved: Joi.boolean().optional(), // ? admin approve the document
+      id: Joi.string().allow('', null).optional()
     });
 
     const validate = schema.validate(req.body);
-    if (validate.error) {
-      return next(PopulateResponse.validationError(validate.error));
-    }
+
+    // if (validate.error) {
+    //   return next(PopulateResponse.validationError(validate.error));
+    // }
     const query = {
-      _id: req.user.role === 'admin' ? req.params.id : req.user._id
+      _id: req.body.id
     };
     const user = await DB.User.findOne(query);
     if (!user) {
@@ -593,7 +640,7 @@ exports.updateDocument = async (req, res, next) => {
 
     user.verificationDocument = Object.assign(user.verificationDocument, _.omit(validate.value, ['isApproved']));
     user.isCompletedDocument = true;
-    if (req.user.role === 'admin') {
+    if (req?.user?.role === 'admin') {
       user.isApproved = validate.value.isApproved || false;
     }
     await user.save();
@@ -657,68 +704,70 @@ exports.getOTP = async (req, res, next) => {
  */
 exports.updateCertificationPhoto = async (req, res, next) => {
   try {
-    const user = req.params.id
-      ? await DB.User.findOne({
-        _id: req.params.id,
-        type: 'model' // only model to update certification
-      })
-      : req.user;
+    // Ensure `req.body.id` is provided
+    console.log('req.body.id:', req.body.id);
+
+    // Check if a valid user is found
+    const user = req.body.id ? await DB.User.findOne({ _id: req.body.id, type: 'model' }) : null;
+
     if (!user) {
-      return next(PopulateResponse.notFound());
+      // If no user is found, return a "Not Found" response
+      return next(PopulateResponse.notFound('User not found or invalid user type.'));
     }
 
+    // Set default width and height for thumbnail
     const thumbnailSize = await DB.Config.findOne({ key: SYSTEM_CONST.PHOTO_THUMB_SIZE });
     let width = 200;
     let height = 200;
+
     if (thumbnailSize) {
       const spl = thumbnailSize.value.split('x');
       if (spl.length === 2) {
-        width = spl[0];
-        height = spl[1];
+        width = parseInt(spl[0], 10);
+        height = parseInt(spl[1], 10);
       }
     }
 
-    // create thumb for the certification
+    // Resize the image
     const thumbPath = await Image.resize({
       input: req.file.path,
       width,
       height,
       resizeOption: '^'
     });
+
+    // Construct update field dynamically
     const updateString = `verificationDocument.${req.query.position}`;
     const update = {
       [updateString]: thumbPath
     };
 
+    // Perform the update on the user's document
     await DB.User.update(
-      {
-        _id: req.params.id || req.user._id
-      },
-      {
-        $set: update
-      }
+      { _id: req.body.id },
+      { $set: update }
     );
-    // unlink old certification
+
+    // Unlink the old certification document if it exists and is not a URL
     if (
-      user.verificationDocument
-      && user.verificationDocument[req.query.position]
-      && !Helper.String.isUrl(user.verificationDocument[req.query.position])
-      && fs.existsSync(path.resolve(user.verificationDocument[req.query.position]))
+      user.verificationDocument &&
+      user.verificationDocument[req.query.position] &&
+      !Helper.String.isUrl(user.verificationDocument[req.query.position]) &&
+      fs.existsSync(path.resolve(user.verificationDocument[req.query.position]))
     ) {
       fs.unlinkSync(path.resolve(user.verificationDocument[req.query.position]));
     }
 
-    // remove tmp file
-    // if (fs.existsSync(path.resolve(req.file.path))) {
-    //   fs.unlinkSync(path.resolve(req.file.path));
-    // }
-
+    // Send the response
     res.locals.updateCertificationPhoto = {
-      url: DB.User.getAvatarUrl(update[updateString]) // convert to string
+      url: DB.User.getAvatarUrl(update[updateString])
     };
+
     return next();
-  } catch (e) {
-    return next(e);
+  } catch (error) {
+    // Log error and pass it to the next middleware
+    console.error('Error in updateCertificationPhoto:', error);
+    return next(error);
   }
 };
 

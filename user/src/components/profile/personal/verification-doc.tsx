@@ -83,7 +83,7 @@ class VerificationDocument extends Component<any, any> {
         countries: Country.getAllCountries().map((i) => ({ isoCode: i.isoCode, name: i.name }))
       },
       () => {
-        const { verificationDocument } = this.props.authUser;
+        const verificationDocument = this.props.currentUser;
         if (verificationDocument?.country) {
           this.getStateAndCity(verificationDocument.country);
         }
@@ -163,7 +163,7 @@ class VerificationDocument extends Component<any, any> {
   }
 
   render() {
-    const { verificationDocument } = this.props.authUser || this.props.currentUser;
+    const verificationDocument = this.props.currentUser;
     const { countries, states, cities } = this.state;
     const lang = this.getLangFromUrl();
 

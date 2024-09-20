@@ -122,6 +122,18 @@ class Upload extends Component<IProps, any> {
       const formData = new FormData();
       formData.append('file', file, this.props.fileName? this.props.fileName : file.name);
 
+      const currentUser = localStorage.getItem('userRegisterationRecords');
+      if (currentUser) {
+        try {
+          const parsedUser = JSON.parse(currentUser);
+          if (parsedUser && parsedUser._id) {
+            formData.append('id', parsedUser._id); // Append user ID to formData
+          }
+        } catch (error) {
+          console.error('Error parsing current user from localStorage:', error);
+        }
+      }
+
       if (this.props.customFields) {
         Object.keys(this.props.customFields).forEach((key) => {
           formData.append(key, this.props.customFields[key]);
@@ -129,10 +141,13 @@ class Upload extends Component<IProps, any> {
       }
 
       req.responseType = 'json';
-      req.open('POST', this.props.url);
+    req.open('POST', this.props.url);
+
+      if(!currentUser){
       const accessToken = authService.getToken() || '';
       if (accessToken) {
         req.setRequestHeader('Authorization', `Bearer ${accessToken}`);
+      }
       }
 
       req.send(formData);

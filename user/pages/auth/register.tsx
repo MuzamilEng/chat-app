@@ -11,7 +11,6 @@ import { connect } from 'react-redux';
 import BlankWithFooterLayout from 'src/components/layouts/blank-with-footer';
 import NickName from './components/nick-name';
 import ImageCrop from './components/image-crop';
-import { useSelector } from 'react-redux';
 
 const RegisterFrom = dynamic(() => import('src/components/auth/register-form'));
 
@@ -26,7 +25,7 @@ function Register({ authUser }: IProps) {
   const { lang, currentUser, currentStep, setCurrentStep } = useTranslationContext();
   // const authUser = useSelector((state: any)=> state.auth.authUser)
 
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(currentUser ? 1 : 0);
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
 
   const steps = [
@@ -38,7 +37,7 @@ function Register({ authUser }: IProps) {
   ];
 
   const handleNext = () => {
-    if (!authUser.authUser){
+    if (!currentUser){
       // donot allow setp 2
       setActiveStep(1)
     }
@@ -76,12 +75,12 @@ function Register({ authUser }: IProps) {
     }
   }
   // handleImageSuccess
-  useEffect(()=> {
-    if(authUser.authUser && authUser.authUser !== null){
-      setActiveStep(1)
+  useEffect(() => {
+    if (currentUser && currentUser !== null) {
+      setActiveStep(1);  // Move to step 1 when currentUser is available
     }
-  }, [])
-
+  }, [currentUser]);  // Add currentUser as a dependency
+  
   return (
     <div id="wrapper" className="wrapper">
       <SeoMetaHead pageTitle="Register" />

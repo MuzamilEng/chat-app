@@ -1,3 +1,4 @@
+import Loading from '@components/common-layout/loading/loading';
 import { City, Country, State } from 'country-state-city';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import { Component } from 'react';
@@ -88,7 +89,7 @@ class ProfileDataForm extends Component<any, any> {
 
 
   render() {
-    const { authUser } = this.props || this.props.currentUser;
+    const authUser  = this.props.currentUser;
     const { countries, states, cities } = this.state;
     const { t} = this.props;
     const lang = this.getLangFromUrl();
@@ -115,7 +116,7 @@ class ProfileDataForm extends Component<any, any> {
 
     return (
       <div>
-          <Formik
+         {authUser ? <Formik
             validationSchema={schema}
             initialValues={{
               username: authUser?.username,
@@ -128,7 +129,8 @@ class ProfileDataForm extends Component<any, any> {
               state: authUser?.state,
               city: authUser?.city,
               country: authUser?.country,
-              postCode: authUser?.postCode
+              postCode: authUser?.postCode,
+              id: authUser?._id
             }}
             onSubmit={(values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
               this.props.updateProfile({ ...values });
@@ -341,7 +343,10 @@ class ProfileDataForm extends Component<any, any> {
                 </div>
               </form>
             )}
-          </Formik>
+          </Formik> :
+           <>
+           <Loading />
+          </>}
       </div>
     );
   }

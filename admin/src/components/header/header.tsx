@@ -26,6 +26,7 @@ function Header({
     evt.preventDefault();
     if (window.confirm('Abmelden bestätigen?')) {
       logout();
+      localStorage.removeItem('userRegisterationRecords');
       window.location.href = '/login';
     }
   };

@@ -75,6 +75,13 @@ module.exports = (router) => {
     Middleware.Response.success('updateAvatar')
   );
 
+  router.post(
+    '/v1/users/update-avatar',
+    uploadAvatar.single('file'),
+    userController.updateAvatar2,
+    Middleware.Response.success('updateAvatar2')
+  );
+
   /**
    * @apiGroup User
    * @apiVersion 1.0.0
@@ -110,7 +117,7 @@ module.exports = (router) => {
    */
   router.put(
     '/v1/users/updateProfile',
-    Middleware.isAuthenticated,
+    // Middleware.isAuthenticated,
     userController.updateProfile,
     Middleware.Response.success('update')
   );
@@ -177,7 +184,7 @@ module.exports = (router) => {
   router.get('/v1/users/me', Middleware.isAuthenticated, userController.me, Middleware.Response.success('me'));
 
   // email verificatio
-  router.post('/v1/users/email-verify', Middleware.isAuthenticated, userController.checkEmailVarification, Middleware.Response.success('checkEmailVarification'));
+  router.post('/v1/users/email-verify', userController.checkEmailVarification, Middleware.Response.success('checkEmailVarification'));
 
   /**
    * @apiGroup User
@@ -337,7 +344,7 @@ module.exports = (router) => {
    */
   router.post(
     '/v1/users/certification/photo',
-    Middleware.isAuthenticated,
+    // Middleware.isAuthenticated,
     uploadCertification.single('file'),
     userController.updateCertificationPhoto,
     Middleware.Response.success('updateCertificationPhoto')
@@ -356,7 +363,7 @@ module.exports = (router) => {
    */
   router.post(
     '/v1/users/document/',
-    Middleware.isAuthenticated,
+    // Middleware.isAuthenticated,
     userController.updateDocument,
     Middleware.Response.success('document')
   );
@@ -375,7 +382,7 @@ module.exports = (router) => {
 
   router.put(
     '/v1/update-nickname',
-    Middleware.isAuthenticated,
+    // Middleware.isAuthenticated,
     userController.updateNickname,
     Middleware.Response.success('updateNickname')
   );

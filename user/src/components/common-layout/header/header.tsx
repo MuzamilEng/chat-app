@@ -201,7 +201,7 @@ function Header({
                 data-target="#inviteUsers"
                 onClick={() => {
                   setShowInviteUser(true);
-                  if (authUser && (!authUser.isCompletedProfile || !authUser.isApproved)) {
+                  if (authUser && authUser.nickname && (!authUser.isCompletedProfile || !authUser.isApproved)) {
                     toast.error('Bitte aktualisieren Sie Ihr Profil, um die Website einzugeben.');
                     return router.pathname !== '/profile/update' && router.push(`/${lang}/profile/update?requireUpdate=1`);
                   } return {};

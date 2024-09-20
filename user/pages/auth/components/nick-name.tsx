@@ -7,14 +7,13 @@ import { toast } from 'react-toastify'
 
 function NickName({onNicknameSuccess}) {
     const {lang, currentUser} = useTranslationContext()
-    const authUser = useSelector((state : any)=> state.auth.authUser)
     const [nickname, setNickname] = React.useState('')
     const [error, setError] = React.useState('')
     const [emailStatus, setEmailStatus] = React.useState(null)
 
     const checkEmailStatus = async ()=> {
       try {
-        const resp = await authService.checkEmail({email: authUser?.email})
+        const resp = await authService.checkEmail({email: currentUser?.email})
       if(resp) {
         setEmailStatus(resp?.data?.user?.emailVerified)
       }
@@ -29,7 +28,7 @@ function NickName({onNicknameSuccess}) {
       try {
         const result = await authService.updateNickname({
           nickname,
-          userId: authUser && authUser._id ? authUser._id : currentUser?._id
+          userId: currentUser?._id
         })
         if(result){
           toast.success(lang === 'en' ? 'Nickname updated successfully' : 'Benutzername wurde erfolgreich geändert')

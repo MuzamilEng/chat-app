@@ -15,7 +15,7 @@ const ImageCroper = () => {
   const [crop, setCrop] = useState<any>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const {setOnImageUploadSuccess} = useTranslationContext()
+  const {setOnImageUploadSuccess, currentUser} = useTranslationContext()
 
   const onSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -141,16 +141,11 @@ const ImageCroper = () => {
       // Append the file to FormData
       const formData = new FormData();
       formData.append('file', file, file.name);
+      formData.append('id', currentUser._id);
   
       // Set the response type and open the request
       req.responseType = 'json';
-      req.open('POST', 'https://api.girls2dream.com/v1/users/avatar');  // Update with your API URL
-  
-      // Add Authorization header if token is available
-      const accessToken = authService.getToken() || '';
-      if (accessToken) {
-        req.setRequestHeader('Authorization', `Bearer ${accessToken}`);
-      }
+      req.open('POST', 'https://api.girls2dream.com/v1/users/update-avatar');  // Update with your API URL
   
       // Send the request
       req.send(formData);
