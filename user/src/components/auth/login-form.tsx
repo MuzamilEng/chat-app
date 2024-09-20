@@ -43,12 +43,8 @@ function LoginForm({
   const schema = Yup.object().shape({
     email: Yup.string().email( lang === 'en' ? 'Email is not valid' : 'E-Mail-Format ist nicht korrekt').required( lang === 'en' ? 'Email is required' : 'E-Mail wird benötigt'),
     password: Yup.string()
-      .matches(
-        validatePassword,
-        lang === 'en' ? 'Password must be at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character' :
-        'Passwort muss mindestens 8 Zeichen lang sein, mindestens 1 Zahl, 1 Großbuchstaben, 1 Kleinbuchstaben und 1 Sonderzeichen enthalten'
-      )
-      .required( lang === 'en' ? 'Password is required' : 'Passwort wird benötigt'),
+    .required(lang === 'en' ? 'Password is required' : 'Passwort wird benötigt')
+    .min(6, lang === 'en' ? 'Password must be at least 6 characters long' : 'Passwort muss mindestens 6 Zeichen lang sein'), 
     isKeepLogin: Yup.boolean().default(false)
   });
 
