@@ -2,7 +2,6 @@ import { authService } from '@services/auth.service'
 import { useTranslationContext } from 'context/TranslationContext'
 import React, { useEffect } from 'react'
 import { Button, Form, FormControl } from 'react-bootstrap'
-import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 
 function NickName({onNicknameSuccess}) {
@@ -30,9 +29,12 @@ function NickName({onNicknameSuccess}) {
           nickname,
           userId: currentUser?._id
         })
+        const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
         if(result){
           toast.success(lang === 'en' ? 'Nickname updated successfully' : 'Benutzername wurde erfolgreich geändert')
           onNicknameSuccess(true)
+          userFromLocal.nickname = nickname
+          localStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal))
         }
       } catch (error) {
         // setError(error.message)
@@ -40,6 +42,11 @@ function NickName({onNicknameSuccess}) {
         setError('')
       }
     }
+
+    useEffect(()=> {
+      const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
+      setNickname(userFromLocal?.nickname)
+    }, [currentUser])
 
     useEffect(() => {
       checkEmailStatus()
@@ -63,6 +70,9 @@ function NickName({onNicknameSuccess}) {
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
                     name="nickname"
+                    required
+                    // pattern="[A-Za-z0-9]{3,15}"
+                    title={lang === 'en'? 'Nickname must be between 3 and 8 characters and can contain letters and numbers' : 'Benutzername muss zwischen 3 und 8 Zeichen lang sein kann nur Buchstaben und Zahlen enthalten'}
                     className="form-control"
                     type="text"
                     id="nickname"
@@ -77,7 +87,8 @@ function NickName({onNicknameSuccess}) {
                   ? 'Choose a nickname that reflects your personality. It can be a combination of your interests, hobbies, or something unique to you. Remember, this nickname will be visible to others on the site, while your original name will be kept private.'
                   : 'Wählen Sie einen Benutzernamen, der Ihre Persönlichkeit widerspiegelt. Es kann eine Kombination aus Ihren Interessen, Hobbys oder etwas Einzigartigem für Sie sein. Denken Sie daran, dass dieser Benutzername für andere auf der Seite sichtbar ist, während Ihr richtiger Name privat bleibt.'}
               </p>
-          <Button disabled={emailStatus === false} type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary">
+          {/* <Button disabled={emailStatus === false} type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary"> */}
+          <Button type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary">
               {lang === 'en' ? 'submit' : 'einreichen'}
             </Button>
             </form>

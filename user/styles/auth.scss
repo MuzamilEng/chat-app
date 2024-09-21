@@ -622,3 +622,31 @@ Demo Layout Four
 .linkshover:hover {
   color: black;
 }
+
+
+
+.thanks-message-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // height: 100%;
+  // background-color: #f9f9f9;
+}
+
+.thank-you-box {
+  // background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  // box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.thank-you-box h1 {
+  font-size: 28px;
+  color: #ff337c;
+}
+
+.thank-you-box p {
+  font-size: 18px;
+  color: #666;
+}

@@ -93,14 +93,9 @@ class ProfileDataForm extends Component<any, any> {
     const { countries, states, cities } = this.state;
     const { t} = this.props;
     const lang = this.getLangFromUrl();
+    const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
     const schema = Yup.object().shape({
-      username: Yup.string()
-        .matches(/^[a-zA-Z0-9]*$/, {
-          message: lang === 'en' ? 'Name can only contain letters and numbers' : 'Der Name darf keine Leerzeichen enthalten',
-          excludeEmptyString: true
-        })
-        .min(3, lang === 'en' ? 'Name must be at least 3 characters' : 'Die Länge des Namens muss größer als 3 sein')
-        .required( lang === 'en' ? 'Username is required' : 'Benutzername ist erforderlich'),
+      username: Yup.string().required( lang === 'en' ? 'Username is required' : 'Benutzername ist erforderlich'),
       bio: Yup.string().min(20, lang === 'en' ? 'Bio must be at least 20 characters' : 'Bitte geben Sie mindestens 20 Zeichen ein').required( lang === 'en' ? 'Bio is required' : 'Eine Kurzbiografie wird benötigt'),
       age: Yup.number().min(2).required( lang === 'en' ? 'Age is required' : 'Das Alter wird benötigt'),
       gender: Yup.string().required( lang === 'en' ? 'Gender is required' : 'Geschlecht wird benötigt'),
@@ -119,24 +114,38 @@ class ProfileDataForm extends Component<any, any> {
          {authUser ? <Formik
             validationSchema={schema}
             initialValues={{
-              username: authUser?.username,
-              bio: authUser?.bio,
-              age: authUser?.age,
-              gender: authUser?.gender,
-              phoneNumber: authUser?.phoneNumber,
-              email: authUser?.email,
-              address: authUser?.address,
-              state: authUser?.state,
-              city: authUser?.city,
-              country: authUser?.country,
-              postCode: authUser?.postCode,
+              username: authUser?.username || userFromLocal?.username,
+              bio: authUser?.bio || userFromLocal?.bio,
+              age: authUser?.age || userFromLocal?.age,
+              gender: authUser?.gender || userFromLocal?.gender,
+              phoneNumber: authUser?.phoneNumber || userFromLocal?.phoneNumber,
+              email: authUser?.email || userFromLocal?.email,
+              address: authUser?.address || userFromLocal?.address,
+              state: authUser?.state || userFromLocal?.state,
+              city: authUser?.city || userFromLocal?.city,
+              country: authUser?.country || userFromLocal?.country,
+              postCode: authUser?.postCode || userFromLocal?.postCode,
               id: authUser?._id
             }}
             onSubmit={(values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
               this.props.updateProfile({ ...values });
-              this.props.onProfileFormSuccess(true)
+              this.props.onProfileFormSuccess(true);
               // this.props.setCurrentStep(2)
               formikHelpers.setSubmitting(false);
+              // now update the values in localStorage user
+                  userFromLocal.username = values.username;
+                  userFromLocal.bio = values.bio;
+                  userFromLocal.age = values.age;
+                  userFromLocal.gender = values.gender;
+                  userFromLocal.phoneNumber = values.phoneNumber;
+                  userFromLocal.email = values.email;
+                  userFromLocal.address = values.address;
+                  userFromLocal.state = values.state;
+                  userFromLocal.city = values.city;
+                  userFromLocal.country = values.country;
+                  userFromLocal.postCode = values.postCode;
+                  localStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal));
+                  // this.props.setCurrentUser(userFromLocal);
             }}
           >
             {(props: FormikProps<FormValues>) => (

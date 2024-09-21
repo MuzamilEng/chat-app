@@ -11,6 +11,8 @@ import { connect } from 'react-redux';
 import BlankWithFooterLayout from 'src/components/layouts/blank-with-footer';
 import NickName from './components/nick-name';
 import ImageCrop from './components/image-crop';
+import Thanks from './components/thanks';
+import { toast } from 'react-toastify';
 
 const RegisterFrom = dynamic(() => import('src/components/auth/register-form'));
 
@@ -22,64 +24,81 @@ interface IProps {
 
 
 function Register({ authUser }: IProps) {
-  const { lang, currentUser, currentStep, setCurrentStep } = useTranslationContext();
-  // const authUser = useSelector((state: any)=> state.auth.authUser)
-
+  const { lang, currentUser, setCurrentStep, onImageUploadSuccess } = useTranslationContext();
   const [activeStep, setActiveStep] = useState(currentUser ? 1 : 0);
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
 
   const steps = [
     'Verify email',
     'Nick name',
-    'Profile data',
     'Profile image',
-    'Verify document'
+    'Profile data',
+    'Verify document',
   ];
 
-  const handleNext = () => {
-    if (!currentUser){
-      // donot allow setp 2
-      setActiveStep(1)
-    }
-    if (activeStep < steps.length - 1) {
-      setActiveStep((prev) => prev + 1);
-    }
-  };
-
+  // Handle step completion
   const handleComplete = () => {
     setCompleted((prev) => ({ ...prev, [activeStep]: true }));
     handleNext();
   };
 
-  const handleRegisterSuccess = (data) => {
-    if(data === true || activeStep == 1){
-      setActiveStep(1)
+  // Move to the next step only if the current step is completed
+  const handleNext = () => {
+    if (!completed[activeStep] && activeStep !== 0) return; // Prevent moving forward if step is not completed
+
+    setActiveStep((prev) => Math.min(prev + 1, steps.length)); // Ensure we don't exceed step count
+  };
+
+  // Move to the previous step
+  const handleBack = () => {
+    if(activeStep === 1) {
+      toast.error('You can not go back');
+      return;
     }
-  }
+    setActiveStep((prev) => Math.max(prev - 1, 0)); // Ensure we don't go below step 0
+  };
+
+  const handleRegisterSuccess = (data) => {
+    if (data === true) {
+      handleComplete(); // Step 0 completed, move to step 1
+    }
+  };
 
   const handleNicknameSuccess = (data) => {
-    if(data === true){
-      setActiveStep(2)
+    if (data === true) {
+      handleComplete(); // Step 1 completed, move to step 2
     }
-  }
+  };
 
   const handleProfileSuccess = (data) => {
-    if(data === true){
-      setActiveStep(3)
+    if (data === true) {
+      handleComplete(); // Step 2 completed, move to step 3
     }
-  }
+  };
 
-  const handleImageSuccess = (data) => {
-    if(data === true){
-      setActiveStep(4)
+  const handleImageSuccess = () => {
+    if (onImageUploadSuccess === true) {
+      handleComplete(); // Step 3 completed, move to step 4
     }
-  }
-  // handleImageSuccess
+  };
+
+  const handleVerificationDocumentSuccess = (data) => {
+    if (data === true) {
+      setCurrentStep(5)
+      console.log('Verification')
+      handleComplete(); // Step 4 completed, move to step 5
+    }
+  };
+
   useEffect(() => {
     if (currentUser && currentUser !== null) {
-      setActiveStep(1);  // Move to step 1 when currentUser is available
+      setActiveStep(1); // Move to step 1 when currentUser is available
     }
-  }, [currentUser]);  // Add currentUser as a dependency
+  }, [currentUser]);
+
+  useEffect(() => {
+    handleImageSuccess()
+  }, [onImageUploadSuccess]);
   
   return (
     <div id="wrapper" className="wrapper">
@@ -94,12 +113,14 @@ function Register({ authUser }: IProps) {
         </div>
       </div>
       <div style={{width: '100%', maxWidth: '90vw', margin: '2vw auto'}} className="">
-      <HorizontalNonLinearStepper
-            steps={steps}
-            activeStep={activeStep}
-            completed={completed}
-            handleComplete={handleComplete}
-          />
+ { activeStep !== 5 && <HorizontalNonLinearStepper
+          steps={steps}
+          activeStep={activeStep}
+          completed={completed}
+          handleComplete={handleComplete}
+          handleNext={handleNext}
+          handleBack={handleBack}
+        />}
       </div>
       <div className="container-fluid">
           <div className="row">
@@ -109,7 +130,6 @@ function Register({ authUser }: IProps) {
             {/* register compoent */}
            { activeStep === 0 && <div className="col-md-6 col-12 xchat-bg-color">
               <div className="xchat-content">
-               
                 <h3 className="text-center text-uppercase">{lang === 'en' ? 'Register' : 'Benutzerregistrierung'}</h3>
                 <hr />
                 <div className="xchat-form">
@@ -129,17 +149,19 @@ function Register({ authUser }: IProps) {
             </div>}
             {/* nickname */}
          { activeStep === 1 &&  <NickName onNicknameSuccess={handleNicknameSuccess} />}
+          {/* image crop  */}
+        { activeStep === 2 &&  <ImageCrop />}
           {/* profile form */}
-         { activeStep === 2 && <div className="col-md-6 col-12 xchat-bg-color">
+         { activeStep === 3 &&
+          <div className="col-md-6 col-12 xchat-bg-color">
           <div className="xchat-content">
-               <h3 className="text-center text-uppercase">{lang === 'en' ? 'Personal Information' : 'Persönliche Informationen'}</h3>
-          <ProfileDataForm  currentUser={currentUser} onProfileFormSuccess={handleProfileSuccess} />
+          <h3 className="text-center text-uppercase">{lang === 'en' ? 'Personal Information' : 'Persönliche Informationen'}</h3>
+          <ProfileDataForm currentUser={currentUser} onProfileFormSuccess={handleProfileSuccess} />
           </div>
           </div>}
-          {/* image crop  */}
-        { activeStep === 3 &&  <ImageCrop onImageSuccess={handleImageSuccess} />}
             {/* documentation verfication */}
-          { activeStep === 4 && authUser &&  <div className="col-md-6 col-12 xchat-bg-color">
+          { activeStep === 4 && authUser && 
+           <div className="col-md-6 col-12 xchat-bg-color">
             <div className="xchat-content">
             <div className="card mb-3">
               <div className="card-header">
@@ -147,11 +169,28 @@ function Register({ authUser }: IProps) {
                 <p className="mb-0 text-muted small">{lang === 'en' ? 'Update evidence document' : 'Nachweisdokument aktualisieren'}</p>
               </div>
               <div className="card-body">
-                <VerificationDocument lang={lang} currentUser={currentUser} />
+                <VerificationDocument onVerficationDocumentSuccess={handleVerificationDocumentSuccess} activeStep={activeStep} lang={lang} currentUser={currentUser} />
               </div>
             </div>
            </div>
           </div>}
+
+          {activeStep === 5 &&
+           <div style={{marginTop: '1vw'}} className="">
+            <div className="thanks-message-container">
+              <div className="thank-you-box">
+                <h1>Thank you for your registration!</h1>
+                <p>Your account is currently under review.</p>
+                <p>You will be notified via E-Mail once your account has been verified.</p>
+                <p>This process may take up to 48 hours.</p>
+                <Link legacyBehavior href={`/${lang}/auth/login`} style={{color: 'white'}} as="/login">
+                <button className="btn btn-primary">
+                {lang === 'en' ? 'Sign in' : 'Anmelden'}
+                </button>
+                </Link>
+              </div>
+            </div>
+            </div>}
          </div>
         </div>
       </div>

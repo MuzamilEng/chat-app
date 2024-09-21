@@ -3,14 +3,9 @@ import { useTranslationContext } from 'context/TranslationContext'
 import React, { useEffect } from 'react'
 import { Button } from 'react-bootstrap'
 
-function ImageCrop({onImageSuccess}) {
-  const {lang, onImageUploadSuccess, setCurrentStep} = useTranslationContext()
-   
-  useEffect(() => {
-    if (onImageUploadSuccess === true) {
-      onImageSuccess(true);
-    }
-  }, [onImageUploadSuccess]);
+function ImageCrop() {
+  const {lang, } = useTranslationContext()
+
 
   return (
      <div className="col-md-6 col-12 xchat-bg-color">

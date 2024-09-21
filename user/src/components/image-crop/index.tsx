@@ -11,11 +11,12 @@ const ImageCroper = () => {
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState<any>(null);
-  const [croppedImage, setCroppedImage] = useState<string | null>(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const {setOnImageUploadSuccess, currentUser} = useTranslationContext()
+  const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
+  const [croppedImage, setCroppedImage] = useState<string | null>(userFromLocal?.avatarUrl || null);
 
   const onSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -77,12 +78,14 @@ const ImageCroper = () => {
     uploadAvatar(file)
     .then((response: any) => {
       toast.success("Avatar uploaded successfully!");
-      setImageSrc("");
+      // setImageSrc("");
         setTimeout(() => {
           setOnImageUploadSuccess(true);
         }, 3000);  
       // Use type assertion to access `data.url` safely
       const imageUrl = (response as { data: { url: string } })?.data?.url || dataUrl;
+      userFromLocal.avatarUrl = imageUrl
+      localStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal));
       setCroppedImage(imageUrl);
       setModalOpen(false);
     })

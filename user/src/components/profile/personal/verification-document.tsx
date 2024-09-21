@@ -169,6 +169,7 @@ class VerificationDocumentComponent extends Component<any, any> {
     try {
       const response = await axios.post(`https://api.girls2dream.com/v1/users/document`, data);
       if(response.status === 200 || response.data) {
+        this.props.activeStep === 5;     
         localStorage.removeItem('userRegisterationRecords');
       }
       return response.data; // Adjust based on your API response
@@ -182,10 +183,6 @@ class VerificationDocumentComponent extends Component<any, any> {
     const { currentUser } = this.props;
     const { countries, states, cities } = this.state;
     const lang = this.getLangFromUrl();
-    // const 
-
-
-
     // eslint-disable-next-line no-nested-ternary
     const certText = this.state.type === 'ID' ? 'ID' : this.state.type === 'passport' ? 'Passport' : 'Driving Lisence';
     const { publicRuntimeConfig: config } = getConfig();
@@ -231,17 +228,11 @@ class VerificationDocumentComponent extends Component<any, any> {
             id: currentUser?._id || ''
           }}
           onSubmit={async (values: FormValues) => {
-            console.log("Form submitted with values:", values);
             try {
-              // Make sure to await the API response
-              const response = await this.submitDocument(values);
-          
-              console.log("Document submitted successfully:", response);
-              
-              // Redirect the user upon success
-              window.location.href = `/${lang}/conversation`;
+              const response = await this.submitDocument(values); 
+              this.props.activeStep === 5;       
+              this.props.onVerficationDocumentSuccess(true)
             } catch (error) {
-              console.error("Error during document submission:", error);
               toast.error("There was an error submitting your document. Please try again.");
             }
           }}
