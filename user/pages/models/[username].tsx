@@ -12,6 +12,7 @@ const ContactContent = dynamic(() => import('src/components/contact/contact-deta
 const ContactFooter = dynamic(() => import('src/components/contact/contact-detail-box/footer'));
 const ContactHeader = dynamic(() => import('src/components/contact/contact-detail-box/header'));
 
+
 function ModelDetail({
   user
 }: IProps) {

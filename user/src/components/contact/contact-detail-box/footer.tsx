@@ -137,18 +137,18 @@ function ContactFooter({
               </button>
             </section>
           </Col>
-          {selectedFolderId === folder._id && (
+        <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5vw', width: '100%'}}>
+        {selectedFolderId === folder._id && (
             folder.sellItems.length > 0 ? (
               folder.sellItems.map((item, indx) => (
-                <article key={folder._id + indx} style={{ width: selectedFolderId === folder._id ? '50vw' : '30%' }}>
-                  <Col xs={6} sm={3} md={3} lg={4} className="responsive-width" key={item._id}>
-                    <div className={item.isPurchased || item.free ? 'image-box mt-3 active' : 'image-box mt-3'}>
+                <article key={folder._id + indx}>
+                  <div className={item.isPurchased || item.free || ( item?.category === 'FSK12' && (item.isPurchased || item.free)) ? 'image-box mt-3 active' : 'image-box mt-3'}>
                       <img
                         alt=""
-                        src={item.isPurchased || item.free ? item.media?.thumbUrl || '/images/default_thumbnail_photo.jpg' : item.media?.blurUrl || '/images/default_thumbnail_photo.jpg'}
+                        src={item.isPurchased || item.free || ( item?.category === 'FSK12' && (item.isPurchased || item.free)) ? item.media?.thumbUrl || '/images/default_thumbnail_photo.jpg' : item.media?.blurUrl || '/images/default_thumbnail_photo.jpg'}
                       />
                       <h5>
-                        {item.isPurchased || item.free ? (
+                        {item.isPurchased || item.free || ( item?.category === 'FSK12' && (item.isPurchased || item.free)) ? (
                           <span>
                             <i className="far fa-eye" />
                             {' '}
@@ -180,7 +180,6 @@ function ContactFooter({
                       </a>
                       <div className="overlay" />
                     </div>
-                  </Col>
                 </article>
               ))
             ) : (
@@ -189,6 +188,7 @@ function ContactFooter({
               </Col>
             )
           )}
+        </section>
         </Row>
       ))}
     </Row>
@@ -222,8 +222,9 @@ function ContactFooter({
         {selectedFolderId === folder._id && (
           folder.sellItems.length > 0 ? (
             folder.sellItems.map((item, indx) => (
-              <article key={folder._id + indx} style={{ width: selectedFolderId === folder._id ? '50vw' : '30%' }}>
-                <Col xs={6} sm={3} md={3} lg={4} className="responsive-width" key={item._id}>
+              <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5vw', width: '100%'}}>
+
+              <article key={folder._id + indx}>
                   <div className={item.isPurchased || item.free ? 'image-box mt-3 active' : 'image-box mt-3'}>
                     <video
                       controls style={{ objectFit: 'cover', width: '100%', height: '13vw' }}
@@ -264,8 +265,8 @@ function ContactFooter({
                     </a>
                     <div className="overlay" />
                   </div>
-                </Col>
               </article>
+              </section>
             ))
           ) : (
             <Col>

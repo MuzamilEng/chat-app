@@ -28,9 +28,9 @@ function ContactContent({ contact }: IProps) {
     <div className="card">
       <ul className="list-group list-group-flush">
         <li className="list-group-item">
-          { !profileVideoUrl && <div className="mt-3">
-                      <video style={{ width: '40vw', height: '15vw', borderRadius: '2%', objectFit: 'cover' }} controls src={profileVideoUrl} />
-                    </div>}
+          {profileVideoUrl && <div className="mt-3">
+            <video style={{ width: '40vw', height: '15vw', borderRadius: '2%', objectFit: 'cover' }} controls src={profileVideoUrl} />
+          </div>}
           <div className="media mt-3 align-items-center">
             <div className="media-body">
               <p className="small text-muted mb-0">{lang === 'en' ? 'Biography' : 'Biografie'}</p>
@@ -108,6 +108,78 @@ function ContactContent({ contact }: IProps) {
               />
             </svg>
           </div>
+        </li>
+        {/* languages */}
+        <li className="list-group-item">
+          <div className="media align-items-center">
+            <div className="media-body">
+              <p className="small text-muted mb-0">{lang === 'en' ? 'Languages' : 'Sprachen'}</p>
+              <div className="">
+                {contact?.languages?.map((lang) => (
+                  <span
+                    className="badge badge-primary mr-1"
+                    key={lang}
+                  >
+                    {lang}
+                  </span>
+                ))}
+              </div>
+              </div>
+            </div>
+        </li>
+        {/* interests */}
+        <li className="list-group-item">
+          <div className="media align-items-center">
+            <div className="media-body">
+              <p className="small text-muted mb-0">{lang === 'en' ? 'I am searching for is:' : 'suchte nach:'}</p>
+              <div className="">
+                {contact?.interests?.map((lang) => (
+                  <span
+                    className="badge badge-primary mr-1"
+                    key={lang}
+                  >
+                    {lang}
+                  </span>
+                ))}
+              </div>
+              </div>
+            </div>
+        </li>
+        {/* hobbies */}
+        <li className="list-group-item">
+          <div className="media align-items-center">
+            <div className="media-body">
+              <p className="small text-muted mb-0">{lang === 'en' ? 'I want to have:' : 'ich mochte:'}</p>
+              <div className="">
+                {contact?.hobbies?.map((lang) => (
+                  <span
+                    className="badge badge-primary mr-1"
+                    key={lang}
+                  >
+                    {lang}
+                  </span>
+                ))}
+              </div>
+              </div>
+            </div>
+        </li>
+        {/* preferences */}
+        <li className="list-group-item">
+          <div className="media align-items-center">
+            <div className="media-body">
+              <p className="small text-muted mb-0">{lang === 'en' ? 'What are my preferences' : 'Meine Einstellungen'}</p>
+              <div className="">
+                {contact?.preferences?.map((lang) => (
+                  <span
+                    className="badge badge-primary mr-1"
+                    key={lang}
+                  >
+                    {lang}
+                  </span>
+                ))}
+              </div>
+              </div>
+            </div>
         </li>
       </ul>
     </div>

@@ -45,7 +45,7 @@ router.post(
 
   router.get(
     '/v1/getAllLikedVideos',
-    Middleware.isAuthenticated,
+    // Middleware.isAuthenticated,
     sellItemController.getLikedMedia,
     Middleware.Response.success('getLikedMedia')
   );
@@ -249,7 +249,7 @@ router.get('/v1/test', sellItemController.test)
   // get profile video
   router.get(
     '/v1/getProfileVideo/:userId',
-    Middleware.isAuthenticated,
+    // Middleware.isAuthenticated,
     sellItemController.getProfileVideo,
     Middleware.Response.success('getProfileVideo')
   );

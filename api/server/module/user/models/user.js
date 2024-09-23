@@ -54,6 +54,10 @@ const UserSchema = new mongoose.Schema(
       type: Array,
       default: []
     },
+    preferences: {
+      type: Array,
+      default: []
+    },
     provider: {
       type: String,
       default: 'local'

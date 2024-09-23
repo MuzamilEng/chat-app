@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { connect, ConnectedProps } from 'react-redux';
+import "../friends/index.module.scss"
 
 // todo fix dynamic forward ref
 // const ContactSearchForm = dynamic(() => import('@components/contact/contact-search-form'), {
@@ -200,7 +201,7 @@ function ModelList({
               </div>
             )}
           </Row>
-              <div style={{ width: '100%', overflow: 'auto',margin: '2vw', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: '1vw' }} className="">
+              <div style={{ width: '50%', overflow: 'auto',margin: '2vw', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: '1vw' }} className="scroll-bar">
               {trendingVideos?.slice(0, 5).map((item, index) => (
           <div className={'image-box mt-3'} style={{width: '15vw'}} key={index}>
             <video

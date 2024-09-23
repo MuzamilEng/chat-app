@@ -13,6 +13,7 @@ import { Baseurl } from "@services/api-request";
 import { useTranslationContext } from "context/TranslationContext";
 import { userService } from "@services/user.service";
 import Loader from "@components/common-layout/loader/loader";
+import { sellItemService } from "@services/sell-item.service";
 interface IProps {
   authUser: any;
   transparentLogo: string;
@@ -38,6 +39,11 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [isauthusertrue, setisauthusertrue] = useState(false);
+  const [trendingVideos, setTrendingVideos] = useState([]);
+  const [isOpenMedia, setIsOpenMedia] = useState(false);
+  const [mediaItem, setMediaItem] = useState('');
+  const [titleModal, setTitleModal] = useState('');
+
 
   const checkAuthUser = () => {
     if (authService.isLoggedin()) {
@@ -205,6 +211,20 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
     }
   };
 
+  const handleView = async (e, item: any) => {
+    e.preventDefault();
+    await setMediaItem(item);
+    setTitleModal(item?.name);
+    setIsOpenMedia(true);
+  };
+
+  useEffect(() => {
+    const videos = sellItemService.getAllLikedVideos().then((res) => {
+      setTrendingVideos(res.data?.data);
+    })
+    }, []);
+
+
   return (
     <section className="main scroll">
       <PageTitle title="Startseite" />
@@ -221,7 +241,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
           <div className="row col-md-12 col-12 " style={{ flexWrap: "wrap" }}>
             <div className="col-md-6 col-12 text-left">
               <h4 className="set-font-size my-3">
-                {t?.title}
+                {"videos of the month or free content of the day!"}
               </h4>
             </div>
             <div className="col-md-6 col-12 text-right">
@@ -312,6 +332,27 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
               </div>
             </div>
           </div>
+          <div style={{ width: '50%', overflow: 'auto',margin: '2vw', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: '1vw' }} className="scroll-bar">
+              {trendingVideos?.slice(0, 5).map((item, index) => (
+          <div className={'image-box mt-3'} style={{width: '15vw'}} key={index}>
+            <video
+              controls style={{ objectFit: 'cover', width: '100%', height: '10vw' }} src={item?.fileUrl || '/images/default_thumbnail_video.png'}
+            />
+            <a
+              aria-hidden
+              className="popup"
+              role="button"
+              onClick={(e) => handleView(e, item)}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className="flex justify-content-center">
+                <i className={`icon-play`} />
+              </div>
+            </a>
+            <div className="overlay" />
+          </div>
+             ))}
+             </div>
 
           <div className="col-md-12 col-12"  >
             <div className="">

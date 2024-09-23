@@ -17,10 +17,12 @@ function ProfilePage({ authUser }: IProps) {
   const [userLanguages, setUserLanguages] = useState<string[]>([]);
   const [userInterests, setUserInterests] = useState<string[]>([]);
   const [userHobbies, setUserHobbies] = useState<string[]>([]);
+  const [userPreferences, setUserPreferences] = useState<string[]>([]);
 
-  const languages = ['English', 'German', 'French', 'Spanish', 'Chinese', 'Russian'];
-  const interests = ['Music', 'Art', 'Technology', 'Travel', 'Sports', 'Reading'];
-  const hobbies = ['Hiking', 'Cooking', 'Gaming', 'Photography', 'Writing', 'Gardening'];
+  const languages = ['English', 'German', 'French', 'Spanish', 'Italian', 'Russian'];
+  const interests = ['Woman', 'Man', 'Couple', 'Bisexual', 'Trans'];
+  const hobbies = ['Relationship', 'Flirt', 'Email Sex', 'One Night Stand', 'Affair', 'frivolous', 'Friendship', 'Fetish-Erotic ', 'BDSM', 'Group Sex', 'Fling'];
+  const preferences = ['Flower sex', 'Analsex', 'Oralsex', 'Devot', 'Dominant', 'Toys', 'Swinger', 'Outdoorsex', 'Public Sex', 'Dessous', 'Roleplay', 'Voyeur']
 
   // Initialize state with authUser data when the component mounts
   useEffect(() => {
@@ -48,6 +50,7 @@ function ProfilePage({ authUser }: IProps) {
         languages: userLanguages,
         interests: userInterests,
         hobbies: userHobbies,
+        preferences: userPreferences
       });
       toast.success( lang === 'en' ? 'The interest have been updated successfully' : 'Das Interesse wurde erfolgreich aktualisiert');
       // Optionally handle success or navigate elsewhere
@@ -92,12 +95,16 @@ function ProfilePage({ authUser }: IProps) {
             {renderCheckboxes(languages, userLanguages, setUserLanguages)}
           </div>
           <div className="mb-4">
-            <h5>{lang === 'en' ? 'Interests' : 'Interessen'}</h5>
+            <h5>{lang === 'en' ? 'What I am searching for is:' : 'Ich such für ist:'}</h5>
             {renderCheckboxes(interests, userInterests, setUserInterests)}
           </div>
           <div className="mb-4">
-            <h5>{lang === 'en' ? 'Hobbies' : 'Hobbys'}</h5>
+            <h5>{lang === 'en' ? 'What I want to have:' : 'Ich will:'}</h5>
             {renderCheckboxes(hobbies, userHobbies, setUserHobbies)}
+          </div>
+          <div className="mb-4">
+            <h5>{lang === 'en' ? 'What are my preferences' : 'Meine Einstellungen:'}</h5>
+            {renderCheckboxes(preferences, userPreferences, setUserPreferences)}
           </div>
           <button
             className="btn btn-primary"

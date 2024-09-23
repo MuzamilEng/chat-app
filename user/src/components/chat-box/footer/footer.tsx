@@ -56,10 +56,10 @@ const saveRecentMessage = (message) => {
 };
 
 // Function to check similarity (using a basic string comparison for demonstration)
-const isMessageSimilar = (message1, message2) => {
-  const similarity = stringSimilarity.compareTwoStrings(message1, message2);
-  return similarity > 0.8; // Adjust threshold as needed
-};
+// const isMessageSimilar = (message1, message2) => {
+//   const similarity = stringSimilarity.compareTwoStrings(message1, message2);
+//   return similarity > 0.8; // Adjust threshold as needed
+// };
 
 
   useEffect(() => {
@@ -184,9 +184,10 @@ const isMessageSimilar = (message1, message2) => {
 
   const handleSendMessage = (message) => {
     if (/\S/.test(message)) {
-      if (isMessageSimilar(message, recentMessage)) {
-        toast.info('Try something different or a new message!');
-      } else {
+      // if (isMessageSimilar(message, recentMessage)) {
+      //   toast.info('Try something different or a new message!');
+      // } 
+    
         // Proceed with sending the message
         const data = {
           text: message,
@@ -195,7 +196,7 @@ const isMessageSimilar = (message1, message2) => {
         };
         sendMess(data);
         saveRecentMessage(message); // Update recent message
-      }
+      
   
       if (authUser.type === 'user' || userType === 'user') {
         const data = {

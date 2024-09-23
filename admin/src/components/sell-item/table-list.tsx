@@ -73,6 +73,7 @@ const TableSellItems: React.FunctionComponent<IProps> = ({
         <thead>
           <tr>
             <th>Miniaturansicht</th>
+            <th className="">Category</th>
             <th className="th-name">Name</th>
             <th>Preis (Token)</th>
             <th>Modell</th>
@@ -97,6 +98,7 @@ const TableSellItems: React.FunctionComponent<IProps> = ({
                   />
                   )}
                 </td>
+                <td>{item.category && item.category}</td>
                 <td>{item.media && item.name}</td>
                 <td>{item.price}</td>
                 <td>{item.model && item.model.username}</td>

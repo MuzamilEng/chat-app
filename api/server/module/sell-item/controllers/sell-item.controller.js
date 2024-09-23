@@ -13,6 +13,7 @@ exports.createSellItem = async (req, res, next) => {
       mediaType: Joi.string().allow('photo', 'video').allow('', String).optional(),
       folderId: Joi.string().required(),
       isApproved: Joi.boolean().default(false),
+      category: Joi.string().required(),
     });
 
     const validate = schema.validate(req.body);
@@ -818,7 +819,7 @@ exports.getAllFriendRequests = async (req, res, next) => {
 // update interests controller 
 exports.updateInterests = async (req, res, next) => {
   try {
-    const {userId, interests, languages, hobbies } = req.body;
+    const {userId, interests, languages, hobbies, preferences } = req.body;
     // Fetch the user either by id or the current user in session
     const user = await DB.User.findOne({ _id: userId })
 
@@ -830,6 +831,7 @@ exports.updateInterests = async (req, res, next) => {
     user.interests = interests;
     user.languages = languages;
     user.hobbies = hobbies;
+    user.preferences = preferences;
 
     // Save the updated user record
     await user.save();

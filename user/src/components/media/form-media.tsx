@@ -18,6 +18,7 @@ interface FormValues {
   price: string;
   mediaType: string;
   free: boolean;
+  category: string;
   // folderName: string;
 }
 
@@ -37,6 +38,7 @@ function FormMedia() {
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState('');
   const [newFolderName, setNewFolderName] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const {lang} = useTranslationContext();
   
   const schema = Yup.object().shape({
@@ -48,6 +50,7 @@ function FormMedia() {
     description: Yup.string().required( lang === 'de' ? 'Beschreibung ist erforderlich' : 'Description is Required'),
     mediaType: Yup.string().required( lang === 'de' ? 'Typ ist erforderlich' : 'Type is Required'),
     free: Yup.boolean().required(),
+    category: Yup.string().required( lang === 'de' ? 'Kategorie ist erforderlich' : 'Category is Required'),
     // folderName: Yup.string().required('Folder Name is Required'),
   });
 
@@ -102,6 +105,7 @@ function FormMedia() {
   const handleCheckboxChange2 = () => {
     setIsContentChecked(!isContentChecked);
   };
+
   const upload = async (formValues) => {
     if (!isChecked) {
       toast.error( lang === 'en' ? 'Please check the checkbox to continue.' : 'Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
@@ -109,6 +113,10 @@ function FormMedia() {
     }
     if (!isContentChecked) {
       toast.error( lang === 'en' ? 'Please check the 2nd checkbox to continue.' : 'Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
+      return;
+    }
+    if(formValues.category === '') {
+      toast.error( lang === 'en' ? 'Please select a category.' : 'Bitte wählen Sie einen Kategorie aus.');
       return;
     }
     if(!selectedFolder){
@@ -119,7 +127,7 @@ function FormMedia() {
       setDisabled(true);
       await sellItemService.createSellItem({
         ...formValues,
-        mediaId, folderId: selectedFolder
+        mediaId, folderId: selectedFolder, category: formValues.category
       });
       toast.success( lang === 'en' ? 'Media content has been successfully uploaded. Please wait for approval by the administrator.' : 'Medieninhalt wurde erfolgreich hochgeladen. Bitte warten Sie auf die Genehmigung durch den Administrator.');
       setTimeout(() => router.push('/profile/media-content'), 3000);
@@ -150,6 +158,7 @@ function FormMedia() {
               price: '0',
               mediaType: 'photo',
               free: false,
+              category: '',  // Initialized category
             }}
           >
             {(props: FormikProps<FormValues>) => (
@@ -169,6 +178,26 @@ function FormMedia() {
                           <option value="photo">{lang === 'de' ? 'Foto' : 'Photo'}</option>
                           <option value="video">Video</option>
                         </Field>
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-12 col-12">
+                      <Form.Group>
+                        <Form.Label>{lang === 'de' ? 'Wählen Sie den Ordner aus.' : 'Please select category.'} </Form.Label>
+                        <Field
+                          className="form-control form-control-md"
+                          name="category"
+                          component="select"
+                          value={props.values.category}
+                          onChange={props.handleChange}
+                        >
+                          <option  value="">{lang === 'de' ? 'Bitte waehlen Sie' : 'select category'}</option>
+                          <option value="FSK12">{lang === 'de' ? 'FSK12' : 'FSK12'}</option>
+                          <option value="FSK16">{lang === 'de' ? 'FSK16' : 'FSK16'}</option>
+                          <option value="FSK18">{lang === 'de' ? 'FSK18' : 'FSK18'}</option>
+                        </Field>
+                        <div className="invalid-feedback">
+                        {props.errors.category && props.touched.category ? props.errors.category : null}
+                      </div>
                       </Form.Group>
                     </div>
                      <div className="col-md-6 col-12">
