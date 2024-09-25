@@ -59,7 +59,7 @@ exports.login = (req, res, next) => {
     res.locals.login = {
       token,
       expiredAt,
-      user
+      // user
     };
 
     return next();

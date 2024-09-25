@@ -31,6 +31,7 @@ function VerificationUser() {
   };
   const updateVerification = async (data: any) => {
     setLoadingUpdate(true);
+    data.id = userId;
     try {
       await userService.updateVerificationDocument(userId as string, data);
       toast.success('Die Verifizierung wurde aktualisiert');
