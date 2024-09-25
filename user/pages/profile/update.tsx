@@ -27,6 +27,7 @@ function UpdateProfile({
   const router = useRouter();
   const [showRq, setShowRq] = useState(false);
   const {t, lang} = useTranslationContext()
+  const user = authUser;
 
 
   useEffect(() => {
@@ -60,7 +61,7 @@ function UpdateProfile({
                     <h6 className="mb-1">{t?.profilePage?.account}</h6>
                     <p className="mb-0 text-muted small">{t?.profilePage?.update}</p>
                   </div>
-                  <PersonalProfileForm t={t} />
+                  <PersonalProfileForm authUser={user} t={t} />
                 </div>
               </div>
               <div className="col-md-6">

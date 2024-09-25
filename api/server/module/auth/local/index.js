@@ -41,23 +41,31 @@ exports.login = (req, res, next) => {
     if (!user) {
       return next(PopulateResponse.notFound());
     }
+    const userData = await DB.User.findOne({ email: req.body.email }).select('type isApproved');
+    // Check if user type is 'model' and if they are approved
+    if (userData.type === 'model' && !userData.isApproved) {
+      return next(PopulateResponse.forbidden({ msg: 'Your profile is under review.' }));
+    }
 
     const expireTokenDuration = 60 * 60 * 24 * 7; // 7 days
     const now = new Date();
     const expiredAt = new Date(now.getTime() + expireTokenDuration * 1000);
     const token = signToken(user._id, user.role, expireTokenDuration);
+
     // eslint-disable-next-line no-param-reassign
     user.isBlocked = false;
     await user.save();
 
     res.locals.login = {
       token,
-      expiredAt
+      expiredAt,
+      user
     };
 
     return next();
   })(req, res, next);
 };
+
 
 exports.verifyMail = async (req, res, next) => {
   try {

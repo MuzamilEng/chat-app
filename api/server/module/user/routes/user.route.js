@@ -9,7 +9,9 @@ const uploadAvatar = multer({
       const fileName = Helper.String.randomString(5) + Helper.String.getExt(file.originalname);
       cb(null, fileName);
     },
-    fileSize: (process.env.MAX_PHOTO_SIZE || 10) * 1024 * 1024 // 10MB limit
+    // fileSize: (process.env.MAX_PHOTO_SIZE || 10) * 1024 * 1024 // 10MB limit
+    fileSize: (30) * 1024 * 1024
+
   })
 });
 
@@ -22,7 +24,7 @@ const uploadCertification = multer({
       const fileName = Helper.String.randomString(5) + Helper.String.getExt(file.originalname);
       cb(null, fileName);
     },
-    fileSize: (process.env.MAX_PHOTO_SIZE || 10) * 1024 * 1024 // 10MB limit
+    fileSize: (30) * 1024 * 1024 // 10MB limit
   })
 });
 

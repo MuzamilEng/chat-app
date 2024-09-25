@@ -850,29 +850,38 @@ exports.updateInterests = async (req, res, next) => {
 
 // get profile video
 
+const mongoose = require('mongoose'); // Ensure mongoose is imported
+
 exports.getProfileVideo = async (req, res, next) => {
   try {
-    const { userId } = req.params;
-    
+    const {userId}  = req.params;
+
     if (!userId) {
       return res.status(400).json({ error: 'Invalid request, userId is required' });
     }
-// i want to get only that video whose name = 'profile-video'
-    const userVideo = await DB.Media.findOne({ ownerId : userId , name: 'profile-video' })
 
+    // Fetch the video with the name that includes "profile-video"
+  // Search for the latest video where the name includes 'profile-video'
+  const userVideo = await DB.Media.findOne(
+    { 
+      ownerId: userId, 
+      name: { $regex: /profile-video/, $options: 'i' }  // Case-insensitive regex search
+    }
+  ).sort({ createdAt: -1 });  // Sort by latest createdAt
     if (!userVideo) {
       return res.status(404).json({ error: 'No profile video found for this user' });
     }
+
     res.locals.getProfileVideo = {
       data: userVideo
-    }
+    };
     return next();
 
   } catch (error) {
     return next(error);
   }
+};
 
-}
 
 
 // add or update controller for secret info

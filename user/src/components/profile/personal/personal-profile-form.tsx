@@ -109,7 +109,7 @@ class PersonalProfileForm extends Component<any, any> {
   };
 
   render() {
-    const { authUser } = this.props;
+    const authUser = this.props.authUser;
     const { countries, states, cities } = this.state;
     const { t} = this.props;
     const lang = this.getLangFromUrl();
@@ -150,7 +150,8 @@ class PersonalProfileForm extends Component<any, any> {
               state: authUser?.state,
               city: authUser?.city,
               country: authUser?.country,
-              postCode: authUser?.postCode
+              postCode: authUser?.postCode,
+              id: authUser?._id
             }}
             onSubmit={(values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
               this.props.updateProfile({ ...values });

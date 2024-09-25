@@ -20,7 +20,7 @@ const uploadPhoto = multer({
 
       cb(null, fileName);
     },
-    fileSize: (process.env.MAX_PHOTO_SIZE || 10) * 1024 * 1024 // 10MB limit
+    fileSize: (30) * 1024 * 1024 // 10MB limit
   })
 });
 

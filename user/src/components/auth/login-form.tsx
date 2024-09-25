@@ -67,7 +67,7 @@ function LoginForm({
       }
     } catch (e) {
       const error = await e;
-      toast.error(error?.data?.message || showError(e));
+      toast.error(error?.data?.message || error?.data?.msg || showError(e));
       setLoading(false);
     }
   };
