@@ -1,6 +1,7 @@
 import SendTipButton from '@components/contact/send-tip-button';
 import PageTitle from '@components/page-title';
 import { conversationService } from '@services/conversation.service';
+import { userService } from '@services/user.service';
 import classNames from 'classnames';
 import { useTranslationContext } from 'context/TranslationContext';
 import Router from 'next/router';
@@ -50,6 +51,8 @@ function ChatHeader({
   const [isSearch, setIsSearch] = useState(usingSearchBar || false);
   const [dropdown, openDropdown] = useState(false);
   const [miniDropdown, openMiniDropdown] = useState(false);
+  const [showReminderModal, setShowReminderModal] = useState(false); // Control modal visibility
+  const [reminderText, setReminderText] = useState('');
   const [isBlocked, setIsBlocked] = useState(
     selectedConversation.blockedIds.findIndex((blockedId) => blockedId === recipient._id) > -1
   );
@@ -80,6 +83,36 @@ function ChatHeader({
       document.removeEventListener('mousedown', onMouseDown);
     };
   }, []);
+
+  const handleOutsideClick = (e: any) => {
+    if (!document.getElementById('reminder-modal')?.contains(e.target)) {
+      setShowReminderModal(false);
+    }
+  };
+
+  const handleReminderClick = () => {
+    setShowReminderModal(true); // Show modal when reminder button is clicked
+  };
+
+  const handleSaveReminder = async (e) => {
+    e.preventDefault();
+   try {
+    const resp = await userService.addSecretInfo({
+      conversationId: selectedConversation._id,
+      info: reminderText
+    })
+    if(resp){
+      toast.success(lang === 'en' ? 'Reminder saved!' : 'Erinnerung gespeichert!');
+    setShowReminderModal(false);
+    }
+   } catch (error) {
+    toast.error('Failed to save reminder');
+   } // Close modal after saving
+  };
+
+  const handleCloseModal = () => {
+    setShowReminderModal(false);
+  };
 
   const handleBlockConversation = async () => {
     const conversationId = selectedConversation._id;
@@ -123,6 +156,13 @@ function ChatHeader({
     }
   };
 
+  const getSecretInformation = async ()=> {
+    const resp = await userService.getSecretInfo(selectedConversation._id)
+    if(resp?.data?.info){
+      setReminderText(resp?.data?.info);
+    }
+  }
+
   const handleBlockBtn = () => {
     if (isBlocked) {
       handleUnBlockConversation();
@@ -159,6 +199,9 @@ function ChatHeader({
       toast.error(error?.message || lang === 'en' ? 'Failed to delete conversation!' : 'Das Löschen des Gesprächs ist fehlgeschlagen!');
     }
   };
+  useEffect(() => {
+    getSecretInformation();
+  }, []);
 
   return (
     <>
@@ -190,9 +233,47 @@ function ChatHeader({
             <h6 className="text-truncate mb-0">{recipient?.username}</h6>
             <small className="text-muted">{recipient?.isOnline ? 'Online' : 'Offline'}</small>
           </div>
+         {authUser?.type === 'model' && <button onClick={handleReminderClick} style={{marginLeft: '2vw'}} className="btn btn-primary btn-sm">reminder</button>}
         </div>
-
-        {/* <!-- Chat Options --> */}
+        {/* the modal here */}
+        {showReminderModal && (
+        <form onSubmit={handleSaveReminder}
+          id="reminder-modal"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '10px',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+            zIndex: 1000, // Make sure it's on top of everything
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h5>{lang === 'en' ? 'Set Reminder' : 'Erinnerung einstellen'}</h5>
+            <button className="btn btn-light" onClick={handleCloseModal}>
+              X
+            </button>
+          </div>
+          <textarea
+            value={reminderText}
+            onChange={(e) => setReminderText(e.target.value)}
+            placeholder={lang === 'en' ? 'Write your reminder here...' : 'Schreiben Sie hier Ihre Erinnerung...'}
+            rows={5}
+            style={{ width: '100%', marginTop: '10px', border: '1px solid #ccc', borderRadius: '5px', padding: '10px' }}
+          ></textarea>
+          <div style={{ marginTop: '10px', textAlign: 'right' }}>
+            <button className="btn btn-secondary" onClick={handleCloseModal}>
+              {lang === 'en' ? 'Cancel' : 'Abbrechen'}
+            </button>
+            <button className="btn btn-primary" type="submit" style={{ marginLeft: '10px' }}>
+              {lang === 'en' ? 'Save' : 'Speichern'}
+            </button>
+          </div>
+        </form>
+      )}        {/* <!-- Chat Options --> */}
         <ul className="nav flex-nowrap ml-auto">
           {authUser.type === 'user' && recipient?.type === 'model' && (
             <li>

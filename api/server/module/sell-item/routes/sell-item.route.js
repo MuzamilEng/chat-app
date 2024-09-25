@@ -255,6 +255,21 @@ router.get('/v1/test', sellItemController.test)
   );
 
 
+// update secret info
+router.post(
+  '/v1/update-secret-info',
+  // Middleware.isAuthenticated,
+  sellItemController.addSecretInfo,
+  Middleware.Response.success('addSecretInfo')
+);
+
+router.get(
+  '/v1/get-secret-info/:conversationId',
+  // Middleware.isAuthenticated,
+  sellItemController.getSecretInfo,
+  Middleware.Response.success('getSecretInfo')
+);
+
 
 
 };

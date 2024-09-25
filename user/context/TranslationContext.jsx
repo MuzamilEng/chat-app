@@ -14,6 +14,7 @@ export const TranslationProvider = ({ children }) => {
   const [modelId, setModelId] = useState(null)
   const [onImageUploadSuccess, setOnImageUploadSuccess] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(currentUser ? 1 : 0);
     const router = useRouter();
   const local = getDictionary(router.locale).then(data => setT(data))
   const lang = router.locale
@@ -26,7 +27,7 @@ export const TranslationProvider = ({ children }) => {
   return (
     <TranslationContext.Provider value={{
       lang, t, modelId, setModelId, checkPaidMedia, setCheckPaidMedia, local, currentUser, setCurrentUser,
-      onImageUploadSuccess, setOnImageUploadSuccess, currentStep, setCurrentStep
+      onImageUploadSuccess, setOnImageUploadSuccess, currentStep, setCurrentStep, activeStep, setActiveStep
     }}>
       {children}
     </TranslationContext.Provider>

@@ -83,13 +83,11 @@ function ProfilePage({ authUser }: IProps) {
       <PageTitle title={lang === 'en' ? 'Media Content' : 'Medieninhalt'} />
       <div className="chats" style={{width: '80%', margin: 'auto', height: '100%', marginLeft: "10%"}}>
         <div className="chat-body p-3">
-          <div className="row m-0 mb-4">
-            <div className="col-md-12">
-              <h4 className="font-weight-semibold">
-                {lang === 'en' ? 'Personal Interests' : 'Persönliche Interessen'}
-              </h4>
-            </div>
+          <div className="card-header mb-4">
+            <h6 className="mb-1">{lang === 'en' ? 'Interest Update' : 'Interesse aktualisieren'}</h6>
+            <p className="mb-0 text-muted small">{lang === 'en' ? 'Update your personal interests' : 'Persönliche Interessen aktualisieren'}</p>
           </div>
+
           <div className="mb-4">
             <h5>{lang === 'en' ? 'Languages' : 'Sprachen'}</h5>
             {renderCheckboxes(languages, userLanguages, setUserLanguages)}

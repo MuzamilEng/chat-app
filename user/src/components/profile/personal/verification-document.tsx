@@ -436,7 +436,6 @@ class VerificationDocumentComponent extends Component<any, any> {
                       >
                         <option value="ID">{lang === 'en' ? 'Identification' : 'Identifikation'}</option>
                         <option value="passport">{lang === 'en' ? 'Passport' : 'Reisepass'}</option>
-                        <option value="driverCard">{lang === 'en' ? 'Driver\'s License' : 'Fahrerschein'}</option>
                       </FormControl>
                     </Form.Group>
                   </Col>

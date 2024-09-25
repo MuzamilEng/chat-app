@@ -60,10 +60,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [data, setData] = useState({
-    items: [],
-    count: 0
-  });
+  const [data, setData] = useState([]);
   const [query, setQuery] = useState({
     page: 1,
     take: 12,
@@ -96,7 +93,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
         isFriend: true
       })
       : await userService.findDefault(requestQuery);
-    setData(resp?.data);
+    setData(resp?.data?.items?.filter((i) => i.isApproved == true));
     setLoading(false);
   };
 
@@ -357,10 +354,10 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
           <div className="col-md-12 col-12"  >
             <div className="">
               <div style={{ display: "flex", flexWrap: "wrap" ,minHeight:"420px", marginTop: "10px", width: "100%" }} className="col-md-12">
-              {data?.items?.length === 0 ? (
+              {data?.length === 0 ? (
                    <div className="" style={{ margin: "auto" }}><Loader /></div>
                    ) : (
-                   data?.items?.map((data, index) => (
+                   data?.map((data, index) => (
                  <div  key={index} className="d-block"
                  style={{ position: "relative", margin: "auto", }}
 

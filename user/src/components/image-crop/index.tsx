@@ -14,7 +14,7 @@ const ImageCroper = () => {
   const [crop, setCrop] = useState<any>(null);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const {setOnImageUploadSuccess, currentUser} = useTranslationContext()
+  const {setOnImageUploadSuccess, currentUser, setActiveStep} = useTranslationContext()
   const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
   const [croppedImage, setCroppedImage] = useState<string | null>(userFromLocal?.avatarUrl || null);
 
@@ -86,6 +86,7 @@ const ImageCroper = () => {
       const imageUrl = (response as { data: { url: string } })?.data?.url || dataUrl;
       userFromLocal.avatarUrl = imageUrl
       localStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal));
+      setActiveStep(3)
       setCroppedImage(imageUrl);
       setModalOpen(false);
     })

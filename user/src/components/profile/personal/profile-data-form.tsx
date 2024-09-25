@@ -114,7 +114,7 @@ class ProfileDataForm extends Component<any, any> {
          {authUser ? <Formik
             validationSchema={schema}
             initialValues={{
-              username: authUser?.username || userFromLocal?.username,
+              username: "",
               bio: authUser?.bio || userFromLocal?.bio,
               age: authUser?.age || userFromLocal?.age,
               gender: authUser?.gender || userFromLocal?.gender,
@@ -130,6 +130,9 @@ class ProfileDataForm extends Component<any, any> {
             onSubmit={(values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
               this.props.updateProfile({ ...values });
               this.props.onProfileFormSuccess(true);
+              console.log('====================================');
+              console.log("cledkdifkflfkf", values);
+              console.log('====================================');
               // this.props.setCurrentStep(2)
               formikHelpers.setSubmitting(false);
               // now update the values in localStorage user
@@ -166,7 +169,7 @@ class ProfileDataForm extends Component<any, any> {
                           type="text"
                           id="username"
                           placeholder={lang === 'en' ? 'Enter your name' : 'Geben Sie Ihren Namen ein'}
-                          // onChange={props.handleChange}
+                          onChange={props.handleChange}
                           onBlur={props.handleBlur}
                           value={props.values.username}
                         />
@@ -183,7 +186,7 @@ class ProfileDataForm extends Component<any, any> {
                           className="form-control form-control-md"
                           type="email"
                           placeholder={lang === 'en' ? 'Enter your email' : 'Geben Sie Ihre E-Mail Adresse ein'}
-                          // onChange={props.handleChange}
+                          onChange={props.handleChange}
                           onBlur={props.handleBlur}
                           value={props.values.email}
                         />

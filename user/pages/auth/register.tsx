@@ -24,9 +24,9 @@ interface IProps {
 
 
 function Register({ authUser }: IProps) {
-  const { lang, currentUser, setCurrentStep, onImageUploadSuccess } = useTranslationContext();
-  const [activeStep, setActiveStep] = useState(currentUser ? 1 : 0);
+  const { lang, currentUser, setCurrentStep, onImageUploadSuccess, activeStep, setActiveStep } = useTranslationContext();
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
+  const [userType, setUserType] = useState('');
 
   const steps = [
     'Verify email',
@@ -73,6 +73,7 @@ function Register({ authUser }: IProps) {
   const handleProfileSuccess = (data) => {
     if (data === true) {
       handleComplete(); // Step 2 completed, move to step 3
+      setCurrentStep(4)
     }
   };
 
@@ -85,9 +86,13 @@ function Register({ authUser }: IProps) {
   const handleVerificationDocumentSuccess = (data) => {
     if (data === true) {
       setCurrentStep(5)
-      console.log('Verification')
-      handleComplete(); // Step 4 completed, move to step 5
+      handleComplete();
     }
+  };
+
+  const handleTypeCheck = (data) => {
+    setUserType(data);
+    localStorage.setItem('userType', data);
   };
 
   useEffect(() => {
@@ -99,6 +104,14 @@ function Register({ authUser }: IProps) {
   useEffect(() => {
     handleImageSuccess()
   }, [onImageUploadSuccess]);
+
+  useEffect(()=> {
+    const userType = localStorage.getItem('userType')
+    if(userType) {
+      setUserType(userType)
+    }
+  }, [])
+
   
   return (
     <div id="wrapper" className="wrapper">
@@ -113,7 +126,7 @@ function Register({ authUser }: IProps) {
         </div>
       </div>
       <div style={{width: '100%', maxWidth: '90vw', margin: '2vw auto'}} className="">
- { activeStep !== 5 && <HorizontalNonLinearStepper
+ { userType === 'model' && activeStep !== 5 && <HorizontalNonLinearStepper
           steps={steps}
           activeStep={activeStep}
           completed={completed}
@@ -133,7 +146,7 @@ function Register({ authUser }: IProps) {
                 <h3 className="text-center text-uppercase">{lang === 'en' ? 'Register' : 'Benutzerregistrierung'}</h3>
                 <hr />
                 <div className="xchat-form">
-                  <RegisterFrom onSuccess={handleRegisterSuccess} />
+                  <RegisterFrom type={handleTypeCheck} onSuccess={handleRegisterSuccess} />
                 </div>
                 <div className="text-center">
                   <p>

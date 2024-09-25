@@ -34,6 +34,15 @@ class UserService extends APIRequest {
   contactAdmin(data: IContact) {
     return this.post('/contact-us', data);
   }
+  // update-secret-info
+  addSecretInfo(data: any) {
+    return this.post('/update-secret-info', data);
+  }
+  // get-secret-info/:conversationId
+
+  getSecretInfo(conversationId: string) {
+    return this.get(`/get-secret-info/${conversationId}`);
+  }
 }
 
 export const userService = new UserService();

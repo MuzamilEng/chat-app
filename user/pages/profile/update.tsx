@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { withAuth } from 'src/redux/withAuth';
+import Interests from './interests';
 
 const TokenPerMessageForm = dynamic(() => import('src/components/setting/token-per-message-form'));
 const DeactiveProfileForm = dynamic(() => import('src/components/setting/deactive-profile-form'));
@@ -63,6 +64,9 @@ function UpdateProfile({
                 </div>
               </div>
               <div className="col-md-6">
+              <div style={{marginTop: "-1vw"}} className="">
+              <Interests />
+              </div>
                 {authUser.type === 'model' && <TokenPerMessageForm />}
                 <div className="card mb-3">
                   <div className="card-header">

@@ -22,7 +22,7 @@ interface FormValues {
   isAgreeToImages: boolean;
 }
 
-function RegisterForm({onSuccess}) {
+function RegisterForm({onSuccess, type: checkUserType}) {
   const [showPw, setShowPw] = useState(false);
   const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
   const [requesting, setRequesting] = useState(false);
@@ -32,7 +32,7 @@ function RegisterForm({onSuccess}) {
   const router = useRouter()
 
   const schema = Yup.object().shape({
-    username: Yup.string().required(lang === 'en' ? 'Username is required' : 'Benutzername ist erforderlich'),
+    username: Yup.string().optional(),
     email: Yup.string().email( lang === 'en' ? 'Email format is not correct' : 'E-Mail-Format ist nicht korrekt').required( lang === 'en' ? 'Email is required' : 'E-Mail wird benötigt'),
     password: Yup.string()
     .required(lang === 'en' ? 'Password is required' : 'Passwort wird benötigt')
@@ -44,6 +44,10 @@ function RegisterForm({onSuccess}) {
     isAgreeToPrivacyPolicy: Yup.boolean().required(lang === 'en' ? 'Please accept the agreement contract' : 'Bitte bestätigen Sie die Nutzungsbedingungen.').default(false),
     isAgreeToImages: Yup.boolean().required(lang === 'en' ? 'Please accept the medida showing agreement' : 'Bitte bestätigen Sie die Nutzungsbedingungen. ').default(false)
   });
+
+  const generateRandomName = () => {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  };
 
   const handleCheckboxChange2 = () => {
     setIsContentChecked(!isContentChecked);
@@ -62,6 +66,11 @@ function RegisterForm({onSuccess}) {
     } catch (e) {
       console.warn(e);
     }
+  };
+
+  const handleTypecheck = (data) => {
+    setType(data);
+    checkUserType(data);
   };
 
 
@@ -87,7 +96,7 @@ function RegisterForm({onSuccess}) {
     } else {
       await authService
         .register({
-          username, email, password, type
+          username : type === 'model' ? generateRandomName() : username, email, password, type
         })
         .then((resp) => {
           toast.success(resp?.data?.data?.message || lang === 'en' ? 'Registration successful!' : 'Registrierung erfolgreich!');
@@ -122,7 +131,7 @@ function RegisterForm({onSuccess}) {
     >
       {(props: FormikProps<FormValues>) => (
         <form onSubmit={props.handleSubmit}>
-          <Form.Group className="form-group">
+          {type !== 'model' && <Form.Group className="form-group">
             <Form.Label className="input-label">{lang === 'de' ? 'Benutzername' : 'Username'}</Form.Label>
             <FormControl
               isInvalid={props.touched.username && !!props.errors.username}
@@ -136,7 +145,7 @@ function RegisterForm({onSuccess}) {
               value={props.values.username}
             />
             <div className="invalid-feedback">{props.errors.username}</div>
-          </Form.Group>
+          </Form.Group>}
           <Form.Group className="form-group">
             <Form.Label className="input-label">{lang === 'de' ? 'E-Mail-Adresse' : 'Email-Adress'}</Form.Label>
             <FormControl
@@ -195,7 +204,7 @@ function RegisterForm({onSuccess}) {
           <Form.Group className="mb-10 form-group">
             <Form.Check
               type="radio"
-              onChange={() => setType('user')}
+              onChange={()=> handleTypecheck('user')}
               value="user"
               defaultChecked
               name="type"
@@ -205,7 +214,7 @@ function RegisterForm({onSuccess}) {
             />
             <Form.Check
               type="radio"
-              onChange={() => setType('model')}
+              onChange={() => handleTypecheck('model')}
               value="model"
               name="type"
               id="model"
@@ -292,7 +301,7 @@ function RegisterForm({onSuccess}) {
           </Form.Group>
           <Form.Group className="form-group">
             <button type="submit" className="xchat-btn-fill" disabled={requesting}>
-              {requesting ? <Loader /> : 'Register'}
+              {requesting ? <Loader /> : 'Next'}
             </button>
           </Form.Group>
         </form>

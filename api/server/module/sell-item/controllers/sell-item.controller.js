@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const _ = require('lodash');
 const Folder = require('../models/folder');
+const secretInfo = require('../models/secret-info');
 
 exports.createSellItem = async (req, res, next) => {
   try {
@@ -872,3 +873,52 @@ exports.getProfileVideo = async (req, res, next) => {
   }
 
 }
+
+
+// add or update controller for secret info
+exports.addSecretInfo = async (req, res, next) => {
+  try {
+    const { conversationId, info } = req.body;
+    
+    if (!conversationId) {
+      return res.status(400).json({ error: 'Invalid request, conversationId is required' });
+    }
+
+    // Find and update the document if it exists, or create a new one if it doesn't (upsert).
+    const userInfo = await secretInfo.findOneAndUpdate({ conversationId},
+      { $set: { info } }, // Set the new info
+      { new: true, upsert: true } // Return the updated document, create if it doesn't exist
+    );
+
+    res.locals.addSecretInfo = userInfo;
+
+    return next();
+
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getSecretInfo = async (req, res, next) => {
+  try {
+    const { conversationId } = req.params;
+    
+    if (!conversationId) {
+      return res.status(400).json({ error: 'Invalid request, conversationId is required' });
+    }
+    
+    // Find the document by conversationId
+    const userInfo = await secretInfo.findOne({ conversationId });
+
+    if (!userInfo) {
+      return res.status(404).json({ error: 'No secret info found for this conversation' });
+    }
+
+    res.locals.getSecretInfo = userInfo;
+
+    return next();
+
+  } catch (error) {
+    return next(error);
+  }
+};

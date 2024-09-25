@@ -206,7 +206,6 @@ class PersonalProfileForm extends Component<any, any> {
                         <div className="invalid-feedback">{props.errors.username}</div>
                       </Form.Group>
                     </Col>
-                    <p className='text-muted mx-auto'>{lang === 'en' ? 'This data will be displayed publicly' : 'Diese Daten werden nicht im Profil angezeigt'}</p>
                     <Col md={12} xs={12}>
                       <Form.Group>
                         <Form.Label>{t?.profilePage?.email}</Form.Label>
@@ -222,6 +221,7 @@ class PersonalProfileForm extends Component<any, any> {
                         />
                         <div className="invalid-feedback">{props.errors.email}</div>
                       </Form.Group>
+                    <p style={{ textAlign: 'center', display: 'block' }} className='text-muted mx-auto'>{lang === 'en' ? 'This data will be displayed publicly' : 'Diese Daten werden nicht im Profil angezeigt'}</p> <br />
                     </Col>
                     <Col xs={12} md={6}>
                       <Form.Group>
