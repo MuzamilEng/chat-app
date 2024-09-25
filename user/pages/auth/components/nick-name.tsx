@@ -5,7 +5,7 @@ import { Button, Form, FormControl } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 
 function NickName({onNicknameSuccess}) {
-    const {lang, currentUser, setActiveStep} = useTranslationContext()
+    const {lang, currentUser} = useTranslationContext()
     const [nickname, setNickname] = React.useState('')
     const [error, setError] = React.useState('')
     const [emailStatus, setEmailStatus] = React.useState(null)
@@ -35,7 +35,7 @@ function NickName({onNicknameSuccess}) {
           onNicknameSuccess(true)
           userFromLocal.nickname = nickname
           localStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal))
-          setActiveStep(2)
+          // setActiveStep(2)
         }
       } catch (error) {
         // setError(error.message)
@@ -88,8 +88,8 @@ function NickName({onNicknameSuccess}) {
                   ? 'Choose a nickname that reflects your personality. It can be a combination of your interests, hobbies, or something unique to you. Remember, this nickname will be visible to others on the site, while your original name will be kept private.'
                   : 'Wählen Sie einen Benutzernamen, der Ihre Persönlichkeit widerspiegelt. Es kann eine Kombination aus Ihren Interessen, Hobbys oder etwas Einzigartigem für Sie sein. Denken Sie daran, dass dieser Benutzername für andere auf der Seite sichtbar ist, während Ihr richtiger Name privat bleibt.'}
               </p>
-          <Button disabled={emailStatus === false} type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary">
-          {/* <Button type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary"> */}
+          {/* <Button disabled={emailStatus === false} type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary"> */}
+          <Button type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary">
               {lang === 'en' ? 'submit' : 'einreichen'}
             </Button>
             </form>

@@ -1,4 +1,5 @@
 import Loading from '@components/common-layout/loading/loading';
+import axios from 'axios';
 import { City, Country, State } from 'country-state-city';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import { Component } from 'react';
@@ -107,50 +108,63 @@ class ProfileDataForm extends Component<any, any> {
       country: Yup.string(),
       postCode: Yup.string()
     });
+
+
+    const handleFormSubmit = async (values, formikHelpers) => {
+      try {
+        const response = await axios.put('https://api.girls2dream.com/v1/users/updateProfile', values, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (response.status === 200) {
+          toast.success(lang === 'de' ? 'Profil erfolgreich aktualisiert!' : 'Profile updated successfully!');
+          this.props.onProfileFormSuccess(true);
+          // Update localStorage with new user data
+          userFromLocal.username = values.username;
+          userFromLocal.bio = values.bio;
+          userFromLocal.age = values.age;
+          userFromLocal.gender = values.gender;
+          userFromLocal.phoneNumber = values.phoneNumber;
+          userFromLocal.email = values.email;
+          userFromLocal.address = values.address;
+          userFromLocal.state = values.state;
+          userFromLocal.city = values.city;
+          userFromLocal.country = values.country;
+          userFromLocal.postCode = values.postCode;
+  
+          localStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal));
+  
+          formikHelpers.setSubmitting(false);
+        }
+      } catch (error) {
+        formikHelpers.setSubmitting(false);
+        console.error('Error updating profile:', error);
+        toast.error(lang === 'de' ? 'Fehler beim Aktualisieren des Profils!' : 'Error updating profile!');
+      }
+    };
   
 
     return (
       <div>
          {authUser ? <Formik
-            validationSchema={schema}
-            initialValues={{
-              username: "",
-              bio: authUser?.bio || userFromLocal?.bio,
-              age: authUser?.age || userFromLocal?.age,
-              gender: authUser?.gender || userFromLocal?.gender,
-              phoneNumber: authUser?.phoneNumber || userFromLocal?.phoneNumber,
-              email: authUser?.email || userFromLocal?.email,
-              address: authUser?.address || userFromLocal?.address,
-              state: authUser?.state || userFromLocal?.state,
-              city: authUser?.city || userFromLocal?.city,
-              country: authUser?.country || userFromLocal?.country,
-              postCode: authUser?.postCode || userFromLocal?.postCode,
-              id: authUser?._id
-            }}
-            onSubmit={(values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
-              this.props.updateProfile({ ...values });
-              this.props.onProfileFormSuccess(true);
-              console.log('====================================');
-              console.log("cledkdifkflfkf", values);
-              console.log('====================================');
-              // this.props.setCurrentStep(2)
-              formikHelpers.setSubmitting(false);
-              // now update the values in localStorage user
-                  userFromLocal.username = values.username;
-                  userFromLocal.bio = values.bio;
-                  userFromLocal.age = values.age;
-                  userFromLocal.gender = values.gender;
-                  userFromLocal.phoneNumber = values.phoneNumber;
-                  userFromLocal.email = values.email;
-                  userFromLocal.address = values.address;
-                  userFromLocal.state = values.state;
-                  userFromLocal.city = values.city;
-                  userFromLocal.country = values.country;
-                  userFromLocal.postCode = values.postCode;
-                  localStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal));
-                  // this.props.setCurrentUser(userFromLocal);
-            }}
-          >
+          validationSchema={schema}
+          initialValues={{
+            username: authUser?.username?.length < 14 ? (authUser?.username || userFromLocal?.username) : "",
+            bio: authUser?.bio || userFromLocal?.bio || "",
+            age: authUser?.age || userFromLocal?.age || "",
+            gender: authUser?.gender || userFromLocal?.gender || "",
+            phoneNumber: authUser?.phoneNumber || userFromLocal?.phoneNumber || "",
+            email: authUser?.email || userFromLocal?.email || "",
+            address: authUser?.address || userFromLocal?.address || "",
+            state: authUser?.state || userFromLocal?.state || "",
+            city: authUser?.city || userFromLocal?.city || "",
+            country: authUser?.country || userFromLocal?.country || "",
+            postCode: authUser?.postCode || userFromLocal?.postCode || "",
+            id: authUser?._id
+          }}
+          onSubmit={handleFormSubmit}
+        >
             {(props: FormikProps<FormValues>) => (
               <form onSubmit={props.handleSubmit}>
                 <div className="card-body">

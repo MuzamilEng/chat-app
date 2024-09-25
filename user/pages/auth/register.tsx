@@ -24,7 +24,9 @@ interface IProps {
 
 
 function Register({ authUser }: IProps) {
-  const { lang, currentUser, setCurrentStep, onImageUploadSuccess, activeStep, setActiveStep } = useTranslationContext();
+  const { lang, currentUser, setCurrentStep, onImageUploadSuccess} = useTranslationContext();
+  const [activeStep, setActiveStep] = useState(currentUser ? 1 : 0);
+
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
   const [userType, setUserType] = useState('');
 
@@ -67,10 +69,14 @@ function Register({ authUser }: IProps) {
   const handleNicknameSuccess = (data) => {
     if (data === true) {
       handleComplete(); // Step 1 completed, move to step 2
+      setActiveStep(2)
     }
   };
 
   const handleProfileSuccess = (data) => {
+    console.log('====================================');
+    console.log(data);
+    console.log('====================================');
     if (data === true) {
       handleComplete(); // Step 2 completed, move to step 3
       setCurrentStep(4)
@@ -80,13 +86,14 @@ function Register({ authUser }: IProps) {
   const handleImageSuccess = () => {
     if (onImageUploadSuccess === true) {
       handleComplete(); // Step 3 completed, move to step 4
+      setActiveStep(3)
     }
   };
 
   const handleVerificationDocumentSuccess = (data) => {
     if (data === true) {
-      setCurrentStep(5)
       handleComplete();
+      setCurrentStep(5)
     }
   };
 

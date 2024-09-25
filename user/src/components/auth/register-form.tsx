@@ -45,9 +45,15 @@ function RegisterForm({onSuccess, type: checkUserType}) {
     isAgreeToImages: Yup.boolean().required(lang === 'en' ? 'Please accept the medida showing agreement' : 'Bitte bestätigen Sie die Nutzungsbedingungen. ').default(false)
   });
 
-  const generateRandomName = () => {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  const generateRandomName = (minLength = 16) => {
+    let name = '';
+    while (name.length < minLength) {
+      name += Math.random().toString(36).substring(2);
+    }
+  
+    return name.substring(0, minLength);
   };
+  
 
   const handleCheckboxChange2 = () => {
     setIsContentChecked(!isContentChecked);
