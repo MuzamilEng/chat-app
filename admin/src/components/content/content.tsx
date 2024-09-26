@@ -14,12 +14,27 @@ function ChatContent({ items = null }: IProps) {
     setMessage(e.target.value);
   };
 
-  const handleSubmit = async (e: any, message) => {
+  const handleSubmit = async (e: any, message: string) => {
     e.preventDefault();
-    if(message){
-      const model = items?.find((item) => item?.sender?.type === 'model' || item?.recipient?.type === 'model');  
+  
+    if (message) {
+      // Find the model either in the sender or recipient field
+      const model = items?.find(
+        (item) =>
+          item?.sender?.type === 'model' ||
+          item?.recipient?.type === 'model'
+      );
+  
       if (!model) {
         console.error('No model found in the conversation');
+        return;
+      }
+  
+      // Determine if the model is the sender or recipient and get the ID
+      const modelId = model?.sender?.type === 'model' ? model?.sender?._id : model?.recipient?._id;
+  
+      if (!modelId) {
+        console.error('Model ID not found');
         return;
       }
   
@@ -27,7 +42,7 @@ function ChatContent({ items = null }: IProps) {
       const data = {
         text: message,
         conversationId: items?.[0]?.conversationId,
-        subAdminId: model?.sender._id, // Use the model's ID as subAdminId
+        subAdminId: modelId, // Use the model's ID as subAdminId
         type: 'text',
       };
   
@@ -42,6 +57,7 @@ function ChatContent({ items = null }: IProps) {
       }
     }
   };
+  
   
   const reversedItems = [...items].reverse(); // Create a reversed copy of items
 
