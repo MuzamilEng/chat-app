@@ -6,7 +6,11 @@ class MessageService extends APIRequest {
   }
 
   find(conversationId: any, query?: any) {
-    return this.get(`/messages/all-message/${conversationId}`, query);
+    return this.get(`/messages/${conversationId}`, query);
+  }
+
+  send(data: any) {
+    return this.post('/messages', data);
   }
 
   findConversation(data: any) {

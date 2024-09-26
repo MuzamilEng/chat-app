@@ -33,7 +33,7 @@ function MediaContent({ items, type, }: IProps) {
                 setActiveImage(`${item?.fileUrl}`);
               }}
             > 
-              <img alt="media_thumb" src={item?.thumbUrl} />
+              <img alt="" src={item?.thumbUrl} />
               {/* type = video */}
               {type === 'video' && (
               <video controls src={`${item?.fileUrl}`} width="100%" />

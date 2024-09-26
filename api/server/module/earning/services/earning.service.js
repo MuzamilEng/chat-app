@@ -20,6 +20,7 @@ exports.calculateTokenUnreadMessage = calculateTokenUnreadMessage;
 
 exports.create = async (option, status = 'approved') => {
   const user = await DB.User.findOne({ _id: option.userId });
+  
   if (!user) {
     throw new Error('Fan is not found');
   }
@@ -33,7 +34,7 @@ exports.create = async (option, status = 'approved') => {
   const siteCommisionValue = siteCommision?.value || 0.2;
 
   const token = option.type === 'send_message' ? model.tokenPerMessage : option.token;
-  if (user.balance < token) {
+  if (user.role !== 'admin' && user.balance < token) {
     throw new Error('Token is not enough');
   }
   const commissionRate = Number(siteCommisionValue);

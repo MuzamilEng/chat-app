@@ -13,8 +13,13 @@ exports.create = async (req, res, next) => {
       conversationId: Joi.string().required(),
       type: Joi.string().allow('text', 'photo', 'video', 'file').required(),
       price: Joi.number().min(0).optional(), // Add price validation
-      socketId: Joi.string().allow(null, '').optional()
+      socketId: Joi.string().allow(null, '').optional(),
+      subAdminId: Joi.string().allow(null, '').optional()
     });
+
+    const required_id = req.body.subAdminId ? req.body.subAdminId : req.user._id 
+    const subAdminUser = await DB.User.findOne({_id: required_id})
+    const requestedUser = req.body.subAdminId ? subAdminUser : req.user
     const validate = validateSchema.validate(req.body);
     if (validate.error) {
       return next(PopulateResponse.validationError(validate.error));
@@ -33,7 +38,7 @@ exports.create = async (req, res, next) => {
     }
 
     // Get recipient
-    const recipientId = _.find(conversation.memberIds, (member) => member.toString() !== req.user._id.toString());
+    const recipientId = _.find(conversation.memberIds, (member) => member.toString() !== required_id.toString());
     const recipient = await DB.User.findOne({ _id: recipientId });
     if (!recipient) {
       return next(PopulateResponse.notFound({ message: 'Recipient is not found' }));
@@ -43,7 +48,7 @@ exports.create = async (req, res, next) => {
     }
 
     // Check if user is a model and hasn't received a reply from the user
-    if (req.user.type === 'model') {
+    if (requestedUser.type === 'model') {
       // Find the latest messages between model and user
       const lastMessages = await DB.Message.find({
         conversationId: validate.value.conversationId
@@ -54,7 +59,7 @@ exports.create = async (req, res, next) => {
       // Count unreplied messages from model
       let unrepliedMessageCount = 0;
       for (const message of lastMessages) {
-        if (message.senderId.toString() === req.user._id.toString()) {
+        if (message.senderId.toString() === required_id.toString()) {
           unrepliedMessageCount++;
         } else {
           // If user replied, reset the count
@@ -84,7 +89,7 @@ exports.create = async (req, res, next) => {
     }
 
     const messageData = Object.assign(validate.value, { 
-      senderId: req.user._id, 
+      senderId: required_id, 
       recipientId, 
       text: messageText // Use sanitized text
     });
@@ -103,27 +108,27 @@ exports.create = async (req, res, next) => {
     Queue.notifyAndUpdateRelationData(message, { socketId: validate.value?.socketId || null });
 
     // Update conversation meta data for request user
-    await Service.Message.readMessage({ conversationId: validate.value.conversationId, userId: req.user._id });
+    await Service.Message.readMessage({ conversationId: validate.value.conversationId, userId: required_id });
 
     // Update earning data
     const EarningData = { type: 'send_message' };
-    if (req.user.type === 'user') {
+    if (requestedUser.type === 'user') {
       await Service.Earning.create(
         Object.assign(EarningData, {
-          userId: req.user._id,
-          modelId: _.find(conversation.memberIds, (member) => member.toString() !== req.user._id.toString()),
+          userId: required_id,
+          modelId: _.find(conversation.memberIds, (member) => member.toString() !== required_id.toString()),
           itemId: message._id
         }),
         // Do not charge user until model replied
         'pending'
       );
     } else {
-      const userId = _.find(conversation.memberIds, (member) => member.toString() !== req.user._id.toString());
-      await Service.Earning.approvePendingItemWhenModelRespondMessage(userId, req.user._id);
+      const userId = _.find(conversation.memberIds, (member) => member.toString() !== required_id.toString());
+      await Service.Earning.approvePendingItemWhenModelRespondMessage(userId, required_id);
     }
 
     const newMessage = message.toObject();
-    newMessage.sender = req.user.getPublicProfile();
+    newMessage.sender = requestedUser.getPublicProfile();
     newMessage.recipient = recipient.getPublicProfile();
 
     if (sensitiveInfoFound) {
@@ -373,6 +378,68 @@ exports.getAllMessagesByConversationId = async (req, res, next) => {
     return next();
   } catch (e) {
     return next(e);
+  }
+};
+
+exports.search = async (req, res, next) => {
+  const page = Math.max(0, req.query.page - 1) || 0; // using a zero-based page index for use with skip()
+  const take = parseInt(req.query.take, 10) || 10;
+  try {
+    const query = Object.assign(Helper.App.populateDbQuery(req.query, { text: ['text'] }), {
+      conversationId: req.params.conversationId
+    });
+    const count = await DB.Message.count(query);
+    const items = await DB.Message.find(query)
+      .populate('sender')
+      .populate('recipient')
+      .populate('files')
+      .sort({ createdAt: -1 })
+      .skip(page * take)
+      .limit(take)
+      .exec();
+    const messageIds = items.map((item) => item._id);
+    const bookmarks = await DB.BookmarkMessage.find({
+      messageId: { $in: messageIds },
+      userId: req.user._id
+    });
+    const updateFiles = async () => {
+      for (const item of items) {
+        for (const file of item.files) {
+          const purchaseExists = await DB.PurchaseItem.exists({ mediaId: file._id });
+    
+          const sellItemExists = await DB.SellItem.findOne({ mediaId: file._id, folderId: file._id });
+          if (!sellItemExists) {
+            file.isFree = true; // Set isFree to true if no SellItem exists
+          } else {
+            file.isFree = false; // Set isFree to false if SellItem exists
+            file.sellItemId = sellItemExists._id; // Assign sellItemId if SellItem exists
+            file.price = sellItemExists.price; 
+          }
+    
+          file.isPurchased = !!purchaseExists;
+          file.purchasedItem = null;
+    
+          await file.save();
+        }
+      }
+    };
+    
+    await updateFiles();
+    
+    res.locals.search = {
+      count,
+      items: items.map((item) => {
+        const bookmark = bookmarks.find((b) => b.messageId.toString() === item._id.toString());
+        const data = item.toObject();
+        data.sender = item?.sender.getPublicProfile();
+        data.bookmarked = !!bookmark;
+        data.bookmarkId = bookmark && bookmark.id;
+        return data;
+      })
+    };
+    next();
+  } catch (e) {
+    next(e);
   }
 };
 

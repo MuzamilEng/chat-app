@@ -158,18 +158,18 @@ function ConversationList({ conversations, authUser }: IProps) {
                   }}
                 >
                   <a href="#" className="contacts-link">
-                    <div className={`avatar ${user.isOnline ? 'avatar-online' : 'avatar-offline'}`}>
+                    <div className={`avatar ${user?.isOnline ? 'avatar-online' : 'avatar-offline'}`}>
                       <img
-                        key={`${user._id}`}
-                        src={user.avatarUrl}
+                        key={`${user?._id}`}
+                        src={user?.avatarUrl}
                         alt="avatar"
                         onError={(e) => e.currentTarget.src = 'https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg'}
                       />
                     </div>
                     <div className="contacts-content">
                       <div className="contacts-info">
-                        <h6 className="chat-name text-truncate" key={user._id}>
-                          {user.username}
+                        <h6 className="chat-name text-truncate" key={user?._id}>
+                          {user?.username}
                         </h6>
                         <div className="chat-time">{renderDate(conv.updatedAt)}</div>
                       </div>

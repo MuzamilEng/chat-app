@@ -54,7 +54,7 @@ function ChatHeader({
   const [showReminderModal, setShowReminderModal] = useState(false); // Control modal visibility
   const [reminderText, setReminderText] = useState('');
   const [isBlocked, setIsBlocked] = useState(
-    selectedConversation.blockedIds.findIndex((blockedId) => blockedId === recipient._id) > -1
+    selectedConversation.blockedIds?.findIndex((blockedId) => blockedId === recipient._id) > -1
   );
 
   const {lang} = useTranslationContext()

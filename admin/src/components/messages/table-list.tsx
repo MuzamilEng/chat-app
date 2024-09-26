@@ -81,7 +81,13 @@ function TableMessages() {
                 <a>Text</a>
               </th>
               <th>
+                <a>Type</a>
+              </th>
+              <th>
                 <a>Erstellen bei</a>
+              </th>
+              <th>
+                <a>View chat</a>
               </th>
             </tr>
           </thead>
@@ -91,8 +97,13 @@ function TableMessages() {
                 <tr key={index as any} onClick={()=> onFindFilter(item.senderId, item.recipientId)}>
                   <td>{item.sender && item.sender.username}</td>
                   <td><span>{item.text}</span></td>
+                  <td>{item.sender && item.sender.type}</td>
                   <td>
                     <Moment format="YYYY-MM-DD">{item.createdAt}</Moment>
+                  </td>
+                  <td  style={{cursor: 'pointer'}} className=''>
+                    View
+                    <i style={{marginLeft: '1vw'}} className="fa fa-eye" aria-hidden="true"></i>
                   </td>
                 </tr>
               ))
