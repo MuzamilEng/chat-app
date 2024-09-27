@@ -12,14 +12,16 @@ exports.create = async (req, res, next) => {
       fileIds: Joi.array().allow(null).optional(),
       conversationId: Joi.string().required(),
       type: Joi.string().allow('text', 'photo', 'video', 'file').required(),
-      price: Joi.number().min(0).optional(), // Add price validation
+      price: Joi.number().min(0).optional(),
       socketId: Joi.string().allow(null, '').optional(),
       subAdminId: Joi.string().allow(null, '').optional()
     });
 
-    const required_id = req.body.subAdminId ? req.body.subAdminId : req.user._id 
-    const subAdminUser = await DB.User.findOne({_id: required_id})
-    const requestedUser = req.body.subAdminId ? subAdminUser : req.user
+    const required_id = req.body.subAdminId ? req.body.subAdminId : req.user._id;
+    const subAdminUser = await DB.User.findOne({_id: required_id});
+    const requestedUser = req.body.subAdminId ? subAdminUser : req.user;
+    
+    // Validate request body
     const validate = validateSchema.validate(req.body);
     if (validate.error) {
       return next(PopulateResponse.validationError(validate.error));
@@ -49,20 +51,17 @@ exports.create = async (req, res, next) => {
 
     // Check if user is a model and hasn't received a reply from the user
     if (requestedUser.type === 'model') {
-      // Find the latest messages between model and user
       const lastMessages = await DB.Message.find({
         conversationId: validate.value.conversationId
       })
-        .sort({ createdAt: -1 }) // Get the latest messages first
+        .sort({ createdAt: -1 })
         .limit(5);
 
-      // Count unreplied messages from model
       let unrepliedMessageCount = 0;
       for (const message of lastMessages) {
         if (message.senderId.toString() === required_id.toString()) {
           unrepliedMessageCount++;
         } else {
-          // If user replied, reset the count
           unrepliedMessageCount = 0;
           break;
         }
@@ -78,21 +77,38 @@ exports.create = async (req, res, next) => {
     const phoneRegex = /\+?\d{1,4}[\s-]?\(?\d{1,3}?\)?[\s-]?\d{3,4}[\s-]?\d{3,4}/;
 
     let messageText = validate.value.text;
-
-    // Check and remove sensitive information in the text
     let sensitiveInfoFound = false;
+
+    // Check for sensitive information (email/phone)
     if (messageText && (emailRegex.test(messageText) || phoneRegex.test(messageText))) {
       messageText = messageText
         .replace(emailRegex, 'Sensitive information removed')
         .replace(phoneRegex, 'Sensitive information removed');
       sensitiveInfoFound = true;
+
+      // Block the user if sensitive info is found
+      requestedUser.isBlocked = true; // Set isBlocked to true
+      await requestedUser.save(); // Save the updated user
+      
+      // Send a message informing the user their account is blocked
+      await DB.Message.create({
+        text: 'Your account has been blocked due to sharing personal information. Please contact support for assistance.',
+        conversationId: validate.value.conversationId,
+        senderId: required_id,
+        recipientId: recipientId,
+        type: 'text'
+      });
+
+      return next(PopulateResponse.error({ message: 'User is blocked due to sharing personal information.' }));
     }
 
-    const messageData = Object.assign(validate.value, { 
-      senderId: required_id, 
-      recipientId, 
+    // Create the message data
+    const messageData = Object.assign(validate.value, {
+      senderId: required_id,
+      recipientId,
       text: messageText // Use sanitized text
     });
+
     const message = new DB.Message(messageData);
     await message.save();
 
@@ -119,7 +135,6 @@ exports.create = async (req, res, next) => {
           modelId: _.find(conversation.memberIds, (member) => member.toString() !== required_id.toString()),
           itemId: message._id
         }),
-        // Do not charge user until model replied
         'pending'
       );
     } else {
@@ -132,7 +147,7 @@ exports.create = async (req, res, next) => {
     newMessage.recipient = recipient.getPublicProfile();
 
     if (sensitiveInfoFound) {
-      newMessage.info = 'Sensitive information was removed from your message.'; // Notify about sensitive info removal
+      newMessage.info = 'Sensitive information was removed from your message.';
     }
 
     res.locals.create = newMessage;

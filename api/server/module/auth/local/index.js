@@ -32,39 +32,57 @@ exports.adminLogin = (req, res, next) => {
   })(req, res, next);
 };
 
-exports.login = (req, res, next) => {
-  passport.authenticate('local', async (err, user, info) => {
-    const error = err || info;
-    if (error) {
-      return next(error);
+exports.login = async (req, res, next) => {
+  try {
+    // Fetch the user data before authentication
+    const userData = await DB.User.findOne({ email: req.body.email }).select('type isApproved isBlocked');
+
+    if (!userData) {
+      return next(PopulateResponse.notFound({ msg: 'User not found.' }));
     }
-    if (!user) {
-      return next(PopulateResponse.notFound());
+
+    // Check if the user is blocked
+    if (userData.isBlocked) {
+      return next(PopulateResponse.forbidden({ msg: 'Your account is blocked.' }));
     }
-    const userData = await DB.User.findOne({ email: req.body.email }).select('type isApproved');
-    // Check if user type is 'model' and if they are approved
+
+    // Check if the user is a model and not approved
     if (userData.type === 'model' && !userData.isApproved) {
       return next(PopulateResponse.forbidden({ msg: 'Your profile is under review.' }));
     }
 
-    const expireTokenDuration = 60 * 60 * 24 * 7; // 7 days
-    const now = new Date();
-    const expiredAt = new Date(now.getTime() + expireTokenDuration * 1000);
-    const token = signToken(user._id, user.role, expireTokenDuration);
+    // If the user is not blocked and approved, continue with authentication
+    passport.authenticate('local', async (err, user, info) => {
+      const error = err || info;
+      if (error) {
+        return next(error);
+      }
+      if (!user) {
+        return next(PopulateResponse.notFound());
+      }
 
-    // eslint-disable-next-line no-param-reassign
-    user.isBlocked = false;
-    await user.save();
+      const expireTokenDuration = 60 * 60 * 24 * 7; // 7 days
+      const now = new Date();
+      const expiredAt = new Date(now.getTime() + expireTokenDuration * 1000);
+      const token = signToken(user._id, user.role, expireTokenDuration);
 
-    res.locals.login = {
-      token,
-      expiredAt,
-      // user
-    };
+      // Update the user's blocked status (if needed)
+      user.isBlocked = false;
+      await user.save();
 
-    return next();
-  })(req, res, next);
+      res.locals.login = {
+        token,
+        expiredAt,
+        // other user data (if needed)
+      };
+
+      return next();
+    })(req, res, next);
+  } catch (error) {
+    return next(error);
+  }
 };
+
 
 
 exports.verifyMail = async (req, res, next) => {

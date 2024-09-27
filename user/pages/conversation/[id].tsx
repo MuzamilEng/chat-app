@@ -7,6 +7,9 @@ import { connect, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { setSelectedConversation } from 'src/redux/conversation/actions';
 import { loadMessage, loadOldMessage, removeSendMessgeStatus } from 'src/redux/message/actions';
+import { logout } from 'src/redux/auth/actions';
+import { authService } from '@services/auth.service';
+import Cookies from 'js-cookie';
 
 const ConversationSideBar = dynamic(() => import('src/components/common-layout/sidebar/conversation-sidebar'));
 const ChatContent = dynamic(() => import('src/components/chat-box/content/content'));
@@ -47,7 +50,7 @@ function MessagePage({
   selectedConversation,
   loadMessageStore,
   sendMessageStore,
-  loadOldMessageStore
+  loadOldMessageStore,
 }: IProps) {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
@@ -91,7 +94,13 @@ function MessagePage({
       }, 500);
     }
     if (!sendMessageStore.requesting && !sendMessageStore.success && sendMessageStore.error) {
-      toast.error(sendMessageStore.error?.data?.message || lang === 'en' ? 'Failed to send message!' : 'Senden der Nachricht fehlgeschlagen!');
+      toast.error(sendMessageStore?.error?.data?.message);
+      if(sendMessageStore.error?.data?.message === "User is blocked due to sharing personal information."){
+        logout();
+        Cookies.remove('accessToken');
+        authService.removeToken()
+        Router.push(`/${lang}/login`);
+      }
       dispatch(removeSendMessgeStatus());
     }
   }, [sendMessageStore]);
