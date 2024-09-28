@@ -82,7 +82,7 @@ exports.verifyEmailView = async (req, res, next) => {
     }
 
     return res.redirect(url.format({
-      pathname: new URL('/auth/login', nconf.get('siteUrl')).href,
+      pathname: new URL('/auth/register', nconf.get('siteUrl')).href,
       query: { verified: 'success' }
     }));
   } catch (e) {
