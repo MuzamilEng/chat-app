@@ -3,29 +3,35 @@
 import { useTranslationContext } from 'context/TranslationContext';
 import { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { isEmail, ReactMultiEmail } from 'react-multi-email';
+import { isEmail } from 'react-multi-email';
 import { toast } from 'react-toastify';
 import { mailService } from 'src/services';
 
 function SendMailModal({ state, setState }: any) {
-  const [emails, setEmails] = useState([]);
+  const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(true);
-  const {t, lang} = useTranslationContext();
+  const { t, lang } = useTranslationContext();
 
   const sendInvite = async (e: any) => {
     e.preventDefault();
 
-    if (emails.length) {
+    if (email) {
+      if (!isEmail(email)) {
+        setIsValidEmail(false);
+        toast.error(lang === 'en' ? 'Invalid email address.' : 'Ungültige E-Mail-Adresse.');
+        return;
+      }
+
       try {
-        await mailService.inviteUser({ emails });
-        toast.success('Einladungsmail wurde versendet.');
+        await mailService.inviteUser({ emails: email }); // Sending the email as an array with one element
+        toast.success(lang === 'en' ? 'Invitation sent.' : 'Einladungsmail wurde versendet.');
         setState(false);
-        setEmails([]);
+        setEmail(''); // Clear the input
       } catch {
         toast.error('Fehler');
       }
     } else {
-      toast.error('Bitte geben Sie die E-Mail-Adresse ein, um die Einladung zu senden!');
+      toast.error(lang === 'en' ? 'Please enter the email address.' : 'Bitte geben Sie die E-Mail-Adresse ein, um die Einladung zu senden!');
     }
   };
 
@@ -41,9 +47,9 @@ function SendMailModal({ state, setState }: any) {
       >
         <Modal.Header>
           <h5 className="modal-title" id="inviteUsersLabel">
-          {lang === 'en' ? 'Invite User' : 'Benutzer einladen'}
+            {lang === 'en' ? 'Invite User' : 'Benutzer einladen'}
           </h5>
-          <Button className="fa fa-xmark" type="button" aria-label="Close" onClick={setState} />
+          <Button className="fa fa-xmark" type="button" aria-label="Close" onClick={() => setState(false)} />
         </Modal.Header>
         <Modal.Body>
           <form>
@@ -51,25 +57,19 @@ function SendMailModal({ state, setState }: any) {
               <div className="col-12">
                 <div className="form-group">
                   <label>{lang === 'en' ? 'Email' : 'E-Mail-Adresse'}</label>
-                  <ReactMultiEmail
-                    className="form-control form-control-md h-100"
+                  <input
+                    type="email"
+                    className={`form-control form-control-md h-100 ${!isValidEmail ? 'is-invalid' : ''}`}
                     placeholder={lang === 'en' ? 'Enter the email address here' : 'Bitte geben Sie hier Ihre E-Mail-Adresse ein'}
-                    emails={emails}
-                    onChange={(_emails: any) => setEmails(_emails)}
-                    validateEmail={(email) => {
-                      setIsValidEmail(isEmail(email));
-                      return isEmail(email);
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setIsValidEmail(true); // Reset the error message when the user starts typing
                     }}
-                    getLabel={(email: string, index: number, removeEmail: (i: number) => void) => (
-                      <div data-tag key={email}>
-                        {email}
-                        <span data-tag-handle onClick={() => removeEmail(index)}>&#215;</span>
-                      </div>
-                    )}
                   />
                   {!isValidEmail && (
                     <div className="invalid-feedback" style={{ display: 'block' }}>
-                      E-Mail ist erforderlich
+                      {lang === 'en' ? 'Invalid email address.' : 'Ungültige E-Mail-Adresse.'}
                     </div>
                   )}
                 </div>
@@ -86,8 +86,8 @@ function SendMailModal({ state, setState }: any) {
           >
             {lang === 'en' ? 'Close' : 'Schließen'}
           </button>
-          <button type="button" className="btn btn-primary" onClick={(e) => sendInvite(e)}>
-          {lang === 'en' ? 'Send Invite' : 'Einladung versenden'}
+          <button type="button" className="btn btn-primary" onClick={sendInvite}>
+            {lang === 'en' ? 'Send Invite' : 'Einladung versenden'}
           </button>
         </Modal.Footer>
       </Modal>

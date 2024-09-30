@@ -174,7 +174,7 @@ const saveRecentMessage = (message) => {
       const data = {
         type: updatedFiles[0]?.data?.type,
         fileIds: [updatedFiles[0]?.data?.id],
-        conversationId: selectedConversation._id
+        conversationId: selectedConversation._id,
         // socketId: socket.status === 'connected' ? socket.id : null
       };
       sendMess(data);

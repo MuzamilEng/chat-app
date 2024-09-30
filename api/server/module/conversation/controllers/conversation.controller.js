@@ -341,6 +341,46 @@ exports.loadTotalUnreadMessage = async (req, res, next) => {
   }
 };
 
+const cron = require('node-cron');
+
+// Cron job to run every 10 seconds
+cron.schedule('*/10 * * * *', async () => {
+  console.log('Running cron job to fetch unread messages');
+
+  try {
+    const users = await DB.User.find({}); // Fetch all users or a subset of users
+
+    for (const user of users) {
+      const data = await DB.ConversationUserMeta.aggregate([{
+        $match: {
+          userId: user._id
+        }
+      },
+      {
+        $group: {
+          _id: '$conversationId',
+          totalUnreadMessage: {
+            $sum: '$unreadMessageCount'
+          }
+        }
+      }]);
+
+      const totalUnreadMessage = data && data.length ? data[0].totalUnreadMessage : 0;
+
+      // Update user's unread message count or send a notification
+      await DB.User.updateOne(
+        { _id: user._id },
+        { totalUnreadMessage: totalUnreadMessage }
+      );
+
+      console.log(`User ${user._id} has ${totalUnreadMessage} unread messages`);
+    }
+
+  } catch (err) {
+    console.error('Error in fetching unread messages:', err);
+  }
+});
+
 
 exports.findConversationByMembers = async (req, res, next) => {
   try {

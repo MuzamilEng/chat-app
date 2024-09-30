@@ -2,6 +2,7 @@ const Joi = require('joi');
 const nconf = require('nconf');
 const url = require('url');
 const SYSTEM_CONST = require('../system/constants');
+const Invite = require("../newsletter/models/invite")
 
 exports.register = async (req, res, next) => {
   const schema = Joi.object().keys({
@@ -40,6 +41,7 @@ exports.register = async (req, res, next) => {
     }
     const siteName = await DB.Config.findOne({ key: SYSTEM_CONST.SITE_NAME });
     user.emailVerifiedToken = Helper.String.randomString(48);
+    user.balance = 10;
     await user.save();
     // send verify email to user
     await Service.Mailer.send('verify-email.html', user.email, {
@@ -47,6 +49,25 @@ exports.register = async (req, res, next) => {
       siteName: siteName ? siteName.value : 'xChat',
       emailVerifyLink: new URL(`v1/auth/verifyEmail/${user.emailVerifiedToken}`, nconf.get('baseUrl')).href
     });
+
+        // Check if the user was invited
+        const invitation = await Invite.findOne({
+          inviteeEmail: validate.value.email,
+          status: 'pending' // Check if it's still pending
+        });
+    
+        if (invitation) {
+          // Update the invitation status to accepted
+          invitation.status = 'accepted';
+          await invitation.save();
+    
+          // Reward the sender with 10 tokens
+          const sender = await DB.User.findById(invitation.sender);
+          if (sender) {
+            sender.balance = (sender.balance || 0) + 10; // Add 10 tokens to the sender's balance
+            await sender.save();
+          }
+        }
 
     res.locals.register = PopulateResponse.success(
       { message: 'Your account has been created, please check and verify your mail.' },

@@ -3,7 +3,7 @@ import { formatNumber } from '@lib/utils';
 import { conversationService } from '@services/conversation.service';
 import classNames from 'classnames';
 import Router, { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Button
 } from 'react-bootstrap';
@@ -15,6 +15,7 @@ import { updateTotalUnreadMessage } from 'src/redux/conversation/actions';
 import SendMailModal from './send-mail.modal';
 import UserMenu from './user-menu';
 import { useTranslationContext } from 'context/TranslationContext';
+import { authService } from '@services/auth.service';
 
 const mapStates = (state: any) => ({
   isLoggedIn: state.auth.isLoggedIn,
@@ -36,11 +37,14 @@ function Header({
 }: PropsFromRedux) {
   const [showInviteUser, setShowInviteUser] = useState(false);
   const [activeRoute, setActiveRoute] = useState(null);
-  const {t, setCheckPaidMedia, lang} = useTranslationContext()
-
+  const { t, setCheckPaidMedia, lang } = useTranslationContext();
 
   const router = useRouter();
   const totalUnreadMessage = useSelector((state: any) => state.conversation.totalUnreadMessage);
+
+  // Ref to store previous unread message count and the audio element
+  const prevUnreadMessageRef = useRef<number>(totalUnreadMessage);
+  const audioRef = useRef<HTMLAudioElement>(null); // Ref for audio element
 
   const handleClickToMenu = () => {
     setShowInviteUser(false);
@@ -84,13 +88,24 @@ function Header({
   useEffect(() => {
     if (isLoggedIn) {
       getTotalUnreadmessage();
-    } else {
-      // Router.push('/');
     }
+  }, []);
+
+  // Play sound when new message arrives
+  useEffect(() => {
+    if (totalUnreadMessage > prevUnreadMessageRef.current && audioRef.current) {
+      audioRef.current.play(); // Play the sound when the message count increases
+    }
+    prevUnreadMessageRef.current = totalUnreadMessage; // Update the previous message count
+  }, [totalUnreadMessage]);
+
+  useEffect(() => {
+    const token = authService.getToken();
   }, []);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light top-nav navbar-menu-mobile">
+            <audio ref={audioRef} src="/sounds/notification.mp3" preload="auto" />
       <a aria-hidden className={`navbar-brand ${activeRoute === 'models' && 'active'}`} href={`/${lang}/models`}>
         <img alt="img_logo_header" src={appConfig.siteLogo || '/images/logo_0.png'} />
       </a>
