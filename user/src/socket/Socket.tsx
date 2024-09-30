@@ -54,7 +54,7 @@ function Socket({
     } as any;
 
     const { publicRuntimeConfig: config } = getConfig();
-    const socketUrl = 'wss://api.girls2dream.com';
+    const socketUrl = 'https://api.girls2dream.com' || config.SOCKET_ENDPOINT as string;
     socket.current = SocketIO(socketUrl, options) as any;
     setSocketState(socket.current);
 
