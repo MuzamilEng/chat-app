@@ -10,6 +10,7 @@ export interface IUser {
   avatarUrl: string;
   shareLove: number;
   lastActivity: string;
+  nickname: string;
 }
 
 export interface IContact {

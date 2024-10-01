@@ -338,6 +338,7 @@ async function checkAndConvertFriend(models, user) {
     );
 
     data.isFriend = !!isFriend;
+    data.nickname = model.nickname || '';
     return data;
   });
   return array;

@@ -507,7 +507,7 @@ function Home({ authUser, dispatchSetLogin }: IProps & PropsFromRedux) {
                           className="fa-duotone fa-cake-candles"
                           style={{ marginLeft: "5px" }}
                         ></i>
-                        {data.verificationDocument.firstName}
+                        {data.nickname ? data.nickname : data.username}
                       </div>
                     </div>
                   </div>

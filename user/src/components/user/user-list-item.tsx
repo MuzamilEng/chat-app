@@ -189,7 +189,7 @@ function UserListItem({
               </OverlayTrigger>
             </div>
             <div className="position-absolute common-info" onClick={checkProfile}>
-              <div className="username">{user.username}</div>
+              <div className="username">{user.nickname ? user.nickname : user.username}</div>
               <div className="gender-and-age">
                 {' '}
                 <i className="fas fa-venus-mars" />

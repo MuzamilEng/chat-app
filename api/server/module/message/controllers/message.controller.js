@@ -92,7 +92,7 @@ exports.create = async (req, res, next) => {
       
       // Send a message informing the user their account is blocked
       await DB.Message.create({
-        text: 'Your account has been blocked due to sharing personal information. Please contact support for assistance.',
+        text: 'Your account has been blocked due to sharing personal information. Please contact support for assistance. please contect the support team. ',
         conversationId: validate.value.conversationId,
         senderId: required_id,
         recipientId: recipientId,

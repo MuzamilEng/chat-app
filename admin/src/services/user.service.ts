@@ -36,6 +36,14 @@ class UserService extends APIRequest {
   getProfilePhotos(data: any) {
     return this.get(this.buildUrl('/media/search', data));
   }
+  addSecretInfo(data: any) {
+    return this.post('/update-secret-info', data);
+  }
+  // get-secret-info/:conversationId
+
+  getSecretInfo(conversationId: any) {
+    return this.get(`/get-secret-info/${conversationId}`);
+  }
 }
 
 export const userService = new UserService();

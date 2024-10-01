@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import ChatContent from '../../src/components/content/content'
+import ChatContent from '../../src/components/content/[id]'
 import { messageService } from '../../src/services/message.service';
 import { useRouter } from 'next/router';
 

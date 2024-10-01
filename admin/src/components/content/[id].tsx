@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import MediaContent from './media-content';
 import { Button, FormControl, Toast } from 'react-bootstrap';
 import { messageService } from '@services/message.service';
+import { userService } from '@services/user.service';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
 
 interface IProps {
   items?: any;
@@ -9,9 +12,46 @@ interface IProps {
 
 function ChatContent({ items = null }: IProps) {
   const [message, setMessage] = useState('');
+  const {id} = useRouter().query;
+  const [showReminderModal, setShowReminderModal] = useState(false); // Control modal visibility
+  const [reminderText, setReminderText] = useState('');
+  const lang = 'en';
 
   const handleInputChange = (e) => {
     setMessage(e.target.value);
+  };
+
+
+  const handleSaveReminder = async (e) => {
+    e.preventDefault();
+   try {
+    const resp = await userService.addSecretInfo({
+      conversationId: id,
+      info: reminderText
+    })
+    if(resp){
+      toast.success(lang === 'en' ? 'Reminder saved!' : 'Erinnerung gespeichert!');
+    setShowReminderModal(false);
+    }
+   } catch (error) {
+    toast.error('Failed to save reminder');
+   } // Close modal after saving
+  };
+
+  const handleCloseModal = () => {
+    setShowReminderModal(false);
+  };
+
+
+  const getSecretInformation = async ()=> {
+    const resp = await userService.getSecretInfo(id)
+    if(resp?.data?.info){
+      setReminderText(resp?.data?.info);
+    }
+  }
+
+  const handleReminderClick = () => {
+    setShowReminderModal(true); // Show modal when reminder button is clicked
   };
 
   const handleSubmit = async (e: any, message: string) => {
@@ -61,10 +101,61 @@ function ChatContent({ items = null }: IProps) {
   
   const reversedItems = [...items].reverse(); // Create a reversed copy of items
 
+  useEffect(()=> {
+    getSecretInformation();
+  }, [])
+
 
   return (
     <>
       <div className="container" style={{ paddingBottom: 70 }}>
+
+      {/* <div className="media-body align-self-center">
+            <h6 className="text-truncate mb-0">{recipient?.username}</h6>
+            <small className="text-muted">{recipient?.isOnline ? 'Online' : 'Offline'}</small>
+          </div>
+        </div> */}
+         <button onClick={handleReminderClick} style={{marginLeft: '2vw', marginTop: '-4vw'}} className="btn btn-primary btn-sm">reminder</button>
+        {/* the modal here */}
+        {showReminderModal && (
+        <form onSubmit={handleSaveReminder}
+          id="reminder-modal"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '10px',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+            zIndex: 1000, // Make sure it's on top of everything
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h5>{lang === 'en' ? 'Set Reminder' : 'Erinnerung einstellen'}</h5>
+            <button className="btn btn-light" onClick={handleCloseModal}>
+              X
+            </button>
+          </div>
+          <textarea
+            value={reminderText}
+            onChange={(e) => setReminderText(e.target.value)}
+            placeholder={lang === 'en' ? 'Write your reminder here...' : 'Schreiben Sie hier Ihre Erinnerung...'}
+            rows={5}
+            style={{ width: '100%', marginTop: '10px', border: '1px solid #ccc', borderRadius: '5px', padding: '10px' }}
+          ></textarea>
+          <div style={{ marginTop: '10px', textAlign: 'right' }}>
+            <button className="btn btn-secondary" onClick={handleCloseModal}>
+              {lang === 'en' ? 'Cancel' : 'Abbrechen'}
+            </button>
+            <button className="btn btn-primary" type="submit" style={{ marginLeft: '10px' }}>
+              {lang === 'en' ? 'Save' : 'Speichern'}
+            </button>
+          </div>
+        </form>
+      )} 
+
         <div className="message-day">
           {reversedItems?.map((message: any, index: number) => {
             const isModel = message?.sender?.type === 'model';
