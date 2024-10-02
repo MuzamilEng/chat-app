@@ -182,8 +182,8 @@ function Register({ authUser }: IProps) {
             <div className="xchat-content">
             <div className="card mb-3">
               <div className="card-header">
-                <h6 className="mb-1">{lang === 'en' ? 'Verification Document' : 'Überprüfungsdokument'}</h6>
-                <p className="mb-0 text-muted small">{lang === 'en' ? 'Update evidence document' : 'Nachweisdokument aktualisieren'}</p>
+                <h6 className="mb-1">{lang === 'en' ? 'Verification of Documents:' : 'Überprüfungsdokument'}</h6>
+                <p className="mb-0 text-muted small">{lang === 'en' ? 'Provide & Upload your official government issued ID' : 'Nachweisdokument aktualisieren'}</p>
               </div>
               <div className="card-body">
                 <VerificationDocument onVerficationDocumentSuccess={handleVerificationDocumentSuccess} activeStep={activeStep} lang={lang} currentUser={currentUser} />

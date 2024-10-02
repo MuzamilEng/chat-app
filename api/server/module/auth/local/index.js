@@ -46,8 +46,7 @@ exports.login = async (req, res, next) => {
       return next(PopulateResponse.forbidden({ msg: 'Your account is blocked.' }));
     }
 
-    // Check if the user is a model and not approved
-    if (userData.type === 'model' && !userData.isApproved) {
+    if (!userData.isApproved) {
       return next(PopulateResponse.forbidden({ msg: 'Your profile is under review.' }));
     }
 

@@ -103,7 +103,8 @@ exports.verifyEmailView = async (req, res, next) => {
     }
 
     return res.redirect(url.format({
-      pathname: new URL('/auth/register', nconf.get('siteUrl')).href,
+      // if user.type === 'model' then redirect to auth/register page else auth/login page
+      pathname: user.type === 'user' ? new URL('/auth/login', nconf.get('siteUrl')).href :  new URL('/auth/register', nconf.get('siteUrl')).href,
       query: { verified: 'success' }
     }));
   } catch (e) {

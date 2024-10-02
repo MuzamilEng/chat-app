@@ -179,7 +179,7 @@ const ImageCroper = () => {
                 height: '25vw',
               }}
             >
-              <img src={croppedImage} style={{ objectFit: 'cover', objectPosition: 'center', width: '100%', height: '100%' }} alt="profile" />
+              <img src={croppedImage} style={{ objectFit: "cover", objectPosition: 'center', width: '100%', height: '100%' }} alt="profile" />
             </Avatar>
           ) : (
             <img src="/images/no-image.png" style={{ objectFit: 'cover', objectPosition: 'center', borderRadius: '50%' }} alt="profile" />
@@ -190,7 +190,7 @@ const ImageCroper = () => {
           onClose={() => setModalOpen(false)}
           aria-labelledby="crop-image-modal"
           aria-describedby="crop-image-description"
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", overflowY: "auto" }}
         >
           <Box
             sx={{
@@ -198,7 +198,9 @@ const ImageCroper = () => {
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              maxWidth: 600,
+              // maxWidth: 600,
+              // width: "100%",
+              objectFit: "contain",
               bgcolor: "background.paper",
               boxShadow: 24,
               p: 4,
@@ -209,12 +211,12 @@ const ImageCroper = () => {
                 crop={crop}
                 onChange={(pixelCrop, percentCrop) => setCrop(percentCrop)}
                 keepSelection
-                aspect={1}
+                // aspect={1}
                 minWidth={200}
                 minHeight={200}
               >
                 <img
-                  style={{ width: "100%" }}
+                  style={{ width: "80vw", maxHeight: "40vw", objectFit: "contain" }}
                   ref={imgRef}
                   src={imageSrc}
                   alt="Selected Image"
