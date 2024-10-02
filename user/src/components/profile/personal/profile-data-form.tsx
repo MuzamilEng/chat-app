@@ -150,7 +150,8 @@ class ProfileDataForm extends Component<any, any> {
          {authUser ? <Formik
           validationSchema={schema}
           initialValues={{
-            username: authUser?.username?.length < 14 ? (authUser?.username || userFromLocal?.username) : "",
+            // username: authUser?.username?.length < 14 ? (authUser?.username || userFromLocal?.username) : "",
+            username: authUser?.username || userFromLocal?.username || "",
             bio: authUser?.bio || userFromLocal?.bio || "",
             age: authUser?.age || userFromLocal?.age || "",
             gender: authUser?.gender || userFromLocal?.gender || "",
@@ -169,7 +170,7 @@ class ProfileDataForm extends Component<any, any> {
               <form onSubmit={props.handleSubmit}>
                 <div className="card-body">
                   <Row>
-                    <Col md={12} xs={12}>
+                    {/* <Col md={12} xs={12}>
                       <Form.Group>
                         <Form.Label>
                         {lang === 'en' ? 'Username' : 'Benutzername'}
@@ -208,6 +209,7 @@ class ProfileDataForm extends Component<any, any> {
                       </Form.Group>
                     </Col>
                     <p className='text-muted mx-auto'>{lang === 'en' ? 'This data will not be displayed publicly' : 'Diese Daten werden nicht im Profil angezeigt'}</p>
+                     */}
                     <Col xs={12} md={6}>
                       <Form.Group>
                         <Form.Label>

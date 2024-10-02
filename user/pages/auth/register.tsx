@@ -74,9 +74,6 @@ function Register({ authUser }: IProps) {
   };
 
   const handleProfileSuccess = (data) => {
-    console.log('====================================');
-    console.log(data);
-    console.log('====================================');
     if (data === true) {
       handleComplete(); // Step 2 completed, move to step 3
       setCurrentStep(4)
