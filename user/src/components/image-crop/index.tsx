@@ -15,34 +15,39 @@ const ImageCroper = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const {setOnImageUploadSuccess, currentUser} = useTranslationContext()
-  const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
+  const userFromLocal = JSON.parse(sessionStorage.getItem('userRegisterationRecords'))
   const [croppedImage, setCroppedImage] = useState<string | null>(userFromLocal?.avatarUrl || null);
 
   const onSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
+  
     const reader = new FileReader();
     reader.addEventListener("load", () => {
       const imageElement = new Image();
       const imageUrl = reader.result?.toString() || "";
-
+  
       imageElement.src = imageUrl;
-
+  
       imageElement.addEventListener("load", (e) => {
         const target = e.currentTarget as HTMLImageElement;
         const { naturalWidth, naturalHeight } = target;
-        if (naturalWidth < 150 || naturalHeight < 150) {
-          alert("Image dimensions should be at least 150x150");
-          setImageSrc("");
+        
+        // Check if image resolution is at least 1080 x 1080 pixels
+        if (naturalWidth < 1080 || naturalHeight < 1080) {
+          alert("Image dimensions should be at least 1080x1080 pixels.");
+          setImageSrc(null);  // Reset the image source
           return;
         }
+  
         setImageSrc(imageUrl);
-        setModalOpen(true);
+        setModalOpen(true); // Open the modal to crop
       });
     });
+  
     reader.readAsDataURL(file);
   };
+  
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { height, width } = e.currentTarget;
@@ -211,7 +216,7 @@ const ImageCroper = () => {
                 crop={crop}
                 onChange={(pixelCrop, percentCrop) => setCrop(percentCrop)}
                 keepSelection
-                // aspect={1}
+                aspect={1}
                 minWidth={200}
                 minHeight={200}
               >

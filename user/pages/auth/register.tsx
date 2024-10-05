@@ -34,7 +34,7 @@ function Register({ authUser }: IProps) {
     'Verify email',
     'Nick name',
     'Profile image',
-    'Profile data',
+    // 'Profile data',
     'Verify document',
   ];
 
@@ -73,12 +73,12 @@ function Register({ authUser }: IProps) {
     }
   };
 
-  const handleProfileSuccess = (data) => {
-    if (data === true) {
-      handleComplete(); // Step 2 completed, move to step 3
-      setCurrentStep(4)
-    }
-  };
+  // const handleProfileSuccess = (data) => {
+  //   if (data === true) {
+  //     handleComplete(); // Step 2 completed, move to step 3
+  //     setCurrentStep(4)
+  //   }
+  // };
 
   const handleImageSuccess = () => {
     if (onImageUploadSuccess === true) {
@@ -90,7 +90,7 @@ function Register({ authUser }: IProps) {
   const handleVerificationDocumentSuccess = (data) => {
     if (data === true) {
       handleComplete();
-      setCurrentStep(5)
+      setActiveStep(4)
     }
   };
 
@@ -169,15 +169,15 @@ function Register({ authUser }: IProps) {
           {/* image crop  */}
         { activeStep === 2 &&  <ImageCrop />}
           {/* profile form */}
-         { activeStep === 3 &&
+         {/* { activeStep === 3 &&
           <div className="col-md-6 col-12 xchat-bg-color">
           <div className="xchat-content">
           <h3 className="text-center text-uppercase">{lang === 'en' ? 'Personal Information' : 'Persönliche Informationen'}</h3>
           <ProfileDataForm currentUser={currentUser} onProfileFormSuccess={handleProfileSuccess} />
           </div>
-          </div>}
+          </div>} */}
             {/* documentation verfication */}
-          { activeStep === 4 && authUser && 
+          { activeStep === 3 && authUser && 
            <div className="col-md-6 col-12 xchat-bg-color">
             <div className="xchat-content">
             <div className="card mb-3">
@@ -192,7 +192,7 @@ function Register({ authUser }: IProps) {
            </div>
           </div>}
 
-          {activeStep === 5 &&
+          {activeStep === 4 &&
            <div style={{marginTop: '1vw'}} className="">
             <div className="thanks-message-container">
               <div className="thank-you-box">

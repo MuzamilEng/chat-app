@@ -94,7 +94,7 @@ class ProfileDataForm extends Component<any, any> {
     const { countries, states, cities } = this.state;
     const { t} = this.props;
     const lang = this.getLangFromUrl();
-    const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
+    const userFromLocal = JSON.parse(sessionStorage.getItem('userRegisterationRecords'))
     const schema = Yup.object().shape({
       username: Yup.string().required( lang === 'en' ? 'Username is required' : 'Benutzername ist erforderlich'),
       bio: Yup.string().min(20, lang === 'en' ? 'Bio must be at least 20 characters' : 'Bitte geben Sie mindestens 20 Zeichen ein').required( lang === 'en' ? 'Bio is required' : 'Eine Kurzbiografie wird benötigt'),
@@ -133,7 +133,7 @@ class ProfileDataForm extends Component<any, any> {
           userFromLocal.country = values.country;
           userFromLocal.postCode = values.postCode;
   
-          localStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal));
+          sessionStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal));
   
           formikHelpers.setSubmitting(false);
         }

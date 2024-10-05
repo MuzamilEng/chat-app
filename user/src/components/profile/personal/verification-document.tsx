@@ -32,7 +32,9 @@ interface FormValues {
   expiredDate: string;
   isConfirm: boolean;
   isExpired: boolean;
+  type: string;
   id?: string;
+  gender: string;
 }
 
 // Your component logic remains the same
@@ -170,7 +172,8 @@ class VerificationDocumentComponent extends Component<any, any> {
       const response = await axios.post(`https://api.girls2dream.com/v1/users/document`, data);
       if(response.status === 200 || response.data) {
         this.props.activeStep === 5;     
-        localStorage.removeItem('userRegisterationRecords');
+        this.props.onVerficationDocumentSuccess(true);
+        sessionStorage.removeItem('userRegisterationRecords');
       }
       return response.data; // Adjust based on your API response
     } catch (error) {
@@ -193,8 +196,8 @@ class VerificationDocumentComponent extends Component<any, any> {
       firstName: Yup.string().required( lang === 'en' ? 'First Name is required' : 'Vorname ist erforderlich'),
       lastName: Yup.string().required( lang === 'en' ? 'Last Name is required' : 'Nachname ist erforderlich'),
       address: Yup.string().required( lang === 'en' ? 'Address is required' : 'Adresse ist erforderlich'),
-      city: Yup.string(),
-      state: Yup.string(),
+      city: Yup.string().required( lang === 'en' ? 'City is required' : 'Stadt ist erforderlich'),
+      state: Yup.string().required( lang === 'en' ? 'State is required' : 'Bundesland ist erforderlich'),
       country: Yup.string().required( lang === 'en' ? 'Country is required' : 'Land ist erforderlich'),
       zipCode: Yup.string().required( lang === 'en' ? 'Zip Code is required' : 'Postleitzahl ist erforderlich'),
       birthday: Yup.string().required( lang === 'en' ? 'Birthday is required' : 'Geburtstag ist erforderlich'),  
@@ -203,7 +206,8 @@ class VerificationDocumentComponent extends Component<any, any> {
       number: Yup.string().notRequired(),
       expiredDate: Yup.string().notRequired(),
       isExpired: Yup.boolean(),
-      isConfirm: Yup.boolean()
+      isConfirm: Yup.boolean(),
+      gender: Yup.string().required( lang === 'en' ? 'Gender is required' : 'Geschlecht ist erforderlich')
     });
 
     return (
@@ -225,6 +229,8 @@ class VerificationDocumentComponent extends Component<any, any> {
             expiredDate: currentUser?.verificationDocument?.expiredDate || '',
             isExpired: currentUser?.verificationDocument?.isExpired || false,
             isConfirm: currentUser?.verificationDocument?.isConfirm || false,
+            gender: currentUser?.gender || '',
+            type: currentUser?.verificationDocument?.type || 'ID',
             id: currentUser?._id || ''
           }}
           onSubmit={async (values: FormValues) => {
@@ -303,7 +309,44 @@ class VerificationDocumentComponent extends Component<any, any> {
                       <div className="invalid-feedback">{props.errors.birthday}</div>
                     </Form.Group>
                   </Col>
-                  <Col md={12} xs={12}>
+                  <Col xs={12}>
+                      <Form.Group>
+                        <Form.Label>{lang === 'en' ? 'Gender' : 'Geschlecht'}</Form.Label>
+                        <br />
+                        <Form.Check
+                          type="radio"
+                          onChange={props.handleChange}
+                          value="male"
+                          checked={props.values.gender === 'male'}
+                          className="form-check form-check-inline"
+                          name="gender"
+                          id="male"
+                          label={lang === 'en' ? 'Male' : 'Maennlich'}
+                        />
+                        <Form.Check
+                          type="radio"
+                          onChange={props.handleChange}
+                          value="female"
+                          checked={props.values.gender === 'female'}
+                          className="form-check form-check-inline"
+                          name="gender"
+                          id="female"
+                          label={lang === 'en' ? 'Female' : 'Weiblich'}
+                        />
+                        <Form.Check
+                          type="radio"
+                          onChange={props.handleChange}
+                          value="transgender"
+                          checked={props.values.gender === 'transgender'}
+                          className="form-check form-check-inline"
+                          name="gender"
+                          id="transgender"
+                          label={lang === 'en' ? 'Transgender' : 'Transgendlich'}
+                        />
+                        <div className="invalid-feedback">{props.errors.gender}</div>
+                      </Form.Group>
+                    </Col>
+                  <Col md={12} xs={12} className="mt-3">
                     <Form.Group>
                       <Form.Label>
                       {lang === 'en' ? 'Address' : 'Adresse'}
@@ -417,7 +460,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         name="zipCode"
                         className="form-control form-control-md"
                         min="0"
-                        type="number"
+                        type="string"
                         placeholder={lang === 'en' ? 'Please enter your zip code.' : 'Bitte geben Sie Ihre Postleitzahl ein.'}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
@@ -451,7 +494,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                       <FormControl
                         name="number"
                         className="form-control form-control-md"
-                        type="number"
+                        type="string"
                         min="0"
                         placeholder={lang === 'en' ? 'Please enter your number.' : `Geben Sie Ihre ${certText}-Nummer ein.`}
                         onChange={props.handleChange}
@@ -617,7 +660,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                   </Col>
                 </Row>
               </div>
-              <Button variant="primary" type="submit">
+              <Button className="btn btn-primary p-2" variant="primary" type="submit">
               {lang === 'en' ? 'Update Verification Document' : 'Aktualisieren Sie das Verifizierungsdokument.'}
               </Button>
             </form>

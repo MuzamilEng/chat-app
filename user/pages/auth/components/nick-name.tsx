@@ -29,12 +29,12 @@ function NickName({onNicknameSuccess}) {
           nickname,
           userId: currentUser?._id
         })
-        const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
+        const userFromLocal = JSON.parse(sessionStorage.getItem('userRegisterationRecords'))
         if(result){
           toast.success(lang === 'en' ? 'Nickname updated successfully' : 'Benutzername wurde erfolgreich geändert')
           onNicknameSuccess(true)
           userFromLocal.nickname = nickname
-          localStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal))
+          sessionStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal))
           // setActiveStep(2)
         }
       } catch (error) {
@@ -45,7 +45,7 @@ function NickName({onNicknameSuccess}) {
     }
 
     useEffect(()=> {
-      const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
+      const userFromLocal = JSON.parse(sessionStorage.getItem('userRegisterationRecords'))
       setNickname(userFromLocal?.nickname)
     }, [currentUser])
 
@@ -57,7 +57,7 @@ function NickName({onNicknameSuccess}) {
   return (
        <section className="col-md-6 col-12 xchat-bg-color">
             <form onSubmit={handleSubmit} style={{ width: '100%', height: '100%', padding: '30px' }}>
-              {emailStatus === false && <p style={{color: 'red', textAlign: 'center', fontSize: '1.3vw'}}>{lang === 'en' ? 'Please verify your email!' : 'Bitte Email verifizieren!'}</p>}
+              {emailStatus === false && <p style={{color: 'red', textAlign: 'center', fontSize: '1.3vw'}}>{lang === 'en' ? 'Please go to your Email account and verify your Email to Continue' : 'Bitte gehe zu deinem E-Mail-Konto und bestätige deinen E-Mail, um fortzufahren'}</p>}
               <h4>{lang === 'en' ? 'Nickname' : 'Nutzername'}</h4>
               <h5 style={{ color: '#ff337c' }} className="mt-3">
                 {lang === 'en' ? 'Choose your nickname' : 'Waehle deinen Usernamen'}

@@ -66,7 +66,7 @@ function RegisterForm({onSuccess, type: checkUserType}) {
       if(resp.data?.user.type === 'user'){
         router.push(`/${lang}/auth/login`);
       } else{
-        localStorage.setItem('userRegisterationRecords', JSON.stringify(resp.data?.user));
+        sessionStorage.setItem('userRegisterationRecords', JSON.stringify(resp.data?.user));
         window.location.reload();
       }
     } catch (e) {
@@ -102,8 +102,8 @@ function RegisterForm({onSuccess, type: checkUserType}) {
     } else {
       await authService
         .register({
-          // username : type === 'model' ? generateRandomName() : username, email, password, type
-          username, email, password, type
+          username : type === 'model' ? generateRandomName() : username, email, password, type
+          // username, email, password, type
         })
         .then((resp) => {
           toast.success(resp?.data?.data?.message || lang === 'en' ? 'Registration successful!' : 'Registrierung erfolgreich!');
@@ -138,7 +138,7 @@ function RegisterForm({onSuccess, type: checkUserType}) {
     >
       {(props: FormikProps<FormValues>) => (
         <form onSubmit={props.handleSubmit}>
-           <Form.Group className="form-group">
+          { type === 'user' &&  <Form.Group className="form-group">
             <Form.Label className="input-label">{lang === 'de' ? 'Benutzername' : 'Username'}</Form.Label>
             <FormControl
               isInvalid={props.touched.username && !!props.errors.username}
@@ -152,7 +152,7 @@ function RegisterForm({onSuccess, type: checkUserType}) {
               value={props.values.username}
             />
             <div className="invalid-feedback">{props.errors.username}</div>
-          </Form.Group>
+          </Form.Group>}
           <Form.Group className="form-group">
             <Form.Label className="input-label">{lang === 'de' ? 'E-Mail-Adresse' : 'Email-Adress'}</Form.Label>
             <FormControl

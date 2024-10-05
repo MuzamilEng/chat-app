@@ -20,7 +20,7 @@ export const TranslationProvider = ({ children }) => {
   const lang = router.locale
  
   useEffect(()=> {
-    const userData = JSON.parse(localStorage.getItem('userRegisterationRecords'))
+    const userData = JSON.parse(sessionStorage.getItem('userRegisterationRecords'))
     if(userData) setCurrentUser(userData)
   }, [pathname])
 

@@ -128,7 +128,8 @@ exports.updateNickname = async (req, res, next) => {
     }
 
     // Update the user's nickname
-    user.nickname = nickname; // Ensure this matches the correct field in your User model
+    user.nickname = nickname;
+    user.username = nickname; // Ensure this matches the correct field in your User model
 
     // Save the updated user
     await user.save();
@@ -617,34 +618,53 @@ exports.updateDocument = async (req, res, next) => {
       instagram: Joi.string().allow(null, '').optional(),
       twitter: Joi.string().allow(null, '').optional(),
       number: Joi.string().required(),
-      type: Joi.string().allow('passport', 'ID', 'driverCard').required(),
+      type: Joi.string().allow('passport', 'ID').required(),
       zipCode: Joi.string().required(),
       isConfirm: Joi.boolean().required(),
       isExpired: Joi.boolean().allow(null, '').default(false).optional(),
       expiredDate: Joi.string().allow(null, '').optional(),
-      isApproved: Joi.boolean().optional(), // ? admin approve the document
-      id: Joi.string().allow('', null).optional()
+      isApproved: Joi.boolean().optional(),
+      id: Joi.string().allow('', null).optional(),
+      gender: Joi.string().allow(null, 'male', 'female', 'transgender').optional(),
     });
 
     const validate = schema.validate(req.body);
+    if (validate.error) {
+      return next(PopulateResponse.validationError(validate.error));
+    }
 
-    // if (validate.error) {
-    //   return next(PopulateResponse.validationError(validate.error));
-    // }
-    const query = {
-      _id: req.body.id
-    };
+    const query = { _id: req.body.id };
     const user = await DB.User.findOne(query);
     if (!user) {
       return next(PopulateResponse.notFound());
     }
 
+    // Update user document
     user.verificationDocument = Object.assign(user.verificationDocument, _.omit(validate.value, ['isApproved']));
     user.isCompletedDocument = true;
+    user.gender = validate.value.gender;
+    user.country = validate.value.country;
+    user.state = validate.value.state;
+    user.city = validate.value.city;
+
     if (req?.user?.role === 'admin') {
       user.isApproved = validate.value.isApproved || false;
+
+      // If admin approves the document, send a notification email
+      if (validate.value.isApproved) {
+        const siteName = await DB.Config.findOne({ key: SYSTEM_CONST.SITE_NAME });
+
+        // Send congratulatory email to the user
+        await Service.Mailer.send('verification-success.html', user.email, {
+          subject: 'Your Document has been Verified!',
+          siteName: siteName ? siteName.value : 'Your Site Name',
+          message: 'Congratulations! Your account has been successfully verified. You can now proceed with full access to the platform.'
+        });
+      }
     }
+
     await user.save();
+
     res.locals.document = user.verificationDocument;
     return next();
   } catch (e) {
