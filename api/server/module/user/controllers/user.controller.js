@@ -647,41 +647,33 @@ exports.updateDocument = async (req, res, next) => {
     user.state = validate.value.state;
     user.city = validate.value.city;
 
+    // If the request is made by an admin and the document is approved
     if (req?.user?.role === 'admin') {
       user.isApproved = validate.value.isApproved || false;
 
-      // If admin approves the document, send a notification email
+      // If the admin approves the document, send an email
       if (validate.value.isApproved) {
         const siteName = await DB.Config.findOne({ key: SYSTEM_CONST.SITE_NAME });
 
-        // Send congratulatory email to the user
-        await Service.Mailer.send('verification-success.html', user.email, {
+        // Send verification success email to the user
+        await Service.Mailer.send('verification-success2.html', user.email, {
           subject: 'Congratulations! Your Document has been Verified',
           siteName: siteName ? siteName.value : 'Girls2Dream.com',
-          nickname: user.nickname || 'there',  // Assuming `nickname` is used as a nickname
-          message: `
-            Dear ${user.nickname || 'there'},
-            <br/><br/>
-            Congratulations! Your registration has been successfully completed on Girls2Dream.com and is currently under review.
-            The Girls2Dream support team is now going to verify and check your details. If there is no additional information needed or missing, your account will be activated shortly.
-            <br/><br/>
-            The Girls2Dream support team will contact you if there are any questions about your personal information.
-            <br/><br/>
-            Best regards, <br/>
-            Your Girls2Dream Team
-          `
+          nickname: user.nickname || 'there', // Assuming `nickname` is used as a nickname
         });
       }
     }
 
     await user.save();
 
+    // Attach the updated document to the response
     res.locals.document = user.verificationDocument;
     return next();
   } catch (e) {
     return next(e);
   }
 };
+
 
 
 exports.updateTokenPerMessage = async (req, res, next) => {
