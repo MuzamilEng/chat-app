@@ -652,7 +652,7 @@ exports.updateDocument = async (req, res, next) => {
       user.isApproved = validate.value.isApproved || false;
 
       // If the admin approves the document, send an email
-      if (validate.value.isApproved) {
+      // if (validate.value.isApproved) {
         const siteName = await DB.Config.findOne({ key: SYSTEM_CONST.SITE_NAME });
 
         // Send verification success email to the user
@@ -662,7 +662,7 @@ exports.updateDocument = async (req, res, next) => {
           nickname: user.nickname || 'there', // Assuming `nickname` is used as a nickname
         });
       }
-    }
+    // }
 
     await user.save();
 
