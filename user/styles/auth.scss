@@ -235,6 +235,7 @@ Demo Layout Four
     -ms-flex-pack: start;
     justify-content: flex-start;
     padding: 45px;
+    // z-index: 1;
   }
 
   .xchat-bg-img {
@@ -304,7 +305,7 @@ Demo Layout Four
 
     .xchat-logo {
       display: block;
-      margin-bottom: 50px;
+      margin-bottom: 5px;
       margin-left: auto;
       margin-right: auto;
       max-width: 40vw;
@@ -324,7 +325,7 @@ Demo Layout Four
 
   .xchat-content {
     padding: 30px;
-    max-width: 460px;
+    // max-width: 460px;
     width: 100%;
     height: 100%;
   }
@@ -523,6 +524,32 @@ Demo Layout Four
       }
     }
   }
+
+  .containers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    background-color: #f9f9f9;
+  }
+  
+  .logo2 {
+    margin-bottom: 20px;
+  }
+  
+  .message h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .message p {
+    font-size: 1.2rem;
+    color: #666;
+  }
+  
 
   .switcher-text {
     color: #ff337c;

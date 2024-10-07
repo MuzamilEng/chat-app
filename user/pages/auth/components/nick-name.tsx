@@ -10,16 +10,16 @@ function NickName({onNicknameSuccess}) {
     const [error, setError] = React.useState('')
     const [emailStatus, setEmailStatus] = React.useState(null)
 
-    const checkEmailStatus = async ()=> {
-      try {
-        const resp = await authService.checkEmail({email: currentUser?.email})
-      if(resp) {
-        setEmailStatus(resp?.data?.user?.emailVerified)
-      }
-      } catch (error) {
-        console.warn(error)
-      }
-    }
+    // const checkEmailStatus = async ()=> {
+    //   try {
+    //     const resp = await authService.checkEmail({email: currentUser?.email})
+    //   if(resp) {
+    //     setEmailStatus(resp?.data?.user?.emailVerified)
+    //   }
+    //   } catch (error) {
+    //     console.warn(error)
+    //   }
+    // }
   
 
     const handleSubmit = async (e) => {
@@ -49,15 +49,14 @@ function NickName({onNicknameSuccess}) {
       setNickname(userFromLocal?.nickname)
     }, [currentUser])
 
-    useEffect(() => {
-      checkEmailStatus()
-    }, [])
+    // useEffect(() => {
+    //   checkEmailStatus()
+    // }, [])
 
 
   return (
        <section className="col-md-6 col-12 xchat-bg-color">
             <form onSubmit={handleSubmit} style={{ width: '100%', height: '100%', padding: '30px' }}>
-              {emailStatus === false && <p style={{color: 'red', textAlign: 'center', fontSize: '1.3vw'}}>{lang === 'en' ? 'Please go to your Email account and verify your Email to Continue' : 'Bitte gehe zu deinem E-Mail-Konto und bestätige deinen E-Mail, um fortzufahren'}</p>}
               <h4>{lang === 'en' ? 'Nickname' : 'Nutzername'}</h4>
               <h5 style={{ color: '#ff337c' }} className="mt-3">
                 {lang === 'en' ? 'Choose your nickname' : 'Waehle deinen Usernamen'}
@@ -88,8 +87,8 @@ function NickName({onNicknameSuccess}) {
                   ? 'Choose a nickname that reflects your personality. It can be a combination of your interests, hobbies, or something unique to you. Remember, this nickname will be visible to others on the site, while your original name will be kept private.'
                   : 'Wählen Sie einen Benutzernamen, der Ihre Persönlichkeit widerspiegelt. Es kann eine Kombination aus Ihren Interessen, Hobbys oder etwas Einzigartigem für Sie sein. Denken Sie daran, dass dieser Benutzername für andere auf der Seite sichtbar ist, während Ihr richtiger Name privat bleibt.'}
               </p>
-          <Button disabled={emailStatus === false} type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary">
-          {/* <Button type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary"> */}
+          {/* <Button disabled={emailStatus === false} type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary"> */}
+          <Button type="submit" className="btn btn-primary" style={{marginTop: '2vw'}} color="primary">
               {lang === 'en' ? 'submit' : 'einreichen'}
             </Button>
             </form>

@@ -255,10 +255,10 @@ function RegisterForm({onSuccess, type: checkUserType}) {
         name="isAgreeToPrivacyPolicy"
         label={(
           <>
-            {lang === 'de' ? 'Ich stimme den ' : 'I accept the agreement and want to register'}
+            {lang === 'de' ? 'Ich stimme den ' : 'I accept the agreement and want to register '}
             <a href="/agreement.pdf" download="agreement.pdf"  style={{ display: 'none' }}></a>
             <span>
-               <br />
+               {/* <br /> */}
               <a 
                 href="/agreement.pdf" 
                 download="agreement.pdf"

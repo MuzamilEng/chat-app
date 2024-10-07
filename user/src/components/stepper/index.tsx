@@ -39,9 +39,9 @@ export default function HorizontalNonLinearStepper({ steps, activeStep, complete
         {allStepsCompleted ? (
           <Typography sx={{ mt: 2, mb: 1 }}>All steps completed - you&apos;re finished</Typography>
         ) : (
-          <React.Fragment>
+          <section>
             <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '40%', mt: 2, zIndex: '' }}>
               <Button
                 variant="contained"
                 disabled={activeStep === 0}
@@ -58,7 +58,7 @@ export default function HorizontalNonLinearStepper({ steps, activeStep, complete
                 {isLastStep ? 'Finish' : 'Next'}
               </Button>
             </Box>
-          </React.Fragment>
+          </section>
         )}
       </div>
     </Box>

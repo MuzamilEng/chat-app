@@ -477,7 +477,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         value={this.state.type}
                         onChange={(e: any) => this.setState({ type: e.target.value })}
                       >
-                        <option value="ID">{lang === 'en' ? 'Identification' : 'Identifikation'}</option>
+                        <option value="ID">{lang === 'en' ? 'ID Card' : 'ID'}</option>
                         <option value="passport">{lang === 'en' ? 'Passport' : 'Reisepass'}</option>
                       </FormControl>
                     </Form.Group>

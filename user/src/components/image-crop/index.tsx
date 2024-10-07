@@ -173,7 +173,8 @@ const ImageCroper = () => {
           capture="environment" 
           onChange={onSelectImage} 
         />
-        <figure
+      <div className="flex" style={{ justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+      <figure
           className="w-[10vw] flex justify-center"
           onClick={() => inputRef.current?.click()}
         >
@@ -190,6 +191,7 @@ const ImageCroper = () => {
             <img src="/images/no-image.png" style={{ objectFit: 'cover', objectPosition: 'center', borderRadius: '50%' }} alt="profile" />
           )}
         </figure>
+      </div>
         <Modal
           open={modalOpen}
           onClose={() => setModalOpen(false)}

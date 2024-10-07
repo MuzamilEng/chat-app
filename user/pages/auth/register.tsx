@@ -13,6 +13,7 @@ import NickName from './components/nick-name';
 import ImageCrop from './components/image-crop';
 import Thanks from './components/thanks';
 import { toast } from 'react-toastify';
+import { authService } from '@services/auth.service';
 
 const RegisterFrom = dynamic(() => import('src/components/auth/register-form'));
 
@@ -29,8 +30,10 @@ function Register({ authUser }: IProps) {
 
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
   const [userType, setUserType] = useState('');
+  const [emailStatus, setEmailStatus] = useState(null)
 
   const steps = [
+    'Register',
     'Verify email',
     'Nick name',
     'Profile image',
@@ -69,28 +72,37 @@ function Register({ authUser }: IProps) {
   const handleNicknameSuccess = (data) => {
     if (data === true) {
       handleComplete(); // Step 1 completed, move to step 2
-      setActiveStep(2)
+      setActiveStep(3)
     }
   };
 
-  // const handleProfileSuccess = (data) => {
-  //   if (data === true) {
-  //     handleComplete(); // Step 2 completed, move to step 3
-  //     setCurrentStep(4)
-  //   }
-  // };
+
+  const checkEmailStatus = async ()=> {
+    setEmailStatus(true);
+    try {
+      const resp = await authService.checkEmail({email: currentUser?.email})
+    if(resp) {
+      setEmailStatus(resp?.data?.user?.emailVerified)
+      if(resp.data?.user?.emailVerified === true) {
+      setActiveStep(2)
+      }
+    }
+    } catch (error) {
+      console.warn(error)
+    }
+  }
 
   const handleImageSuccess = () => {
     if (onImageUploadSuccess === true) {
       handleComplete(); // Step 3 completed, move to step 4
-      setActiveStep(3)
+      setActiveStep(4)
     }
   };
 
   const handleVerificationDocumentSuccess = (data) => {
     if (data === true) {
       handleComplete();
-      setActiveStep(4)
+      setActiveStep(5)
     }
   };
 
@@ -129,7 +141,7 @@ function Register({ authUser }: IProps) {
       <h5 className="text-center">You need to complete all these steps to register your account, only then you can start using girls2dream.com. <br /> And once your email is verified, you can complete your profile. </h5>
         </div>
       </div>
-      <div style={{width: '100%', maxWidth: '90vw', margin: '2vw auto'}} className="">
+      <div style={{width: '100%', maxWidth: '90vw', margin: '1vw auto'}} className="">
  { userType === 'model' && activeStep !== 5 && <HorizontalNonLinearStepper
           steps={steps}
           activeStep={activeStep}
@@ -139,7 +151,7 @@ function Register({ authUser }: IProps) {
           handleBack={handleBack}
         />}
       </div>
-      <div className="container-fluid">
+      <div className="container-fluid" style={{marginTop: '-5vw', zIndex: 0}}>
           <div className="row">
             <div className="col-md-6 col-12 xchat-bg-wrap">
             <img src="/images/auth-bg.png" alt="" />
@@ -164,10 +176,23 @@ function Register({ authUser }: IProps) {
                 </div>
               </div>
             </div>}
+           {/* verify email */}
+           {activeStep === 1 &&
+           <div style={{marginTop: '1vw'}} className="">
+            <div className="thanks-message-container">
+              <div className="thank-you-box" style={{padding: '2vw', marginTop: '10vw'}}>
+                <h1>Please click on the link to continue your registration</h1>
+                <button onClick={checkEmailStatus} type='submit' className="btn btn-primary">
+                {lang === 'en' ? 'continue' : 'weiter'}
+                </button>
+                {emailStatus === false && <p style={{color: 'red', textAlign: 'center', fontSize: '1vw', marginTop: '1vw'}}>{lang === 'en' ? 'Please go to your Email account and verify your Email to Continue' : 'Bitte gehe zu deinem E-Mail-Konto und bestätige deinen E-Mail, um fortzufahren'}</p>}
+              </div>
+            </div>
+            </div>}
             {/* nickname */}
-         { activeStep === 1 &&  <NickName onNicknameSuccess={handleNicknameSuccess} />}
+         { activeStep === 2 &&  <NickName onNicknameSuccess={handleNicknameSuccess} />}
           {/* image crop  */}
-        { activeStep === 2 &&  <ImageCrop />}
+        { activeStep === 3 &&  <ImageCrop />}
           {/* profile form */}
          {/* { activeStep === 3 &&
           <div className="col-md-6 col-12 xchat-bg-color">
@@ -177,7 +202,7 @@ function Register({ authUser }: IProps) {
           </div>
           </div>} */}
             {/* documentation verfication */}
-          { activeStep === 3 && authUser && 
+          { activeStep === 4 && authUser && 
            <div className="col-md-6 col-12 xchat-bg-color">
             <div className="xchat-content">
             <div className="card mb-3">
@@ -192,7 +217,7 @@ function Register({ authUser }: IProps) {
            </div>
           </div>}
 
-          {activeStep === 4 &&
+          {activeStep === 5 &&
            <div style={{marginTop: '1vw'}} className="">
             <div className="thanks-message-container">
               <div className="thank-you-box">

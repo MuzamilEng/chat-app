@@ -656,9 +656,20 @@ exports.updateDocument = async (req, res, next) => {
 
         // Send congratulatory email to the user
         await Service.Mailer.send('verification-success.html', user.email, {
-          subject: 'Your Document has been Verified!',
-          siteName: siteName ? siteName.value : 'Your Site Name',
-          message: 'Congratulations! Your account has been successfully verified. You can now proceed with full access to the platform.'
+          subject: 'Congratulations! Your Document has been Verified',
+          siteName: siteName ? siteName.value : 'Girls2Dream.com',
+          nickname: user.nickname || 'there',  // Assuming `nickname` is used as a nickname
+          message: `
+            Dear ${user.nickname || 'there'},
+            <br/><br/>
+            Congratulations! Your registration has been successfully completed on Girls2Dream.com and is currently under review.
+            The Girls2Dream support team is now going to verify and check your details. If there is no additional information needed or missing, your account will be activated shortly.
+            <br/><br/>
+            The Girls2Dream support team will contact you if there are any questions about your personal information.
+            <br/><br/>
+            Best regards, <br/>
+            Your Girls2Dream Team
+          `
         });
       }
     }
@@ -671,6 +682,7 @@ exports.updateDocument = async (req, res, next) => {
     return next(e);
   }
 };
+
 
 exports.updateTokenPerMessage = async (req, res, next) => {
   try {
