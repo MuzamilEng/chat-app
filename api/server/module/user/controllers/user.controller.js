@@ -646,23 +646,14 @@ exports.updateDocument = async (req, res, next) => {
     user.country = validate.value.country;
     user.state = validate.value.state;
     user.city = validate.value.city;
-
-    // If the request is made by an admin and the document is approved
-    if (req?.user?.role === 'admin') {
-      user.isApproved = validate.value.isApproved || false;
-
-      // If the admin approves the document, send an email
-      // if (validate.value.isApproved) {
         const siteName = await DB.Config.findOne({ key: SYSTEM_CONST.SITE_NAME });
-
         // Send verification success email to the user
         await Service.Mailer.send('verification-success2.html', user.email, {
           subject: 'Congratulations! Your Document has been Verified',
           siteName: siteName ? siteName.value : 'Girls2Dream.com',
           nickname: user.nickname || 'there', // Assuming `nickname` is used as a nickname
         });
-      }
-    // }
+
 
     await user.save();
 
