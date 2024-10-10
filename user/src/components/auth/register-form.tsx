@@ -66,7 +66,7 @@ function RegisterForm({onSuccess, type: checkUserType}) {
       if(resp.data?.user.type === 'user'){
         router.push(`/${lang}/auth/login`);
       } else{
-        sessionStorage.setItem('userRegisterationRecords', JSON.stringify(resp.data?.user));
+        localStorage.setItem('userRegisterationRecords', JSON.stringify(resp.data?.user));
         window.location.reload();
       }
     } catch (e) {

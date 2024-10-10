@@ -93,6 +93,9 @@ function UserListing() {
             <th className="text-center">
               <a>Geschlecht</a>
             </th>
+            {/* <th className="text-center">
+              <a>Block-Status</a>
+            </th> */}
             <th className="text-center">
               <a>Rolle</a>
             </th>
@@ -126,7 +129,7 @@ function UserListing() {
         <tbody>
           {usersData && usersData.items?.length > 0 ? (usersData?.items?.map((user, index) => (
             <tr key={index as any}>
-              <td>{user?.username}</td>
+              <td>{user?.username || user?.nickname}</td>
               <td>
                 {user?.email}
                 {' '}

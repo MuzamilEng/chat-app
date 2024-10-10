@@ -29,12 +29,12 @@ function NickName({onNicknameSuccess}) {
           nickname,
           userId: currentUser?._id
         })
-        const userFromLocal = JSON.parse(sessionStorage.getItem('userRegisterationRecords'))
+        const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
         if(result){
           toast.success(lang === 'en' ? 'Nickname updated successfully' : 'Benutzername wurde erfolgreich geändert')
           onNicknameSuccess(true)
           userFromLocal.nickname = nickname
-          sessionStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal))
+          localStorage.setItem('userRegisterationRecords', JSON.stringify(userFromLocal))
           // setActiveStep(2)
         }
       } catch (error) {
@@ -45,7 +45,7 @@ function NickName({onNicknameSuccess}) {
     }
 
     useEffect(()=> {
-      const userFromLocal = JSON.parse(sessionStorage.getItem('userRegisterationRecords'))
+      const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
       setNickname(userFromLocal?.nickname)
     }, [currentUser])
 

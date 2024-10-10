@@ -33,7 +33,6 @@ function Register({ authUser }: IProps) {
   const [emailStatus, setEmailStatus] = useState(null)
 
   const steps = [
-    'Register',
     'Verify email',
     'Nick name',
     'Profile image',
@@ -138,7 +137,7 @@ function Register({ authUser }: IProps) {
           <a href="#" className="xchat-logo">
             <img src={'/images/logo_0.png'} alt="Logo" width="327" />
           </a>
-      <h5 className="text-center">You need to complete all these steps to register your account, only then you can start using girls2dream.com. <br /> And once your email is verified, you can complete your profile. </h5>
+      {/* <h5 className="text-center">You need to complete all these steps to register your account, only then you can start using girls2dream.com. <br /> And once your email is verified, you can complete your profile. </h5> */}
         </div>
       </div>
       <div style={{width: '100%', maxWidth: '90vw', margin: '1vw auto'}} className="">
@@ -181,7 +180,8 @@ function Register({ authUser }: IProps) {
            <div style={{marginTop: '1vw'}} className="">
             <div className="thanks-message-container">
               <div className="thank-you-box" style={{padding: '2vw', marginTop: '10vw'}}>
-                <h1>Please click on the link to continue your registration</h1>
+                <p>in order to continue please verify your email first and also check the spam folder</p>
+                <p>you can close this window and verify your email</p>
                 <button onClick={checkEmailStatus} type='submit' className="btn btn-primary">
                 {lang === 'en' ? 'continue' : 'weiter'}
                 </button>
@@ -218,7 +218,7 @@ function Register({ authUser }: IProps) {
           </div>}
 
           {activeStep === 5 &&
-           <div style={{marginTop: '1vw'}} className="">
+           <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column',}} className="">
             <div className="thanks-message-container">
               <div className="thank-you-box">
                 <h1>Thank you for your registration!</h1>

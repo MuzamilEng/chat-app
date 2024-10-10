@@ -15,7 +15,7 @@ const ImageCroper = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const {setOnImageUploadSuccess, currentUser} = useTranslationContext()
-  const userFromLocal = JSON.parse(sessionStorage.getItem('userRegisterationRecords'))
+  const userFromLocal = JSON.parse(localStorage.getItem('userRegisterationRecords'))
   const [croppedImage, setCroppedImage] = useState<string | null>(userFromLocal?.avatarUrl || null);
 
   const onSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {

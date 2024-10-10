@@ -122,7 +122,7 @@ class Upload extends Component<IProps, any> {
       const formData = new FormData();
       formData.append('file', file, this.props.fileName? this.props.fileName : file.name);
 
-      const currentUser = sessionStorage.getItem('userRegisterationRecords');
+      const currentUser = localStorage.getItem('userRegisterationRecords');
       if (currentUser) {
         try {
           const parsedUser = JSON.parse(currentUser);

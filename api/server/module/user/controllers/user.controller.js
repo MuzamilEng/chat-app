@@ -381,11 +381,13 @@ exports.search = async (req, res, next) => {
     }
 
     // Set default sort to balance descending
-    let sort = { balance: -1 };
+    let sort = { balance: -1, createdAt: -1 };
 
     // Check if there's a custom sort parameter in the query
     if (req.query.sort) {
       sort = Helper.App.populateDBSort(req.query);
+    } else{
+      sort = { createdAt: -1 };
     }
 
     const count = await DB.User.count(query);
@@ -638,11 +640,21 @@ exports.updateDocument = async (req, res, next) => {
     if (!user) {
       return next(PopulateResponse.notFound());
     }
+ 
+
+    if(validate.value.isApproved === true) {
+      user.isApproved = true;
+    }
+
+    
+    if(validate.value.gender){
+      user.gender = validate.value.gender;
+    }
 
     // Update user document
     user.verificationDocument = Object.assign(user.verificationDocument, _.omit(validate.value, ['isApproved']));
     user.isCompletedDocument = true;
-    user.gender = validate.value.gender;
+    
     user.country = validate.value.country;
     user.state = validate.value.state;
     user.city = validate.value.city;

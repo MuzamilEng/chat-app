@@ -173,7 +173,7 @@ class VerificationDocumentComponent extends Component<any, any> {
       if(response.status === 200 || response.data) {
         this.props.activeStep === 5;     
         this.props.onVerficationDocumentSuccess(true);
-        sessionStorage.removeItem('userRegisterationRecords');
+        localStorage.removeItem('userRegisterationRecords');
       }
       return response.data; // Adjust based on your API response
     } catch (error) {

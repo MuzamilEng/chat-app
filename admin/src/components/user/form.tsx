@@ -79,10 +79,10 @@ const UserForm: React.FunctionComponent<IProps> = ({
   const { publicRuntimeConfig: config } = getConfig();
   const schema = Yup.object().shape({
     username: Yup.string()
-      .matches(/^[a-zA-Z0-9]*$/, {
-        message: 'The username not whitespace',
-        excludeEmptyString: true
-      })
+      // .matches(/^[a-zA-Z0-9]*$/, {
+      //   message: 'The username not whitespace',
+      //   excludeEmptyString: true
+      // })
       .min(3, 'The username length must be greater than 3')
       .required('Username is required'),
     email: Yup.string().matches(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/, 'Email format is not right').required('Email is required'),
