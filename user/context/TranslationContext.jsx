@@ -18,6 +18,13 @@ export const TranslationProvider = ({ children }) => {
     const router = useRouter();
   const local = getDictionary(router.locale).then(data => setT(data))
   const lang = router.locale
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('userRegisterationRecords'))
+    if(userData && userData?.nickname){
+      localStorage.removeItem('userRegisterationRecords')
+    }
+  }, [])
  
   useEffect(()=> {
     const userData = JSON.parse(localStorage.getItem('userRegisterationRecords'))

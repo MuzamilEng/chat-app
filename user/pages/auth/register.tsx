@@ -26,7 +26,7 @@ interface IProps {
 
 function Register({ authUser }: IProps) {
   const { lang, currentUser, setCurrentStep, onImageUploadSuccess} = useTranslationContext();
-  const [activeStep, setActiveStep] = useState(currentUser ? 1 : 0);
+  const [activeStep, setActiveStep] = useState(currentUser ? 1 : 3);
 
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
   const [userType, setUserType] = useState('');
@@ -46,21 +46,33 @@ function Register({ authUser }: IProps) {
     handleNext();
   };
 
-  // Move to the next step only if the current step is completed
-  const handleNext = () => {
-    if (!completed[activeStep] && activeStep !== 0) return; // Prevent moving forward if step is not completed
+// Handle next step after email verification
+const handleNext = () => {
+  if (activeStep === 0 && !emailStatus) {
+    return; // Prevent moving forward if email is not verified
+  }
 
-    setActiveStep((prev) => Math.min(prev + 1, steps.length)); // Ensure we don't exceed step count
-  };
+  setActiveStep((prev) => Math.min(prev + 1, steps.length)); // Move to the next step
+};
 
   // Move to the previous step
   const handleBack = () => {
-    if(activeStep === 1) {
-      toast.error('You can not go back');
+  
+    if (activeStep === 0) {
+      toast.error('You cannot go back from this step.');
       return;
     }
-    setActiveStep((prev) => Math.max(prev - 1, 0)); // Ensure we don't go below step 0
+    
+    // Custom logic to restrict going back from specific steps
+    if (activeStep === 1) {
+      toast.error('You cannot go back to email verification.');
+      return;
+    }
+  
+    // Move to the previous step
+    setActiveStep((prev) => Math.max(prev - 1, 0));
   };
+  
 
   const handleRegisterSuccess = (data) => {
     if (data === true) {
@@ -71,37 +83,37 @@ function Register({ authUser }: IProps) {
   const handleNicknameSuccess = (data) => {
     if (data === true) {
       handleComplete(); // Step 1 completed, move to step 2
-      setActiveStep(3)
+      setActiveStep(2)
     }
   };
 
 
-  const checkEmailStatus = async ()=> {
-    setEmailStatus(true);
-    try {
-      const resp = await authService.checkEmail({email: currentUser?.email})
-    if(resp) {
-      setEmailStatus(resp?.data?.user?.emailVerified)
-      if(resp.data?.user?.emailVerified === true) {
-      setActiveStep(2)
-      }
+// Check email status
+const checkEmailStatus = async () => {
+  try {
+    const resp = await authService.checkEmail({ email: currentUser?.email });
+    if (resp?.data?.user?.emailVerified) {
+      setEmailStatus(true);
+      handleComplete(); // Move to the next step (Nick name) if email is verified
+    } else {
+      setEmailStatus(false);
     }
-    } catch (error) {
-      console.warn(error)
-    }
+  } catch (error) {
+    console.warn(error);
   }
+};
 
   const handleImageSuccess = () => {
     if (onImageUploadSuccess === true) {
       handleComplete(); // Step 3 completed, move to step 4
-      setActiveStep(4)
+      setActiveStep(3)
     }
   };
 
   const handleVerificationDocumentSuccess = (data) => {
     if (data === true) {
       handleComplete();
-      setActiveStep(5)
+      setActiveStep(4)
     }
   };
 
@@ -127,17 +139,30 @@ function Register({ authUser }: IProps) {
     }
   }, [])
 
+// Handle email verification success
+useEffect(() => {
+  if (emailStatus === true) {
+    setActiveStep(1); // Move to Nickname step once email is verified
+  }
+}, [emailStatus]);
+
+// Check email status once the user is available
+useEffect(() => {
+  if (currentUser) {
+    checkEmailStatus(); // Mandatory email verification check when user exists
+  }
+}, [currentUser]);
+
   
   return (
     <div id="wrapper" className="wrapper">
       <SeoMetaHead pageTitle="Register" />
       <div className="xchat-template-animation xchat-template-layout4">
-      <div className="xchat-header">
+      <div className="xchat-header" style={{zIndex: 1}}>
         <div className="xchat-transformY- xchat-transition-delay-1">
-          <a href="#" className="xchat-logo">
+          <a href="#" className="xchat-logo" >
             <img src={'/images/logo_0.png'} alt="Logo" width="327" />
           </a>
-      {/* <h5 className="text-center">You need to complete all these steps to register your account, only then you can start using girls2dream.com. <br /> And once your email is verified, you can complete your profile. </h5> */}
         </div>
       </div>
       <div style={{width: '100%', maxWidth: '90vw', margin: '1vw auto'}} className="">
@@ -153,7 +178,7 @@ function Register({ authUser }: IProps) {
       <div className="container-fluid" style={{marginTop: '-5vw', zIndex: 0}}>
           <div className="row">
             <div className="col-md-6 col-12 xchat-bg-wrap">
-            <img src="/images/auth-bg.png" alt="" />
+            {/* <img src="/images/auth-bg.png" alt="" /> */}
             </div>
             {/* register compoent */}
            { activeStep === 0 && <div className="col-md-6 col-12 xchat-bg-color">
@@ -176,23 +201,23 @@ function Register({ authUser }: IProps) {
               </div>
             </div>}
            {/* verify email */}
-           {activeStep === 1 &&
+           {emailStatus === false &&
            <div style={{marginTop: '1vw'}} className="">
             <div className="thanks-message-container">
               <div className="thank-you-box" style={{padding: '2vw', marginTop: '10vw'}}>
                 <p>in order to continue please verify your email first and also check the spam folder</p>
-                <p>you can close this window and verify your email</p>
-                <button onClick={checkEmailStatus} type='submit' className="btn btn-primary">
+                <p>you can close this window</p>
+                {/* <button onClick={checkEmailStatus} type='submit' className="btn btn-primary">
                 {lang === 'en' ? 'continue' : 'weiter'}
-                </button>
-                {emailStatus === false && <p style={{color: 'red', textAlign: 'center', fontSize: '1vw', marginTop: '1vw'}}>{lang === 'en' ? 'Please go to your Email account and verify your Email to Continue' : 'Bitte gehe zu deinem E-Mail-Konto und bestätige deinen E-Mail, um fortzufahren'}</p>}
+                </button> */}
+                {/* {emailStatus === false && <p style={{color: 'red', textAlign: 'center', fontSize: '1vw', marginTop: '1vw'}}>{lang === 'en' ? 'Please go to your Email account and verify your Email to Continue' : 'Bitte gehe zu deinem E-Mail-Konto und bestätige deinen E-Mail, um fortzufahren'}</p>} */}
               </div>
             </div>
             </div>}
             {/* nickname */}
-         { activeStep === 2 &&  <NickName onNicknameSuccess={handleNicknameSuccess} />}
+         {emailStatus === true && activeStep === 1 &&  <NickName onNicknameSuccess={handleNicknameSuccess} />}
           {/* image crop  */}
-        { activeStep === 3 &&  <ImageCrop />}
+        { activeStep === 2 &&  <ImageCrop />}
           {/* profile form */}
          {/* { activeStep === 3 &&
           <div className="col-md-6 col-12 xchat-bg-color">
@@ -202,7 +227,7 @@ function Register({ authUser }: IProps) {
           </div>
           </div>} */}
             {/* documentation verfication */}
-          { activeStep === 4 && authUser && 
+          { activeStep === 3 && authUser && 
            <div className="col-md-6 col-12 xchat-bg-color">
             <div className="xchat-content">
             <div className="card mb-3">
@@ -217,7 +242,7 @@ function Register({ authUser }: IProps) {
            </div>
           </div>}
 
-          {activeStep === 5 &&
+          {activeStep === 4 &&
            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column',}} className="">
             <div className="thanks-message-container">
               <div className="thank-you-box">

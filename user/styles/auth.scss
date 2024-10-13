@@ -201,6 +201,7 @@ Demo Layout Four
     // padding: 8vh 0 8vh 16vw;
     padding: 1vh 0vw 0vh 9vw;
     min-height: 100vh;
+    z-index: -1;
   }
 
   .xchat-checkbox-area {
@@ -300,6 +301,8 @@ Demo Layout Four
     -webkit-box-flex: 1;
     -ms-flex: 1;
     flex: 1;
+    position: relative;
+    z-index: 1;
     justify-content: center;
     text-align: center;
 

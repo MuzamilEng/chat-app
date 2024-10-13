@@ -330,7 +330,7 @@ const UserForm: React.FunctionComponent<IProps> = ({
                         id="isBlocked"
                         onChange={props.handleChange}
                         checked={props.values.isBlocked}
-                        disabled
+                        // disabled
                       />
                       {' '}
                       Vom Benutzer deaktiviert

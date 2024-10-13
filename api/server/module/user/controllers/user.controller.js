@@ -660,11 +660,19 @@ exports.updateDocument = async (req, res, next) => {
     user.city = validate.value.city;
         const siteName = await DB.Config.findOne({ key: SYSTEM_CONST.SITE_NAME });
         // Send verification success email to the user
-        await Service.Mailer.send('verification-success2.html', user.email, {
-          subject: 'Congratulations! Your Document has been Verified',
-          siteName: siteName ? siteName.value : 'Girls2Dream.com',
-          nickname: user.nickname || 'there', // Assuming `nickname` is used as a nickname
-        });
+        if(validate.value.isApproved === true) {
+          await Service.Mailer.send('verification-success.html', user.email, {
+            subject: 'Congratulations! Your Document has been Verified',
+            siteName: siteName ? siteName.value : 'Girls2Dream.com',
+            nickname: user.nickname || 'there', // Assuming `nickname` is used as a nickname
+          });
+        } else{
+          await Service.Mailer.send('verification-success2.html', user.email, {
+            subject: 'Congratulations! Your Document has been submitted',
+            siteName: siteName ? siteName.value : 'Girls2Dream.com',
+            nickname: user.nickname || 'there', // Assuming `nickname` is used as a nickname
+          });
+        }
 
 
     await user.save();

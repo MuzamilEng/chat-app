@@ -93,9 +93,9 @@ function UserListing() {
             <th className="text-center">
               <a>Geschlecht</a>
             </th>
-            {/* <th className="text-center">
+            <th className="text-center">
               <a>Block-Status</a>
-            </th> */}
+            </th>
             <th className="text-center">
               <a>Rolle</a>
             </th>
@@ -139,6 +139,7 @@ function UserListing() {
                 {user?.gender === 'female' && <span className="badge badge-danger">Female</span>}
                 {user?.gender === 'transgender' && <span className="badge badge-primary">Transgender</span>}
               </td>
+              <td className="text-center">{user.isBlocked ? <span className="badge badge-danger">Y</span> : <span className="badge badge-success">N</span>}</td>
               <td className="text-center">{user.role === 'admin' ? <span>Admin</span> : <span>User</span>}</td>
               <td className="text-center">{user.type === 'model' ? <span>Model</span> : <span>Fan</span>}</td>
               <td className="text-center">
