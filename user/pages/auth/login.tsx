@@ -37,7 +37,12 @@ function Login({
   const bg = authBgImage || '/images/auth-bg.jpg';
   const { t, lang } = useTranslationContext();
 
+  const removeUserFromStorage = () => {
+    localStorage.removeItem('userRegisterationRecords')
+  }
+
   useEffect(() => {
+    localStorage.removeItem('userRegisterationRecords')
     if (authUser) {
       window.location.href = '/conversation';
     }
@@ -78,7 +83,7 @@ function Login({
                 <p>
                 {lang === 'en' ? 'Don’t have an account?' : 'Sie haben kein Konto?'}
                   <Link legacyBehavior href={`/${lang}/auth/register`} as="/auth/register" key="register">
-                    <a className="switcher-text2 inline-text">
+                    <a onClick={removeUserFromStorage} className="switcher-text2 inline-text">
                     {lang === 'en' ? 'Sign up' : 'Registrieren'}
                     </a>
                   </Link>

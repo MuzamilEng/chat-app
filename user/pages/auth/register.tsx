@@ -26,7 +26,7 @@ interface IProps {
 
 function Register({ authUser }: IProps) {
   const { lang, currentUser, setCurrentStep, onImageUploadSuccess} = useTranslationContext();
-  const [activeStep, setActiveStep] = useState(currentUser ? 1 : 3);
+  const [activeStep, setActiveStep] = useState(currentUser ? 1 : 0);
 
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
   const [userType, setUserType] = useState('');

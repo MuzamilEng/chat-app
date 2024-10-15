@@ -611,8 +611,8 @@ exports.updateDocument = async (req, res, next) => {
   try {
     const schema = Joi.object().keys({
       address: Joi.string().required(),
-      city: Joi.string().required(),
-      state: Joi.string().required(),
+      city: Joi.string().allow(null, '').optional(),
+      state: Joi.string().allow(null, '').optional(),
       country: Joi.string().required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
