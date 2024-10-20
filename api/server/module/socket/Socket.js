@@ -11,9 +11,12 @@ let socketio;
 exports.setup = async (httpServer) => {
   socketio = require('socket.io')(httpServer, {
     cors: {
-      origin: '*/*',
-      methods: ['GET', 'POST', 'PUT', 'DELETE']
+      origin: ['https://girls2dream.com'],  // Replace with your production domain
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      allowedHeaders: ['Authorization'],
+      credentials: true
     }
+
   });
 
   // config authorization
