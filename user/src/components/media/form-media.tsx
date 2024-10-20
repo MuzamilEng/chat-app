@@ -396,11 +396,11 @@ function FormMedia() {
       <figure key={index} style={{ position: 'relative', borderRadius: '0.375rem' }}>
         <Icon
           icon="clarity:close-line"
-          style={{ position: 'absolute', top: 0, right: 0, fontSize: '1.8vw', cursor: 'pointer', background: '#f87171', borderRadius: '50%' }}
+          style={{ position: 'absolute', top: 0, right: 0, fontSize: '1.8vw', cursor: 'pointer', background: '#ff337c', borderRadius: '0.4vw' }}
           onClick={() => setFiles(files.filter((_, i) => i !== index))}
         />
         {file.type.startsWith('image') ? (
-          <img src={URL.createObjectURL(file)} alt={`Image ${index + 1}`} style={{ objectFit: 'cover' }} />
+          <img src={URL.createObjectURL(file)} alt={`Image ${index + 1}`} style={{ objectFit: 'cover', width: '15vw', height: '15vw', borderRadius: '0.3vw' }} />
         ) : (
           <video src={URL.createObjectURL(file)} controls style={{ width: '15vw', height: '15vw' }} />
         )}

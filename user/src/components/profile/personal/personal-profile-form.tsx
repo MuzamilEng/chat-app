@@ -155,6 +155,7 @@ class PersonalProfileForm extends Component<any, any> {
             }}
             onSubmit={(values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
               this.props.updateProfile({ ...values });
+              window.location.reload();
               formikHelpers.setSubmitting(false);
             }}
           >
