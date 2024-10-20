@@ -58,6 +58,9 @@ function MediaContent({
       const resp = await sellItemService.getMyPendingItem({ page: pagePhoto, mediaType: 'photo', take });
       setPendingPhotoFolders(resp?.data?.folders)
       setPendingPhotos(resp.data.folders[0]?.sellItems);
+      console.log('====================================');
+      console.log(resp.data.folders[0]?.sellItems);
+      console.log('====================================');
       setTotalPhoto(resp.data?.folders?.length);
     } catch (e) {
       const err = await e;
@@ -183,7 +186,7 @@ function MediaContent({
       <UpdateMediaModal isModalShow={isUpdateShow} setModalShow={setIsUpdateShow} item={itemUpdate} handleUpdate={handelUpdate}/>
       <div className="card-body">
         <Tabs defaultActiveKey="photo" transition={false} id="tab-media-content" onSelect={(key: any) => onChangeTab(key)}>
-        <Tab eventKey="photo" title={`Fotos (${totalPhoto})`}>
+        <Tab eventKey="photo" title={`Fotos`}>
   {loading && <Loading />}
   {!loading && photoFolders?.length > 0 ? (
     <Row>
@@ -243,7 +246,7 @@ function MediaContent({
     )}
         </Tab>
 
-        <Tab eventKey="videos" title={`Videos (${totalVideo})`}>
+        <Tab eventKey="videos" title={`Videos`}>
   {loading && <Loading />}
   {!loading && videoFolders?.length > 0 ? (
     <Row>

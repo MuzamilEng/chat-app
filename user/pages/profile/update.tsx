@@ -28,7 +28,9 @@ function UpdateProfile({
   const [showRq, setShowRq] = useState(false);
   const {t, lang} = useTranslationContext()
   const user = authUser;
-
+console.log('====================================');
+console.log(user, "user in profile");
+console.log('====================================');
 
   useEffect(() => {
     if (router.query.requireUpdate === '1') {

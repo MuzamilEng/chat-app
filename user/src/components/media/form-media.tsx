@@ -1,15 +1,17 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
+import { Icon } from '@iconify/react';
+import { authService } from '@services/auth.service';
 import { sellItemService } from '@services/sell-item.service';
+import axios from 'axios';
 import { useTranslationContext } from 'context/TranslationContext';
 import {
   Field, Formik, FormikHelpers, FormikProps
 } from 'formik';
 import getConfig from 'next/config';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Form, FormControl } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import Upload from 'src/components/upload/Upload';
 import * as Yup from 'yup';
 
 interface FormValues {
@@ -29,7 +31,6 @@ function FormMedia() {
   const [isContentChecked, setIsContentChecked] = useState(false);
   const ENDPOINT: string = process.env.NEXT_PUBLIC_API_ENDPOINT || 'https://api.girls2dream.com/v1';
   const { publicRuntimeConfig: config } = getConfig();
-  const [mediaId, setMediaId] = useState('');
   // const [url, setUrl] = useState(`${config.API_ENDPOINT}/media/photos`); // used (`${config.API_ENDPOINT}/media/photos`) changed to process.env.NEXT_PUBLIC_API_SERVER_ENDPOINT
   const [url, setUrl] = useState(`https://api.girls2dream.com/v1/media/photos`);
   const [switchValue, setSwitchValue] = useState(false);
@@ -38,8 +39,24 @@ function FormMedia() {
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState('');
   const [newFolderName, setNewFolderName] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedMediaType, setSelectedMediaType] = useState('photo');
   const {lang} = useTranslationContext();
+
+  const [files, setFiles] = useState([]);
+  const ref = useRef(null);
+
+  function handleInput() {
+    if (ref.current) {
+      ref.current.click();
+    }
+  }
+
+  function handleImage(e) {
+    const newFiles = Array.from(e.target.files);
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  }
+
+  
   
   const schema = Yup.object().shape({
     name: Yup.string()
@@ -93,11 +110,6 @@ function FormMedia() {
     setSwitchValue(value.target.checked);
   };
 
-  const onCompleteFile = (resp) => {
-    setMediaId(resp.data.id);
-    setFileUpload(resp);
-  };
-
     const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
@@ -107,40 +119,65 @@ function FormMedia() {
   };
 
   const upload = async (formValues) => {
-    if (!isChecked) {
-      toast.error( lang === 'en' ? 'Please check the checkbox to continue.' : 'Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
+    if (!isContentChecked && !isChecked) {
+      alert(lang === 'de' ? 'Bitte akzeptieren Sie die Nutzungsbedingungen' : 'Please accept the Terms and Conditions');
       return;
     }
-    if (!isContentChecked) {
-      toast.error( lang === 'en' ? 'Please check the 2nd checkbox to continue.' : 'Bitte wählen Sie das Kontrollkästchen, um fortzufahren.');
+  
+    if (files.length === 0) {
+      alert("Please upload at least one media file.");
       return;
     }
-    if(formValues.category === '') {
-      toast.error( lang === 'en' ? 'Please select a category.' : 'Bitte wählen Sie einen Kategorie aus.');
-      return;
-    }
-    if(!selectedFolder){
-      toast.error( lang === 'en' ? 'Please select a folder.' : 'Bitte wählen Sie einen Ordner aus.');
-      return;
-    }
+  
+    const accessToken = authService.getToken();
+    const formData = new FormData();
+    formData.append('description', formValues?.description || 'Your Media Description');
+    formData.append('price', formValues?.price || 0);
+    formData.append('mediaType', selectedMediaType); // 'photo' or 'video'
+  
+    files.forEach((file) => {
+      formData.append('files', file, file.name); // Dynamically handle media files
+    });
+  
     try {
-      setDisabled(true);
-      await sellItemService.createSellItem({
-        ...formValues,
-        mediaId, folderId: selectedFolder, category: formValues.category
+      const response = await axios.post('https://api.girls2dream.com/v1/media/multiple-upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${accessToken}`,
+        },
       });
-      toast.success( lang === 'en' ? 'Media content has been successfully uploaded. Please wait for approval by the administrator.' : 'Medieninhalt wurde erfolgreich hochgeladen. Bitte warten Sie auf die Genehmigung durch den Administrator.');
-      setTimeout(() => router.push('/profile/media-content'), 3000);
-    } catch (e) {
-      setDisabled(false);
-      const err = await e;
-      toast.error(err?.data?.msg || err?.data?.message || err?.message || lang === 'en' ? 'Media content could not be uploaded.' : 'Ihr Medieninhalt konnte nicht hochgeladen werden.');
+  
+      if (response.status === 200 || response.status === 201) {
+        const mediaIds = response.data.data.map(media => media.id);
+        setDisabled(true);
+        for (let mediaId of mediaIds) {
+          await sellItemService.createSellItem({
+            ...formValues,
+            mediaId: mediaId,
+            folderId: selectedFolder,
+            category: formValues.category,
+          });
+        }
+  
+        setFiles([]);
+        toast.success(lang === 'en'
+          ? 'Media content uploaded successfully. Await admin approval.'
+          : 'Medieninhalt erfolgreich hochgeladen. Bitte auf die Genehmigung warten.');
+        setTimeout(() => router.push('/profile/media-content'), 3000);
+      }
+    } catch (error) {
+      console.error('Error uploading media:', error.message);
+      alert('An error occurred while uploading the media.');
     }
   };
+  
+  
 
   return (
     <div className="row m-0">
       <div className="col-md-12">
+      {/* <UploadImages /> */}
+
         <div className="card mb-3">
           <Formik
             validationSchema={schema}
@@ -149,8 +186,9 @@ function FormMedia() {
               formikHelpers: FormikHelpers<FormValues>
             ) => {
               upload(values);
+              // handleImageSubmit()
               formikHelpers.setSubmitting(false);
-              formikHelpers.resetForm();
+              // formikHelpers.resetForm();
             }}
             initialValues={{
               name: '',
@@ -173,7 +211,7 @@ function FormMedia() {
                           name="mediaType"
                           component="select"
                           value={props.values.mediaType}
-                          onChange={(e) => onChangeType(e, props)}
+                          onChange={(e) => {onChangeType(e, props); setSelectedMediaType(e.currentTarget.value)} }
                         >
                           <option value="photo">{lang === 'de' ? 'Foto' : 'Photo'}</option>
                           <option value="video">Video</option>
@@ -219,7 +257,7 @@ function FormMedia() {
                     type="submit"
                     variant="primary"
                     key="button-upload"
-                    disabled={!fileUpload || disabled}
+                    // disabled={!fileUpload || disabled}
                     onClick={createFolder}>
                     {lang === 'de' ? 'Ordner erstellen' : 'Create Folder'}
                   </Button>
@@ -330,22 +368,48 @@ function FormMedia() {
                         </div>
                       </Form.Group>
                     </div>
-                    <div className="col-md-6 col-12">
-                      <Upload
-                        key="upload"
-                        url={url}
-                        isChecked={isChecked}
-                        onComplete={onCompleteFile}
-                        onRemove={() => setFileUpload(null)}
-                        config={{
-                          multiple: false,
-                          accept:
-                              props.values.mediaType === 'photo'
-                                ? 'image/*'
-                                : 'video/mp4'
-                        }}
-                      />
-                    </div>
+                    <main style={{ width: '100%', marginLeft: '4vw', marginTop: '4vw' }}>
+      <p style={{ fontSize: '1.3vw', maxWidth: '70vw', color: '#4b5563' }}>
+        {/* Please upload your media here */}
+        {`${selectedMediaType === 'photo' ? 'Please upload your photos here' : 'Please upload your videos here'}`}
+      </p>
+      <section style={{ display: 'flex', alignItems: 'flex-start' }}>
+  <div
+    onClick={handleInput}
+    style={{
+      backgroundColor: 'white',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      borderRadius: '0.375rem',
+      width: '100%',
+      maxWidth: '22vw',
+      padding: '2vw',
+      display: 'flex',
+      justifyContent: 'center',
+      cursor: 'pointer',
+    }}
+  >
+    <Icon icon="clarity:upload-cloud-line" style={{ color: '#374151', fontSize: '7vw' }} />
+    <input type="file" ref={ref} hidden onChange={handleImage} multiple />
+  </div>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.75rem' }}>
+    {files.map((file, index) => (
+      <figure key={index} style={{ position: 'relative', borderRadius: '0.375rem' }}>
+        <Icon
+          icon="clarity:close-line"
+          style={{ position: 'absolute', top: 0, right: 0, fontSize: '1.8vw', cursor: 'pointer', background: '#f87171', borderRadius: '50%' }}
+          onClick={() => setFiles(files.filter((_, i) => i !== index))}
+        />
+        {file.type.startsWith('image') ? (
+          <img src={URL.createObjectURL(file)} alt={`Image ${index + 1}`} style={{ objectFit: 'cover' }} />
+        ) : (
+          <video src={URL.createObjectURL(file)} controls style={{ width: '15vw', height: '15vw' }} />
+        )}
+      </figure>
+    ))}
+  </div>
+</section>
+
+    </main>
                   </div>
                 </div>
                 <div className="card-footer d-flex justify-content-between align-items-center">
@@ -365,7 +429,7 @@ function FormMedia() {
                     type="submit"
                     variant="primary"
                     key="button-upload"
-                    disabled={!fileUpload || disabled}
+                    disabled={!isChecked && !isContentChecked}
                   >
                     {lang === 'de' ? 'Eingeben' : 'Submit'}
                   </Button>

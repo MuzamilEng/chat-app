@@ -35,6 +35,7 @@ interface FormValues {
   type: string;
   id?: string;
   gender: string;
+  age: string;
 }
 
 // Your component logic remains the same
@@ -207,7 +208,8 @@ class VerificationDocumentComponent extends Component<any, any> {
       expiredDate: Yup.string().notRequired(),
       isExpired: Yup.boolean(),
       isConfirm: Yup.boolean(),
-      gender: Yup.string().required( lang === 'en' ? 'Gender is required' : 'Geschlecht ist erforderlich')
+      gender: Yup.string().required( lang === 'en' ? 'Gender is required' : 'Geschlecht ist erforderlich'),
+      age: Yup.string().required( lang === 'en' ? 'Age is required' : 'Alter ist erforderlich'),
     });
 
     return (
@@ -231,7 +233,8 @@ class VerificationDocumentComponent extends Component<any, any> {
             isConfirm: currentUser?.verificationDocument?.isConfirm || false,
             gender: currentUser?.gender || '',
             type: currentUser?.verificationDocument?.type || 'ID',
-            id: currentUser?._id || ''
+            id: currentUser?._id || '',
+            age: currentUser?.age || ''
           }}
           onSubmit={async (values: FormValues) => {
             try {
@@ -309,6 +312,28 @@ class VerificationDocumentComponent extends Component<any, any> {
                       <div className="invalid-feedback">{props.errors.birthday}</div>
                     </Form.Group>
                   </Col>
+                  <Col xs={12} md={6}>
+                      <Form.Group>
+                        <Form.Label>
+                        {lang === 'en' ? 'Age' : 'Alter'}
+                          {' '}
+                          <span className="text-required required-red">*</span>
+                        </Form.Label>
+                        <FormControl
+                          isInvalid={props.touched.age && !!props.errors.age}
+                          name="age"
+                          type="number"
+                          min={18}
+                          className="form-control form-control-md"
+                          id="age"
+                          placeholder={lang === 'en' ? 'Please enter your age.' : 'Bitte geben Sie Ihr Alter ein.'}
+                          onChange={props.handleChange}
+                          onBlur={props.handleBlur}
+                          value={props.values.age}
+                        />
+                        <div className="invalid-feedback">{props.errors.age}</div>
+                      </Form.Group>
+                    </Col>
                   <Col xs={12}>
                       <Form.Group>
                         <Form.Label>{lang === 'en' ? 'Gender' : 'Geschlecht'}</Form.Label>

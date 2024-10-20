@@ -628,6 +628,7 @@ exports.updateDocument = async (req, res, next) => {
       isApproved: Joi.boolean().optional(),
       id: Joi.string().allow('', null).optional(),
       gender: Joi.string().allow(null, 'male', 'female', 'transgender').optional(),
+      age: Joi.number().optional(),
     });
 
     const validate = schema.validate(req.body);
@@ -641,6 +642,9 @@ exports.updateDocument = async (req, res, next) => {
       return next(PopulateResponse.notFound());
     }
  
+    if(validate.value.age) {
+      user.age = validate.value.age;
+    }
 
     if(validate.value.isApproved === true) {
       user.isApproved = true;

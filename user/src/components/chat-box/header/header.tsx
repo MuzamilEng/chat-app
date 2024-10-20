@@ -207,7 +207,7 @@ function ChatHeader({
     <>
       <PageTitle title={!recipient ? '...' : `Chatten mit ${recipient.username}`} />
       {/* <!-- Chat Header Start--> */}
-      <div className="chat-header" style={{ justifyContent: 'flex-start' }}>
+      <div  className="chat-header" style={{ justifyContent: 'flex-start' }}>
         {/* <!-- Chat Back Button (Visible only in Small Devices) --> */}
         <button
           className="btn btn-secondary btn-icon btn-minimal btn-sm text-muted d-xl-none"
@@ -233,47 +233,56 @@ function ChatHeader({
             <h6 className="text-truncate mb-0">{recipient?.username}</h6>
             <small className="text-muted">{recipient?.isOnline ? 'Online' : 'Offline'}</small>
           </div>
-         {authUser?.type === 'model' && <button onClick={handleReminderClick} style={{marginLeft: '2vw'}} className="btn btn-primary btn-sm">reminder</button>}
+         {authUser?.type === 'model' && <button onClick={handleReminderClick} style={{marginLeft: '2vw'}} className="btn btn-primary btn-sm">notes✏️</button>}
         </div>
         {/* the modal here */}
         {showReminderModal && (
-        <form onSubmit={handleSaveReminder}
-          id="reminder-modal"
-          style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'white',
-            padding: '20px',
-            borderRadius: '10px',
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-            zIndex: 1000, // Make sure it's on top of everything
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h5>{lang === 'en' ? 'Set Reminder' : 'Erinnerung einstellen'}</h5>
-            <button className="btn btn-light" onClick={handleCloseModal}>
-              X
-            </button>
-          </div>
-          <textarea
-            value={reminderText}
-            onChange={(e) => setReminderText(e.target.value)}
-            placeholder={lang === 'en' ? 'Write your reminder here...' : 'Schreiben Sie hier Ihre Erinnerung...'}
-            rows={5}
-            style={{ width: '100%', marginTop: '10px', border: '1px solid #ccc', borderRadius: '5px', padding: '10px' }}
-          ></textarea>
-          <div style={{ marginTop: '10px', textAlign: 'right' }}>
-            <button className="btn btn-secondary" onClick={handleCloseModal}>
-              {lang === 'en' ? 'Cancel' : 'Abbrechen'}
-            </button>
-            <button className="btn btn-primary" type="submit" style={{ marginLeft: '10px' }}>
-              {lang === 'en' ? 'Save' : 'Speichern'}
-            </button>
-          </div>
-        </form>
-      )}        {/* <!-- Chat Options --> */}
+  <form className="" onSubmit={handleSaveReminder}
+    id="reminder-drawer"
+    style={{
+      position: 'fixed',
+      top: '3vw',
+      right: '0', // Drawer will slide in from the right
+      height: '100%',
+      width: '300px', // You can adjust the width as per your needs
+      backgroundColor: 'white',
+      padding: '20px',
+      boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+      zIndex: 1000, // Make sure it's on top of everything
+      transition: 'transform 0.3s ease-in-out', // Smooth slide-in effect
+      transform: showReminderModal ? 'translateX(0)' : 'translateX(100%)',
+    }}
+  >
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <h5>{lang === 'en' ? 'Set Reminder' : 'Erinnerung einstellen'}</h5>
+      <button className="btn btn-light" onClick={handleCloseModal}>
+        X
+      </button>
+    </div>
+    <textarea
+      value={reminderText}
+      onChange={(e) => setReminderText(e.target.value)}
+      placeholder={lang === 'en' ? 'Write your reminder here...' : 'Schreiben Sie hier Ihre Erinnerung...'}
+      rows={5}
+      style={{
+        width: '100%',
+        marginTop: '10px',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        padding: '10px',
+      }}
+    ></textarea>
+    <div style={{ marginTop: '10px', textAlign: 'right' }}>
+      <button className="btn btn-secondary" onClick={handleCloseModal}>
+        {lang === 'en' ? 'Cancel' : 'Abbrechen'}
+      </button>
+      <button className="btn btn-primary" type="submit" style={{ marginLeft: '10px' }}>
+        {lang === 'en' ? 'Save' : 'Speichern'}
+      </button>
+    </div>
+  </form>
+)}
+     {/* <!-- Chat Options --> */}
         <ul className="nav flex-nowrap ml-auto">
           {authUser.type === 'user' && recipient?.type === 'model' && (
             <li>

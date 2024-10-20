@@ -19,6 +19,8 @@ exports.upload = async (req, res, next) => {
     .unknown();
 
     const validate = schema.validate(req.body);
+    console.log(req.user, "validate");
+    
     if (validate.error) {
       return next(PopulateResponse.validationError(validate.error));
     }
@@ -31,14 +33,20 @@ exports.upload = async (req, res, next) => {
 
     const sellItem = new DB.SellItem({
       ownerId: req.user._id,
+      userId: req.user._id,
       mediaId: video._id,
       price: validate.value.price,
-      mediaType: validate.value.mediaType,
-      name: validate.value.name,
-      description: validate.value.description,
+      mediaType: validate.value.mediaType || 'video',
+      name: validate.value.name || video.name,
+      description: validate.value.description || 'model video',
       isApproved: false, // Set default approval status
       createdAt: new Date()
     });
+
+    console.log(sellItem, "sellItem");
+
+    await sellItem.save();
+    
 
     res.locals.video = video;
     res.locals.sellItem = sellItem;

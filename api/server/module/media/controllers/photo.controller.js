@@ -64,6 +64,78 @@ exports.upload = async (req, res, next) => {
     return next(e);
   }
 };
+exports.uploadMultiple = async (req, res, next) => {
+  try {
+    // Check if files are present
+    if ((!req.files || req.files.length === 0) && !req.base64Photo) {
+      return next(PopulateResponse.error({ message: 'Missing file!' }, 'ERR_MISSING_FILE'));
+    }
+
+    // Validate the request body
+    const schema = Joi.object().keys({
+      description: Joi.string().allow('', null).optional(),
+      price: Joi.number().allow(null).optional(),
+      mediaType: Joi.string().valid('photo', 'video').required()  // Ensuring mediaType is passed
+    }).unknown();
+
+    const validate = schema.validate(req.body);
+    if (validate.error) {
+      return next(PopulateResponse.error({ message: validate.error.message }, 'ERR_INVALID_BODY'));
+    }
+
+    // Check if the user is authenticated
+    if (!req.user || !req.user._id) {
+      return next(PopulateResponse.error({ message: 'User not authenticated!' }, 'ERR_USER_NOT_AUTHENTICATED'));
+    }
+
+    const files = req.files || [req.base64Photo];
+
+    // Iterate over the files and process each
+    const mediaPromises = files.map(async (file) => {
+      let media;
+      
+      // Handle media type dynamically based on the request
+      if (validate.value.mediaType === 'photo') {
+        media = await Service.Media.createPhoto({
+          file,
+          value: validate.value,
+          user: req.user
+        });
+      } else if (validate.value.mediaType === 'video') {
+        media = await Service.Media.createVideo({
+          file,
+          value: validate.value,
+          user: req.user
+        });
+      }
+
+      // Create a SellItem associated with the media
+      const sellItem = new DB.SellItem({
+        ownerId: req.user._id,
+        mediaId: media._id,
+        price: validate.value.price,
+        mediaType: validate.value.mediaType,
+        description: validate.value.description,
+        isApproved: false,
+        createdAt: new Date(),
+      });
+
+      await sellItem.save();
+      return { media, sellItem };
+    });
+
+    // Wait for all media items to be processed
+    const results = await Promise.all(mediaPromises);
+
+    // Respond with success
+    res.status(201).json({ data: results.map(result => result.media) });
+  } catch (e) {
+    return next(e);
+  }
+};
+
+
+
 
 exports.editPhoto = async (req, res, next) => {
   try {

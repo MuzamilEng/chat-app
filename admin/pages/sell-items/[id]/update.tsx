@@ -35,11 +35,11 @@ function SellItem() {
   const updateSellItem = async (data: any) => {
     setLoadingUpdate(true);
     const {
-      name, price, free, isApproved, description
+      name, price, free, isApproved, description, category
     } = data;
     try {
       await sellItemService.update(sellItemId as string, {
-        name, price, free, isApproved, description
+        name, price, free, isApproved, description, category
       });
       toast.success('Artikel wurde aktualisiert');
       type === 'photo' && Router.push('/sell-items/listing?type=photo');

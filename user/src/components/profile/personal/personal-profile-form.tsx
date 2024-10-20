@@ -115,10 +115,10 @@ class PersonalProfileForm extends Component<any, any> {
     const lang = this.getLangFromUrl();
     const schema = Yup.object().shape({
       username: Yup.string()
-        .matches(/^[a-zA-Z0-9]*$/, {
-          message: lang === 'en' ? 'Name can only contain letters and numbers' : 'Der Name darf keine Leerzeichen enthalten',
-          excludeEmptyString: true
-        })
+        // .matches(/^[a-zA-Z0-9]*$/, {
+        //   message: lang === 'en' ? 'Name can only contain letters and numbers' : 'Der Name darf keine Leerzeichen enthalten',
+        //   excludeEmptyString: true
+        // })
         .min(3, lang === 'en' ? 'Name must be at least 3 characters' : 'Die Länge des Namens muss größer als 3 sein')
         .required( lang === 'en' ? 'Username is required' : 'Benutzername ist erforderlich'),
       bio: Yup.string().min(20, lang === 'en' ? 'Bio must be at least 20 characters' : 'Bitte geben Sie mindestens 20 Zeichen ein').required( lang === 'en' ? 'Bio is required' : 'Eine Kurzbiografie wird benötigt'),
@@ -171,6 +171,7 @@ class PersonalProfileForm extends Component<any, any> {
                   </Col>
                   <div className="mt-3">
                       <video style={{ width: '15vw', height: '15vw', borderRadius: '2%', objectFit: 'cover' }} controls src={this.state.profileVideoUrl} />
+                      <p style={{ color: 'green', marginLeft: '5vw' }} className="text mt-2">{!this.state.profileVideoUrl ? 'pending' : 'approved'}</p>
                     </div>
                   <Col>
                     <Upload

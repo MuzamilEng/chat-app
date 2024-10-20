@@ -17,6 +17,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function Blogs({ authUser }: PropsFromRedux) {
   const [blogPosts, setBlogPosts] = useState([]);
+  const [loader, setLoader] = useState(true);
   const [pendingBlogs, setPendingBlogs] = useState([]);
   const [showPending, setShowPending] = useState(false); // Track whether pending or approved blogs are shown
   const { id } = useRouter().query;
@@ -34,6 +35,7 @@ function Blogs({ authUser }: PropsFromRedux) {
 
   useEffect(() => {
     fetchAllBlogs();
+    setLoader(false);
   }, []);
 
   const handleToggleBlogs = () => {
@@ -59,7 +61,7 @@ function Blogs({ authUser }: PropsFromRedux) {
         </Col>
       )}
       <Row style={{ width: '80vw' }}>
-        {displayedBlogs.length === 0 && (
+        { loader && displayedBlogs.length === 0 ? (
           <div
             style={{
               textAlign: 'center',
@@ -67,18 +69,27 @@ function Blogs({ authUser }: PropsFromRedux) {
               justifyContent: 'center',
               alignItems: 'center',
               height: '60vh',
+              width: '100%',
             }}
-            className="w-full"
           >
             <Loader containerStyle="text-center" size="40px" />
           </div>
+        ): (
+          <p style={{
+            textAlign: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '60vh',
+            width: '100%',
+          }}>oops! no blog posts found.</p>
         )}
         {displayedBlogs?.map((item: any, index: any) => (
           <Col xs={12} sm={6} md={4} lg={4} key={item._id + index} data-toggle="tooltip" title={item.name}>
             <div className="image-box mt-1 mb-1 active">
               <img
                 alt="media_thumb_photo"
-                src={item?.media?.thumbUrl || '/images/default-img.jpg'}
+                src={item?.media?.fileUrl || '/images/default-img.jpg'}
                 onError={(e) => (e.currentTarget.src = 'https://cdn.vectorstock.com/i/500p/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg')}
               />
               <div className="overlay" />

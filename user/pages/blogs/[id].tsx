@@ -37,7 +37,7 @@ function Blogs() {
           ): (
             <>
             <img style={{width: '50vw', height: '20vw', objectFit: 'cover', boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)'}} 
-            src={blogPosts?.media.thumbUrl} alt="" className='w-full' onError={(e) => (e.currentTarget.src = 'https://cdn.vectorstock.com/i/500p/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg')} />
+            src={blogPosts?.media.fileUrl} alt="" className='w-full' onError={(e) => (e.currentTarget.src = 'https://cdn.vectorstock.com/i/500p/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg')} />
             <p className='' style={{width: '100%', maxWidth: '50vw', marginTop: '2vw'}}>{blogPosts?.description}</p>
             </>
           )}

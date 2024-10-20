@@ -90,12 +90,12 @@ function UserMenu({
         >
          {t?.dropdown?.blogs}
         </Dropdown.Item>
-        <Dropdown.Item
+        {/* <Dropdown.Item
           onClick={() => onClickMenu(`/${lang}/profile/interests`, `/${lang}/profile/interests`)}
           active={activeRoute === `/profile/interests`}
         >
          {lang === 'en' ? 'Interests': 'Interesses'}
-        </Dropdown.Item>
+        </Dropdown.Item> */}
             <Dropdown.Item
               onClick={() => onClickMenu('/profile/media-content', `/${lang}/media-content`)}
               active={['/profile/media-content', '/media-content'].includes(activeRoute)}

@@ -96,6 +96,15 @@ exports.router = (router) => {
     Middleware.Response.success('photo')
   );
 
+  router.post(
+    '/v1/media/multiple-upload',
+    Middleware.isAuthenticated,
+    uploadPhoto.array('files', 10),  // Accept multiple files, with a max of 10
+    photoController.base64Upload,    // Keep this if you still need base64 support
+    photoController.uploadMultiple,  // Change the controller method
+    Middleware.Response.success('photo')
+  );
+  
   /**
    * @apiGroup Media
    * @apiVersion 1.0.0

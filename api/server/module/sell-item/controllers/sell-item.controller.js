@@ -76,6 +76,7 @@ exports.search = async (req, res, next) => {
       .skip(page * take)
       .limit(take)
       .exec();
+console.log(items, "items");
 
     // Transform the items to include the public profile of the model
     res.locals.search = {
@@ -101,7 +102,8 @@ exports.update = async (req, res, next) => {
       free: Joi.boolean().required(),
       name: Joi.string().min(2).max(500).required(),
       description: Joi.string().allow('', String).optional(),
-      isApproved: Joi.boolean().optional()
+      isApproved: Joi.boolean().optional(),
+      category: Joi.string().optional(),
     });
 
     const validate = schema.validate(req.body);
@@ -864,11 +866,18 @@ exports.getProfileVideo = async (req, res, next) => {
   // Search for the latest video where the name includes 'profile-video'
   const userVideo = await DB.Media.findOne(
     { 
-      ownerId: userId, 
+      ownerId: userId,
       name: { $regex: /profile-video/, $options: 'i' }  // Case-insensitive regex search
     }
   ).sort({ createdAt: -1 });  // Sort by latest createdAt
     if (!userVideo) {
+      return res.status(404).json({ error: 'No profile video found for this user' });
+    }
+
+    // now check that userVideo._id that is present in sellItem and has isApproved true then we will show the video
+
+    const sellItem = await DB.SellItem.findOne({ mediaId: userVideo._id, isApproved: true });
+    if (!sellItem) {
       return res.status(404).json({ error: 'No profile video found for this user' });
     }
 

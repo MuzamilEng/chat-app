@@ -98,7 +98,7 @@ const TableSellItems: React.FunctionComponent<IProps> = ({
                   />
                   )}
                 </td>
-                <td>{item.category && item.category}</td>
+                <td>{item.category && item.category || 'none'}</td>
                 <td>{item.media && item.name}</td>
                 <td>{item.price}</td>
                 <td>{item.model && item.model.username}</td>

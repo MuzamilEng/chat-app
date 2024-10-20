@@ -3,7 +3,8 @@ import {
   Col, Row, Button, FormGroup, Label, Input, FormFeedback
 } from 'reactstrap';
 import * as Yup from 'yup';
-import { Formik, FormikProps } from 'formik';
+import { Field, Formik, FormikProps } from 'formik';
+import { Form } from 'react-bootstrap';
 
 interface IProps {
   data: {
@@ -15,6 +16,7 @@ interface IProps {
     isApproved?: boolean;
     mediaType?: string;
     description?: string;
+    category?: string;
   };
   submit: Function;
   loadingUpdate: boolean;
@@ -26,6 +28,7 @@ interface FormValue {
   name?: string;
   modelName?: string;
   isApproved?: boolean;
+  category?: string;
 }
 
 const initData = {
@@ -36,25 +39,28 @@ const initData = {
   mediaId: '',
   media: {},
   model: {},
-  description: ''
+  description: '',
+  category: ''
 };
 
 const SellItemDetail: React.FunctionComponent<IProps> = ({ data, submit, loadingUpdate }) => {
   const {
-    price, free, isApproved, mediaType, media, model, description
+    price, free, isApproved, mediaType, media, model, description, category
   } = data || initData;
   const initialValues = {
     price,
     free,
     isApproved,
-    name: data.name || ''
+    name: data.name || '',
+    category: category || ''
   };
 
   const schema = Yup.object().shape({
     name: Yup.string().required('Please enter item name'),
     free: Yup.boolean(),
     isApproved: Yup.boolean(),
-    price: Yup.number().min(0)
+    price: Yup.number().min(0),
+    category: Yup.string().optional()
   });
 
   const onCheck = (e: any, props: FormikProps<FormValue>) => {
@@ -67,7 +73,9 @@ const SellItemDetail: React.FunctionComponent<IProps> = ({ data, submit, loading
       validationSchema={schema}
       onSubmit={(values: FormValue) => {
         Object.assign(values, { description });
-        submit(values);
+        const updatedValues = { ...values, description };
+        submit(updatedValues); // Pass the values to the submit function
+        // submit(values);
       }}
       initialValues={initialValues}
       render={(props: FormikProps<FormValue>) => (
@@ -109,6 +117,26 @@ const SellItemDetail: React.FunctionComponent<IProps> = ({ data, submit, loading
               </FormGroup>
             </Col>
             <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>{'Please select category.'} </Form.Label>
+                        <Field
+                          className="form-control form-control-md"
+                          name="category"
+                          as="select" // Use as="select" for correct rendering
+                          value={props.values.category} // Make sure the value is tied to Formik
+                          onChange={props.handleChange}
+                        >
+                          <option  value="">{'select category'}</option>
+                          <option value="FSK12">{'FSK12'}</option>
+                          <option value="FSK16">{'FSK16'}</option>
+                          <option value="FSK18">{'FSK18'}</option>
+                        </Field>
+                        <div className="invalid-feedback">
+                        {props.errors.category && props.touched.category ? props.errors.category : null}
+                      </div>
+                      </Form.Group>
+                    </Col>
+            <Col md={6}>
               <FormGroup>
                 {mediaType === 'photo' ? (
                   <>
@@ -138,6 +166,7 @@ const SellItemDetail: React.FunctionComponent<IProps> = ({ data, submit, loading
                 )}
               </FormGroup>
             </Col>
+          </Row>
             <Col md={6}>
               <FormGroup check>
                 <Label check for="free">
@@ -166,7 +195,6 @@ const SellItemDetail: React.FunctionComponent<IProps> = ({ data, submit, loading
                 </Label>
               </FormGroup>
             </Col>
-          </Row>
 
           <Button type="submit" color="primary" outline disabled={loadingUpdate}>
             Submit

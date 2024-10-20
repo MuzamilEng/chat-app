@@ -30,6 +30,7 @@ function ProfilePage({ authUser }: IProps) {
       setUserLanguages(authUser.languages || []);  // Default to an empty array if no languages are present
       setUserInterests(authUser.interests || []);
       setUserHobbies(authUser.hobbies || []);
+      setUserPreferences(authUser.preferences || []);
     }
   }, [authUser]);
 
