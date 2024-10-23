@@ -94,7 +94,7 @@ function ChatContent({ items = null, authUser = null }: IProps) {
             <div className={authUser._id === message.senderId ? 'message self' : 'message'} key={index as any}>
               <div className="message-wrapper">
                 <div className={`message-content + ${message.type === 'text' && 'bg-primary-custom'}`}>
-                  {message.type === 'text' && <span>{message.text}</span>}
+                  {message.type === 'text' && <span style={{fontSize: '0.8vw'}}>{message.text}</span>}
                   {(message.type === 'photo' || message.type === 'video') && message.files && (
                   <MediaContent messageLength={items.length} sender={message.sender} type={message.type} items={message.files} download />
                   )}

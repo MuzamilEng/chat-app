@@ -74,7 +74,7 @@ function Blogs({ authUser }: PropsFromRedux) {
           >
             <Loader containerStyle="text-center" size="40px" />
           </div>
-        ): (
+        ): displayedBlogs.length === 0 && !loader && (
           <p style={{
             textAlign: 'center',
             display: 'flex',

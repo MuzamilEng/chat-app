@@ -35,7 +35,7 @@ interface FormValues {
   type: string;
   id?: string;
   gender: string;
-  age: string;
+  age: number;
 }
 
 // Your component logic remains the same
@@ -209,7 +209,7 @@ class VerificationDocumentComponent extends Component<any, any> {
       isExpired: Yup.boolean(),
       isConfirm: Yup.boolean(),
       gender: Yup.string().required( lang === 'en' ? 'Gender is required' : 'Geschlecht ist erforderlich'),
-      age: Yup.string().required( lang === 'en' ? 'Age is required' : 'Alter ist erforderlich'),
+      age: Yup.number()
     });
 
     return (
@@ -234,15 +234,18 @@ class VerificationDocumentComponent extends Component<any, any> {
             gender: currentUser?.gender || '',
             type: currentUser?.verificationDocument?.type || 'ID',
             id: currentUser?._id || '',
-            age: currentUser?.age || ''
+            age: currentUser?.age || 0,
           }}
           onSubmit={async (values: FormValues) => {
             try {
-              const response = await this.submitDocument(values); 
-              this.props.activeStep === 5;       
-              this.props.onVerficationDocumentSuccess(true)
+              // Calculate the user's age based on their birthday
+              const calculatedAge = moment().diff(moment(values.birthday, 'YYYY-MM-DD'), 'years');
+              values.age = calculatedAge || 0; // Assign calculated age as a number
+              const response = await this.submitDocument(values);
+              this.props.activeStep === 5;
+              this.props.onVerficationDocumentSuccess(true);
             } catch (error) {
-              toast.error("There was an error submitting your document. Please try again.");
+              toast.error('There was an error submitting your document. Please try again.');
             }
           }}
           
@@ -312,7 +315,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                       <div className="invalid-feedback">{props.errors.birthday}</div>
                     </Form.Group>
                   </Col>
-                  <Col xs={12} md={6}>
+                  {/* <Col xs={12} md={6}>
                       <Form.Group>
                         <Form.Label>
                         {lang === 'en' ? 'Age' : 'Alter'}
@@ -333,7 +336,7 @@ class VerificationDocumentComponent extends Component<any, any> {
                         />
                         <div className="invalid-feedback">{props.errors.age}</div>
                       </Form.Group>
-                    </Col>
+                    </Col> */}
                   <Col xs={12}>
                       <Form.Group>
                         <Form.Label>{lang === 'en' ? 'Gender' : 'Geschlecht'}</Form.Label>

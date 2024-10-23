@@ -14,7 +14,7 @@ exports.createSellItem = async (req, res, next) => {
       mediaType: Joi.string().allow('photo', 'video').allow('', String).optional(),
       folderId: Joi.string().required(),
       isApproved: Joi.boolean().default(false),
-      category: Joi.string().required(),
+      category: Joi.string().optional().allow(null, ''),
     });
 
     const validate = schema.validate(req.body);
@@ -103,7 +103,7 @@ exports.update = async (req, res, next) => {
       name: Joi.string().min(2).max(500).required(),
       description: Joi.string().allow('', String).optional(),
       isApproved: Joi.boolean().optional(),
-      category: Joi.string().optional(),
+      category: Joi.string().optional().allow(null, ''),
     });
 
     const validate = schema.validate(req.body);

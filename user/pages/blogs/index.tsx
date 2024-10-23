@@ -13,6 +13,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { toast } from 'react-toastify';
 import Upload from 'src/components/upload/Upload';
 import * as Yup from 'yup';
+import ImageCroper from './allblogs/ImageCrop';
 
 interface FormValues {
   name: string;
@@ -147,22 +148,7 @@ function Blogs({ authUser }: PropsFromRedux) {
                         </div>
                       </Form.Group>
                     </div>
-                    <div className="col-md-6 col-12">
-                      <Upload
-                        key="upload"
-                        url={url}
-                        isChecked={isChecked}
-                        onComplete={onCompleteFile}
-                        onRemove={() => setFileUpload(null)}
-                        config={{
-                          multiple: false,
-                          accept:
-                              props.values.mediaType === 'photo'
-                                ? 'image/*'
-                                : 'video/mp4'
-                        }}
-                      />
-                    </div>
+                    <ImageCroper meidaID={(id) => setMediaId(id)} />
                   </div>
                 </div>
                 <div className="card-footer d-flex justify-content-between">
@@ -176,7 +162,7 @@ function Blogs({ authUser }: PropsFromRedux) {
                     type="submit"
                     variant="primary"
                     key="button-upload"
-                    disabled={!fileUpload || disabled}
+                    // disabled={!fileUpload || disabled}
                   >
                     {lang === 'en' ? 'Upload' : 'Eingeben'}
                   </Button>

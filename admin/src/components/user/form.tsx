@@ -21,10 +21,13 @@ interface FormValue {
   address: string;
   password: string;
   avatar: string;
+  avatar2?: string;
   avatarUrl: string;
   balance: number;
   isCompletedProfile: boolean;
   isBlocked: boolean;
+  avatar2Url?: boolean;
+  avatarStatus?: string; // Add avatarStatus here
 }
 
 interface IProps {
@@ -40,8 +43,10 @@ interface IProps {
     address?: string;
     password?: string;
     avatar?: string;
+    avatar2?: string;
     avatarUrl?: string;
     balance?: number;
+    avatar2Url?: boolean;
     isCompletedProfile?: boolean;
     isBlocked?: boolean;
     _id?: string;
@@ -66,7 +71,11 @@ const initialValuesForm = {
   password: '',
   avatar: '',
   avatarUrl: '',
-  balance: 0
+  balance: 0,
+  avatar2: '',
+  avatar2Url: false,
+  avatarStatus: 'pending' 
+
 } as any;
 
 const UserForm: React.FunctionComponent<IProps> = ({
@@ -106,6 +115,7 @@ const UserForm: React.FunctionComponent<IProps> = ({
         'Das Passwort muss mindestens 8 Zeichen lang sein, mindestens 1 Zahl, 1 Großbuchstabe, 1 Kleinbuchstabe und 1 Sonderzeichen'
       ),
     avatarUrl: Yup.string(),
+    avatar: Yup.string(),
     balance: Yup.number()
       .typeError('Amount must be a number')
       .min(0, 'Balance must be greater than or equal to 0!')
@@ -118,6 +128,9 @@ const UserForm: React.FunctionComponent<IProps> = ({
     }
   };
 
+  const removePublicKeywordFromAvatar2 = data.avatar2 ? data.avatar2.replace('public/', '') : '';
+
+
   return (
     <Formik
       enableReinitialize
@@ -126,6 +139,12 @@ const UserForm: React.FunctionComponent<IProps> = ({
       onSubmit={(values: FormValue) => {
         // eslint-disable-next-line no-param-reassign
         values.balance = Number(values.balance);
+
+          // Check if the "Approve Avatar" checkbox is checked
+    if (values.avatar2Url) {
+      values.avatarStatus = 'verified'; // Set avatarStatus to 'verified' if checked
+    }
+
         if (!initialValues.email && !values.password) {
           return toast.error('Bitte geben Sie das Passwort für den neuen Benutzer ein');
         }
@@ -313,7 +332,8 @@ const UserForm: React.FunctionComponent<IProps> = ({
                     config={{ multiple: false, accept: 'image/*' }}
                     // eslint-disable-next-line no-return-assign, no-param-reassign
                     onComplete={(e: any) => props.values.avatar = e.data.fileUrl}
-                    previewImage={data?.avatarUrl}
+                    // https://api.girls2dream.com/${data?.avatar2} this becomes --> https://api.girls2dream.com/public/avatar/YBTDH_800x800.png and i want to replace itwith https://api.girls2dream.com/avatar/YBTDH_800x800.png
+                    previewImage={data?.avatar2 ? `https://api.girls2dream.com/${removePublicKeywordFromAvatar2}` :  data?.avatarUrl}
                   />
                 </FormGroup>
               </Col>
@@ -369,6 +389,22 @@ const UserForm: React.FunctionComponent<IProps> = ({
                     </Label>
                   </FormGroup>
                 </Col>
+              {data.avatar2 &&  <Col xs={12} md={12}>
+                  <FormGroup check>
+                    <Label check for="avatar2Url">
+                      <Input
+                        invalid={props.touched.avatar2Url && !!props.errors.avatar2Url}
+                        type="checkbox"
+                        name="avatar2Url"
+                        id="avatar2Url"
+                        onChange={props.handleChange}
+          checked={props.values.avatar2Url} // Properly bind the form value
+                      />
+                      {' '}
+                      Approve Avatar
+                    </Label>
+                  </FormGroup>
+                </Col>}
                 <Col xs={12} md={12}>
                   <FormGroup check>
                     <Label check for="isActive">

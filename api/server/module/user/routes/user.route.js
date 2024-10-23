@@ -78,6 +78,13 @@ module.exports = (router) => {
   );
 
   router.post(
+    '/v1/users/approve-avatar',
+    Middleware.isAuthenticated,
+    userController.approveAvatar,
+    Middleware.Response.success('approveAvatar')
+  );
+
+  router.post(
     '/v1/users/update-avatar',
     uploadAvatar.single('file'),
     userController.updateAvatar2,

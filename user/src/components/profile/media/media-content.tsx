@@ -43,7 +43,7 @@ function MediaContent({
       setLoading(true);
       const resp = await sellItemService.getMySellItem({ page: pagePhoto, mediaType: 'photo', take });
       setPhotoFolders(resp?.data?.folders)
-      setItemsPhoto(resp.data.folders[0]?.sellItems);
+      setItemsPhoto(resp.data.folders[0]?.sellItems);    
       setTotalPhoto(resp.data?.folders?.length);
     } catch (e) {
       const err = await e;
@@ -59,8 +59,8 @@ function MediaContent({
       setPendingPhotoFolders(resp?.data?.folders)
       setPendingPhotos(resp.data.folders[0]?.sellItems);
       console.log('====================================');
-      console.log(resp.data.folders[0]?.sellItems);
-      console.log('====================================');
+      console.log(resp.data.folders);
+      console.log('==============================+++++++++++++++++++++++++++++++++======');
       setTotalPhoto(resp.data?.folders?.length);
     } catch (e) {
       const err = await e;

@@ -1,4 +1,5 @@
 import Upload from '@components/upload/Upload';
+import { authService } from '@services/auth.service';
 import { sellItemService } from '@services/sell-item.service';
 import { useTranslationContext } from 'context/TranslationContext';
 import { City, Country, State } from 'country-state-city';
@@ -10,6 +11,7 @@ import { toast } from 'react-toastify';
 import AvatarComponent from 'src/components/profile/personal/avatar-box';
 import { setAvatar, updateProfile } from 'src/redux/auth/actions';
 import * as Yup from 'yup';
+import ImageCroper from './ImageCroper';
 
 interface FormValues {
   username: string;
@@ -42,6 +44,7 @@ class PersonalProfileForm extends Component<any, any> {
     const lang = this.getLangFromUrl(); // Extract lang from URL
     this.setState({ lang }, () => this.getCountry()); // Set the lang state and then fetch countries
     this.getProfileVideo(); // Fetch the profile video on mount
+    this.getMyProfile()
   }
 
   componentDidUpdate(prevProps: any) {
@@ -102,6 +105,13 @@ class PersonalProfileForm extends Component<any, any> {
     }
   }
 
+  async getMyProfile() {
+    const res = await authService.me();
+    if (res) {
+      this.setState({userAge: res.data.data})
+    }
+  }
+
   onComplete = (res) => {
     if (res?.data) {
       this.getProfileVideo(); // Fetch the updated video after upload
@@ -115,10 +125,6 @@ class PersonalProfileForm extends Component<any, any> {
     const lang = this.getLangFromUrl();
     const schema = Yup.object().shape({
       username: Yup.string()
-        // .matches(/^[a-zA-Z0-9]*$/, {
-        //   message: lang === 'en' ? 'Name can only contain letters and numbers' : 'Der Name darf keine Leerzeichen enthalten',
-        //   excludeEmptyString: true
-        // })
         .min(3, lang === 'en' ? 'Name must be at least 3 characters' : 'Die Länge des Namens muss größer als 3 sein')
         .required( lang === 'en' ? 'Username is required' : 'Benutzername ist erforderlich'),
       bio: Yup.string().min(20, lang === 'en' ? 'Bio must be at least 20 characters' : 'Bitte geben Sie mindestens 20 Zeichen ein').required( lang === 'en' ? 'Bio is required' : 'Eine Kurzbiografie wird benötigt'),
@@ -165,10 +171,12 @@ class PersonalProfileForm extends Component<any, any> {
                   <Row>
                   <Row>
                   <Col>
-                    <AvatarComponent
+                    {/* <AvatarComponent
                       avatarUrl={authUser.avatarUrl}
                       onUploadAvatarComplete={this.props.setAvatar.bind(this)}
-                    />
+                    /> */}
+                    <ImageCroper avatarURL={authUser.avatarUrl} />
+                     <p style={{ color: 'green', marginLeft: '5vw' }} className="text mt-2">{authUser.avatarStatus === 'pending' ? 'pending' : 'approved'}</p>
                   </Col>
                   <div className="mt-3">
                       <video style={{ width: '15vw', height: '15vw', borderRadius: '2%', objectFit: 'cover' }} controls src={this.state.profileVideoUrl} />

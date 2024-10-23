@@ -8,6 +8,15 @@ exports.User = (schema) => {
       type: String,
       default: ''
     },
+    avatar2: {
+      type: String,
+      default: ''
+    },
+    avatarStatus:{
+      type: String,
+      default: 'pending',
+      enum: ['pending', 'verified', 'rejected'], 
+   },
     username: {
       type: String,
       trim: true,
@@ -188,7 +197,7 @@ exports.User = (schema) => {
       'salt',
       'emailVerified',
       'phoneVerified',
-      'avatar'
+      'avatar',
     ];
     let data = user;
 
@@ -203,7 +212,10 @@ exports.User = (schema) => {
     } else if (user.type === 'model') {
       data = _.omit(data, userUnPublicData);
     }
-
+      // Add birthday to the public profile
+      if (user) {
+        data.birthday = user.verificationDocument.birthday;
+      }
     return data;
   });
 

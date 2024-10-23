@@ -44,6 +44,11 @@ class UserService extends APIRequest {
   getSecretInfo(conversationId: any) {
     return this.get(`/get-secret-info/${conversationId}`);
   }
+  
+  // users/approve-avatar
+  
+    approveAvatar(data: any) {
+      return this.post('/users/approve-avatar', data);
+    }
 }
-
 export const userService = new UserService();

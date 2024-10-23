@@ -66,6 +66,28 @@ exports.update = async (req, res, next) => {
       req.body.password && (publicFields = publicFields.concat(['password']));
     }
 
+    const avatarStatus = req.body.avatarStatus
+    if (avatarStatus && avatarStatus === 'verified') {
+      
+      // Move avatar2 to avatar and set status to 'verified'
+      await DB.User.updateOne(
+        { _id: req.params.id || req.user._id },
+        { 
+          $set: { 
+            avatar: user.avatar2,
+            avatarStatus: avatarStatus,
+            avatar2: '' // clear avatar2 after approval
+          } 
+        }
+      );
+  
+        // Optionally, unlink the old avatar if it's a local file
+  if (user.avatar && !Helper.String.isUrl(user.avatar) && fs.existsSync(path.resolve(user.avatar))) {
+    fs.unlinkSync(path.resolve(user.avatar));
+  }
+    }
+
+
     // check age
     if (req.body.age && req.body.age < 18) {
       return next(
@@ -261,16 +283,21 @@ exports.updateAvatar = async (req, res, next) => {
       resizeOption: '^'
     });
 
-    await DB.User.update({ _id: req.params.id || req.user._id }, { $set: { avatar: thumbPath } });
+    // Store the new avatar in avatar2 and set status to 'pending'
+    await DB.User.updateOne(
+      { _id: req.params.id || req.user._id },
+      { 
+        $set: { 
+          avatar2: thumbPath,
+          avatarStatus: 'pending' 
+        } 
+      }
+    );
 
-    // unlink old avatar
-    if (user.avatar && !Helper.String.isUrl(user.avatar) && fs.existsSync(path.resolve(user.avatar))) {
-      fs.unlinkSync(path.resolve(user.avatar));
+    // Optionally, unlink the temporary uploaded file after processing
+    if (fs.existsSync(path.resolve(req.file.path))) {
+      fs.unlinkSync(path.resolve(req.file.path));
     }
-    // remove tmp file
-    // if (fs.existsSync(path.resolve(req.file.path))) {
-    //   fs.unlinkSync(path.resolve(req.file.path));
-    // }
 
     res.locals.updateAvatar = {
       url: DB.User.getAvatarUrl(thumbPath)
@@ -280,6 +307,40 @@ exports.updateAvatar = async (req, res, next) => {
     return next(e);
   }
 };
+
+
+exports.approveAvatar = async (req, res, next) => {
+  try {
+    const {userId, avatarStatus} = req.body;
+    const user = await DB.User.findOne({ _id: userId });
+    if (!user) {
+      return next(PopulateResponse.notFound());
+    }
+
+    // Move avatar2 to avatar and set status to 'verified'
+    await DB.User.updateOne(
+      { _id: userId },
+      { 
+        $set: { 
+          avatar: user.avatar2,
+          avatarStatus: avatarStatus,
+          avatar2: '' // clear avatar2 after approval
+        } 
+      }
+    );
+
+    // Optionally, unlink the old avatar if it's a local file
+    if (user.avatar && !Helper.String.isUrl(user.avatar) && fs.existsSync(path.resolve(user.avatar))) {
+      fs.unlinkSync(path.resolve(user.avatar));
+    }
+
+    return res.json({ success: true, message: 'Avatar approved successfully' });
+  } catch (e) {
+    return next(e);
+  }
+};
+
+
 
 exports.updateAvatar2 = async (req, res, next) => {
   try {

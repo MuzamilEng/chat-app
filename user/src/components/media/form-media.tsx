@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button, Form, FormControl } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
+import ImageCroper from './ImageCroper';
 
 interface FormValues {
   name: string;
@@ -20,7 +21,7 @@ interface FormValues {
   price: string;
   mediaType: string;
   free: boolean;
-  category: string;
+  // category: string;
   // folderName: string;
 }
 
@@ -40,6 +41,8 @@ function FormMedia() {
   const [selectedFolder, setSelectedFolder] = useState('');
   const [newFolderName, setNewFolderName] = useState('');
   const [selectedMediaType, setSelectedMediaType] = useState('photo');
+  const [folderError, setFolderError] = useState(false);
+  const [previewFolderId, setPreviewFolderId] = useState('')
   const {lang} = useTranslationContext();
 
   const [files, setFiles] = useState([]);
@@ -67,7 +70,7 @@ function FormMedia() {
     description: Yup.string().required( lang === 'de' ? 'Beschreibung ist erforderlich' : 'Description is Required'),
     mediaType: Yup.string().required( lang === 'de' ? 'Typ ist erforderlich' : 'Type is Required'),
     free: Yup.boolean().required(),
-    category: Yup.string().required( lang === 'de' ? 'Kategorie ist erforderlich' : 'Category is Required'),
+    // category: Yup.string().required( lang === 'de' ? 'Kategorie ist erforderlich' : 'Category is Required'),
     // folderName: Yup.string().required('Folder Name is Required'),
   });
 
@@ -76,20 +79,25 @@ function FormMedia() {
     setFolders(response?.folders);
   };
 
+  const handleFolderChange = (e) => {
+    const folderName = e.target.value;
+    const folderExists = folders.some(folder => folder.name === folderName);
+  
+   setTimeout(() => {
+    if (folderExists) {
+      setFolderError(true);
+      setNewFolderName('');
+    }
+   }, 3000);
+  
+    setNewFolderName(folderName);
+    setFolderError(false);
+  };
+
   useEffect(() => {
     fetchFolders();
-  }, [folders.length]);
+  }, []);
 
-  const createFolder = async () => {
-    const folderExists = folders.some(folder => folder.name === newFolderName);
-    if (folderExists) {
-      alert( lang === 'de' ? 'Ordner existiert bereits. Versuchen Sie es erneut' : 'Folder already exists. Try to create a new one.');
-      return;
-    }
-    const response = await sellItemService.createFolder({ name: newFolderName });
-    setFolders([...folders, response?.data?.folder]);
-    setNewFolderName('');
-  };
 
   const onChangeType = (type: any, props: FormikProps<FormValues>) => {
     props.setFieldValue('mediaType', type.currentTarget.value);
@@ -119,14 +127,20 @@ function FormMedia() {
   };
 
   const upload = async (formValues) => {
+    if (files.length < 3) {
+      alert(lang === 'de' ? 'Maximal 3 Medien können hochgeladen werden.' : 'Maximal 3 Media können hochgeladen werden.');
+      return;
+    }
     if (!isContentChecked && !isChecked) {
       alert(lang === 'de' ? 'Bitte akzeptieren Sie die Nutzungsbedingungen' : 'Please accept the Terms and Conditions');
       return;
     }
   
-    if (files.length === 0) {
-      alert("Please upload at least one media file.");
-      return;
+
+    const folderResponse = await sellItemService.createFolder({ name: newFolderName });
+
+    if (folderResponse?.folder) {
+      setSelectedFolder(folderResponse?.folder._id);
     }
   
     const accessToken = authService.getToken();
@@ -134,7 +148,7 @@ function FormMedia() {
     formData.append('description', formValues?.description || 'Your Media Description');
     formData.append('price', formValues?.price || 0);
     formData.append('mediaType', selectedMediaType); // 'photo' or 'video'
-  
+
     files.forEach((file) => {
       formData.append('files', file, file.name); // Dynamically handle media files
     });
@@ -149,13 +163,14 @@ function FormMedia() {
   
       if (response.status === 200 || response.status === 201) {
         const mediaIds = response.data.data.map(media => media.id);
+        mediaIds.push(previewFolderId)
         setDisabled(true);
         for (let mediaId of mediaIds) {
           await sellItemService.createSellItem({
             ...formValues,
             mediaId: mediaId,
-            folderId: selectedFolder,
-            category: formValues.category,
+            folderId: folderResponse?.folder._id || selectedFolder,
+            // category: formValues.category,
           });
         }
   
@@ -196,7 +211,7 @@ function FormMedia() {
               price: '0',
               mediaType: 'photo',
               free: false,
-              category: '',  // Initialized category
+              // category: '',  // Initialized category
             }}
           >
             {(props: FormikProps<FormValues>) => (
@@ -218,7 +233,7 @@ function FormMedia() {
                         </Field>
                       </Form.Group>
                     </div>
-                    <div className="col-md-12 col-12">
+                    {/* <div className="col-md-12 col-12">
                       <Form.Group>
                         <Form.Label>{lang === 'de' ? 'Wählen Sie den Ordner aus.' : 'Please select category.'} </Form.Label>
                         <Field
@@ -237,7 +252,7 @@ function FormMedia() {
                         {props.errors.category && props.touched.category ? props.errors.category : null}
                       </div>
                       </Form.Group>
-                    </div>
+                    </div> */}
                      <div className="col-md-6 col-12">
                       <Form.Group>
                         <Form.Label>{lang === 'de' ? 'Ordnername' : 'Folder Name'}</Form.Label>
@@ -247,39 +262,17 @@ function FormMedia() {
                           id="name"
                           className="form-control form-control-md"
                           placeholder={lang === 'de' ? 'Bitte geben Sie den Namen ein' : 'Please enter the name'}
-                          onChange={(e) => setNewFolderName(e.target.value)}
+                          onChange={handleFolderChange}
                           value={newFolderName}
                         />
                         <div className="invalid-feedback">
                           {props.errors.name}
                         </div>
-                    <Button
-                    type="submit"
-                    variant="primary"
-                    key="button-upload"
-                    // disabled={!fileUpload || disabled}
-                    onClick={createFolder}>
-                    {lang === 'de' ? 'Ordner erstellen' : 'Create Folder'}
-                  </Button>
-                      </Form.Group>
-                    </div>
-              <div >
-              <Form.Group>
-                        <Form.Label>{lang === 'de' ? 'Ordner auswählen' : 'Select Folder'}</Form.Label>
-                        <Field
-                          className="form-control form-control-md"
-                          name="mediaType"
-                          component="select"
-                          value={selectedFolder} onChange={(e) => setSelectedFolder(e.target.value)}
-                        >
-                          <option value="">Select Folder</option>
-                      {folders?.map((folder) => (
-                        <option key={folder?._id} value={folder?._id}>{folder?.name}</option>
-                      ))}
-                        </Field>
-                      </Form.Group>
-                    </div>
+                        {folderError ? <p className="text-danger">{lang === 'de' ? 'Ordner existiert bereits. Versuchen Sie es erneut' : 'Folder already exists. Try to create a new one.'}</p> : null} <br />
 
+               
+                      </Form.Group>
+                    </div>
                     <div className="col-12 mt-4">
                       <Form.Group>
                         <div className=" custom-control custom-switch">
@@ -369,48 +362,55 @@ function FormMedia() {
                       </Form.Group>
                     </div>
                     <main style={{ width: '100%', marginLeft: '4vw', marginTop: '4vw' }}>
-      <p style={{ fontSize: '1.3vw', maxWidth: '70vw', color: '#4b5563' }}>
-        {/* Please upload your media here */}
-        {`${selectedMediaType === 'photo' ? 'Please upload your photos here' : 'Please upload your videos here'}`}
-      </p>
-      <section style={{ display: 'flex', alignItems: 'flex-start' }}>
-  <div
-    onClick={handleInput}
-    style={{
-      backgroundColor: 'white',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      borderRadius: '0.375rem',
-      width: '100%',
-      maxWidth: '22vw',
-      padding: '2vw',
-      display: 'flex',
-      justifyContent: 'center',
-      cursor: 'pointer',
-    }}
-  >
-    <Icon icon="clarity:upload-cloud-line" style={{ color: '#374151', fontSize: '7vw' }} />
-    <input type="file" ref={ref} hidden onChange={handleImage} multiple />
-  </div>
-  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.75rem' }}>
-    {files.map((file, index) => (
-      <figure key={index} style={{ position: 'relative', borderRadius: '0.375rem' }}>
-        <Icon
-          icon="clarity:close-line"
-          style={{ position: 'absolute', top: 0, right: 0, fontSize: '1.8vw', cursor: 'pointer', background: '#ff337c', borderRadius: '0.4vw' }}
-          onClick={() => setFiles(files.filter((_, i) => i !== index))}
-        />
-        {file.type.startsWith('image') ? (
-          <img src={URL.createObjectURL(file)} alt={`Image ${index + 1}`} style={{ objectFit: 'cover', width: '15vw', height: '15vw', borderRadius: '0.3vw' }} />
-        ) : (
-          <video src={URL.createObjectURL(file)} controls style={{ width: '15vw', height: '15vw' }} />
-        )}
-      </figure>
-    ))}
-  </div>
-</section>
+                    <p style={{ fontSize: '1.3vw', maxWidth: '70vw', color: '#4b5563' }}>
+                      {/* Please upload your media here */}
+                      {`${selectedMediaType === 'photo' ? 'Please upload your photos here' : 'Please upload your videos here'}`}
+                    </p>
+                    <section style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <div
+                  onClick={handleInput}
+                  style={{
+                    backgroundColor: 'white',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                    borderRadius: '0.375rem',
+                    width: '100%',
+                    maxWidth: '22vw',
+                    padding: '2vw',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Icon icon="clarity:upload-cloud-line" style={{ color: '#374151', fontSize: '7vw' }} />
+                  <input type="file" ref={ref} hidden onChange={handleImage} multiple />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.75rem' }}>
+                  {files.map((file, index) => (
+                    <figure key={index} style={{ position: 'relative', borderRadius: '0.375rem' }}>
+                      <Icon
+                        icon="clarity:close-line"
+                        style={{ position: 'absolute', top: 0, right: 0, fontSize: '1.8vw', cursor: 'pointer', background: '#ff337c', borderRadius: '0.4vw' }}
+                        onClick={() => setFiles(files.filter((_, i) => i !== index))}
+                      />
+                      {file.type.startsWith('image') ? (
+                        <img src={URL.createObjectURL(file)} alt={`Image ${index + 1}`} style={{ objectFit: 'cover', width: '15vw', height: '15vw', borderRadius: '0.3vw' }} />
+                      ) : (
+                        <video src={URL.createObjectURL(file)} controls style={{ width: '15vw', height: '15vw' }} />
+                      )}
+                    </figure>
+                  ))}
+                </div>
+              </section>
 
-    </main>
+                  </main>
                   </div>
+                 { selectedMediaType === 'photo' && <div style={{marginTop: '3vw', width: '28%',}} className="">
+                  <p style={{ fontSize: '1.1vw', maxWidth: '70vw', color: '#4b5563' }}>
+                      {/* Please upload your media here */}
+                      {`${selectedMediaType === 'photo' ? 'Please upload your main preview image here' : ''}`}
+                    </p>
+                    <ImageCroper meidaID={(id)=> setPreviewFolderId(id)} />
+                  </div>}
                 </div>
                 <div className="card-footer d-flex justify-content-between align-items-center">
                 <section>
